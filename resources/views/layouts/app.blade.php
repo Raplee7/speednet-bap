@@ -21,6 +21,13 @@
     <!-- JQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+
     @stack('styles')
 </head>
 
@@ -67,6 +74,8 @@
     <script src="{{ asset('assets/js/plugins/prism.mini.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/circle-progress.js') }}"></script>
 
+    <!-- Toastify JS -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     @stack('scripts')
 </body>
 

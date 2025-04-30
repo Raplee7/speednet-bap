@@ -4,8 +4,28 @@
     <div class="row">
         <div class="col-sm-12">
             @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        Toastify({
+                            text: "✅ {{ session('success') }}",
+                            duration: 4000,
+                            close: true,
+                            gravity: "top", // or "bottom"
+                            position: "right", // or "left", "center"
+                            style: {
+                                background: "linear-gradient(to right, #00b09b, #96c93d)",
+                                color: "#fff",
+                                borderRadius: "8px",
+                                fontSize: "15px",
+                                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                            },
+                            stopOnFocus: true,
+                        }).showToast();
+                    });
+                </script>
             @endif
+
+
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
                     <div class="header-title">
@@ -32,12 +52,13 @@
                                             <a href="{{ route('devices.edit', $device->id_devices) }}"
                                                 class="btn btn-sm btn-warning">Edit</a>
                                             <form action="{{ route('devices.destroy', $device->id_devices) }}"
-                                                method="POST" style="display:inline;">
+                                                method="POST" class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('Yakin ingin menghapus device ini?')">Hapus</button>
+                                                <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                                    data-nama="{{ $device->nama_perangkat }}">Hapus</button>
                                             </form>
+
                                         </td>
                                     </tr>
                                 @endforeach
@@ -53,4 +74,33 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const deleteButtons = document.querySelectorAll('.btn-delete');
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const form = this.closest('form');
+                        const nama = this.getAttribute('data-nama');
+
+                        Swal.fire({
+                            title: 'Yakin ingin menghapus?',
+                            text: `Perangkat "${nama}" akan dihapus secara permanen.`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#e3342f',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Ya, hapus!',
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                form.submit();
+                            }
+                        });
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection

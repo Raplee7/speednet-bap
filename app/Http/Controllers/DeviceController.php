@@ -30,14 +30,14 @@ class DeviceController extends Controller
 
         Device::create($request->all());
 
-        return redirect()->route('devices.index')->with('success', 'Device berhasil ditambahkan.');
+        return redirect()->route('devices.index')->with('success', 'Perangkat berhasil ditambahkan.');
     }
 
     public function edit(Device $device)
     {
         return view('devices.edit', [
             'device'    => $device,
-            'pageTitle' => 'Edit Device',
+            'pageTitle' => 'Edit Perangkat',
         ]);
     }
 
@@ -49,12 +49,12 @@ class DeviceController extends Controller
 
         $device->update($request->all());
 
-        return redirect()->route('devices.index')->with('success', 'Device berhasil diupdate.');
+        return redirect()->route('devices.index')->with('success', 'Perangkat berhasil diupdate.');
     }
 
     public function destroy(Device $device)
     {
         $device->delete();
-        return redirect()->route('devices.index')->with('success', 'Device berhasil dihapus.');
+        return redirect()->route('devices.index')->with('success', 'Perangkat berhasil dihapus.');
     }
 }
