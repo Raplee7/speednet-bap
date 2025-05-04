@@ -34,7 +34,7 @@
         </a>
         <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
             <i class="icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                     xmlns="http://www.w3.org/2000/svg">
                     <path d="M4.25 12.2744L19.25 12.2744" stroke="currentColor" stroke-width="1.5"
                         stroke-linecap="round" stroke-linejoin="round"></path>
@@ -63,7 +63,7 @@
 
                         <i class="icon">
                             <!-- Dashboard Icon  -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
                                 class="bi bi-grid-fill" viewBox="0 0 16 16">
                                 <path
                                     d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5z" />
@@ -78,7 +78,7 @@
                     <a class="nav-link" href="#">
                         <i class="icon">
                             <!-- Icon User -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
                                 class="bi bi-person-workspace" viewBox="0 0 16 16">
                                 <path
                                     d="M4 16s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-5.95a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
@@ -97,7 +97,7 @@
                     <a class="nav-link" href="#">
                         <i class="icon">
                             <!-- Icon Pelanggan -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                 fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
                                 <path
                                     d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
@@ -110,11 +110,10 @@
 
                 <!-- Perangkat -->
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('devices.*') ? 'active' : '' }}"
-                        href="{{ route('devices.index') }}">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#device-menu" role="button"
+                        aria-expanded="false" aria-controls="device-menu">
                         <i class="icon">
-                            <!-- Icon Perangkat -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                 fill="currentColor" class="bi bi-router-fill" viewBox="0 0 16 16">
                                 <path
                                     d="M5.525 3.025a3.5 3.5 0 0 1 4.95 0 .5.5 0 1 0 .707-.707 4.5 4.5 0 0 0-6.364 0 .5.5 0 0 0 .707.707" />
@@ -124,18 +123,55 @@
                                     d="M2.974 2.342a.5.5 0 1 0-.948.316L3.806 8H1.5A1.5 1.5 0 0 0 0 9.5v2A1.5 1.5 0 0 0 1.5 13H2a.5.5 0 0 0 .5.5h2A.5.5 0 0 0 5 13h6a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5h.5a1.5 1.5 0 0 0 1.5-1.5v-2A1.5 1.5 0 0 0 14.5 8h-2.306l1.78-5.342a.5.5 0 1 0-.948-.316L11.14 8H4.86zM2.5 11a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m4.5-.5a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0m2.5.5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m1.5-.5a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0m2 0a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0" />
                                 <path d="M8.5 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0" />
                             </svg>
-
                         </i>
                         <span class="item-name">Perangkat</span>
+                        <i class="right-icon">
+                            <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
+                        </i>
                     </a>
+                    <ul class="sub-nav collapse" id="device-menu" data-bs-parent="#sidebar-menu">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('device_models.*') ? 'active' : '' }}"
+                                href="{{ route('device_models.index') }}">
+                                <i class="icon">
+                                    <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10"
+                                        fill="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="8" />
+                                    </svg>
+                                </i>
+                                <i class="sidenav-mini-icon"> M </i>
+                                <span class="item-name">Model</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('device_sns.*') ? 'active' : '' }}"
+                                href="{{ route('device_sns.index') }}">
+                                <i class="icon">
+                                    <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10"
+                                        fill="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="8" />
+                                    </svg>
+                                </i>
+                                <i class="sidenav-mini-icon"> S </i>
+                                <span class="item-name">Serial Number</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+
+
+
 
                 <!-- Paket -->
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('pakets.*') ? 'active' : '' }}"
                         href="{{ route('pakets.index') }}">
                         <i class="icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                 fill="currentColor" class="bi bi-reception-4" viewBox="0 0 16 16">
                                 <path
                                     d="M0 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5z" />
@@ -150,7 +186,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                 fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16">
                                 <path
                                     d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z" />
@@ -166,7 +202,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                 fill="currentColor" class="bi bi-file-earmark-ruled-fill" viewBox="0 0 16 16">
                                 <path
                                     d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M3 9h10v1H6v2h7v1H6v2H5v-2H3v-1h2v-2H3z" />

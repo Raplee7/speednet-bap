@@ -10,8 +10,8 @@
                             text: "✅ {{ session('success') }}",
                             duration: 4000,
                             close: true,
-                            gravity: "top", // or "bottom"
-                            position: "right", // or "left", "center"
+                            gravity: "top",
+                            position: "right",
                             style: {
                                 background: "linear-gradient(to right, #00b09b, #96c93d)",
                                 color: "#fff",
@@ -24,45 +24,42 @@
                     });
                 </script>
             @endif
-
-
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
                     <div class="header-title">
-                        <h4 class="card-title">Data Perangkat</h4>
+                        <h4 class="card-title">Data Model Perangkat</h4>
                     </div>
-                    <a href="{{ route('devices.create') }}" class="btn btn-primary">Tambah</a>
+                    <a href="{{ route('device_models.create') }}" class="btn btn-primary">Tambah Model</a>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive mt-4">
-                        <table id="basic-table" class="table table-striped mb-0" role="grid">
+                        <table id="basic-table" class="table table-striped mb-0">
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Perangkat</th>
+                                    <th>Nama Model</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($devices as $device)
+                                @foreach ($device_models as $model)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $device->nama_perangkat }}</td>
+                                        <td>{{ $model->nama_model }}</td>
                                         <td>
-                                            <a href="{{ route('devices.edit', $device->id_devices) }}"
+                                            <a href="{{ route('device_models.edit', $model->id_dm) }}"
                                                 class="btn btn-sm btn-warning">Edit</a>
-                                            <form action="{{ route('devices.destroy', $device->id_devices) }}"
+                                            <form action="{{ route('device_models.destroy', $model->id_dm) }}"
                                                 method="POST" class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-sm btn-danger btn-delete"
-                                                    data-nama="{{ $device->nama_perangkat }}">Hapus</button>
+                                                    data-nama="{{ $model->nama_model }}">Hapus</button>
                                             </form>
-
                                         </td>
                                     </tr>
                                 @endforeach
-                                @if ($devices->isEmpty())
+                                @if ($device_models->isEmpty())
                                     <tr>
                                         <td colspan="3" class="text-center">Data kosong</td>
                                     </tr>
@@ -86,7 +83,7 @@
 
                         Swal.fire({
                             title: 'Yakin ingin menghapus?',
-                            text: `Perangkat "${nama}" akan dihapus secara permanen.`,
+                            text: `Model "${nama}" akan dihapus secara permanen.`,
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#e3342f',
