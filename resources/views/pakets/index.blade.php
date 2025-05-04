@@ -4,25 +4,11 @@
     <div class="row">
         <div class="col-sm-12">
             @if (session('success'))
-                <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        Toastify({
-                            text: "✅ {{ session('success') }}",
-                            duration: 4000,
-                            close: true,
-                            gravity: "top", // or "bottom"
-                            position: "right", // or "left", "center"
-                            style: {
-                                background: "linear-gradient(to right, #00b09b, #96c93d)",
-                                color: "#fff",
-                                borderRadius: "8px",
-                                fontSize: "15px",
-                                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                            },
-                            stopOnFocus: true,
-                        }).showToast();
-                    });
-                </script>
+                @push('scripts')
+                    <script>
+                        toastr.success("{{ session('success') }}");
+                    </script>
+                @endpush
             @endif
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
