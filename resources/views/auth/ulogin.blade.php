@@ -7,7 +7,7 @@
     <title>Login | Speednet</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/logobpp.ico') }}">
 
     <!-- CSS Libraries -->
     <link rel="stylesheet" href="{{ asset('assets/css/core/libs.min.css') }}">
@@ -32,38 +32,32 @@
                                 <div class="card-body z-3 px-md-0 px-lg-4">
                                     <h1 class="mb-2 text-center">LOGIN</h1>
                                     <p class="mb-5 text-center">Login untuk mengatur pembayaran Wi-Fi</p>
-                                    <form method="POST" action="{{ route('ulogin.submit') }}">
+                                    <form method="POST" action="{{ url('/ulogin') }}">
                                         @csrf
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <div class="form-group">
-                                                    <label for="login" class="form-label">Email atau Username</label>
-                                                    <input type="text" class="form-control" id="login"
-                                                        name="login" value="{{ old('login') }}" required autofocus
-                                                        placeholder=" ">
-                                                    @error('login')
-                                                        <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
-                                                </div>
+                                        @error('login')
+                                            <div class="alert alert-warning alert-dismissible fade show " role="alert">
+                                                <span> {{ $message }}</span>
+                                                <button type="button" class="btn-close btn-close-white"
+                                                    data-bs-dismiss="alert" aria-label="Close"></button>
                                             </div>
-                                            <div class="col-lg-12">
-                                                <div class="form-group">
-                                                    <label for="password" class="form-label">Password</label>
-                                                    <input type="password" class="form-control" id="password"
-                                                        name="password" required placeholder=" ">
-                                                    @error('password')
-                                                        <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-12 d-flex justify-content-start">
-                                                <a href="#">Lupa Password?</a>
-                                            </div>
+                                        @enderror
+                                        <div class="form-group">
+                                            <label for="login" class="form-label">Username atau Email</label>
+                                            <input type="text" name="login" class="form-control" id="login"
+                                                value="{{ old('login') }}" required autofocus>
                                         </div>
+
+                                        <div class="form-group">
+                                            <label for="password" class="form-label">Password</label>
+                                            <input type="password" name="password" class="form-control" id="password"
+                                                required>
+                                        </div>
+
                                         <div class="d-flex justify-content-center">
                                             <button type="submit" class="btn btn-primary">Login</button>
                                         </div>
                                     </form>
+
 
                                 </div>
                             </div>
