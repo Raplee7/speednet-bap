@@ -26,19 +26,17 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_user'     => 'required|string|max:255',
-            'username_user' => 'required|string|max:255|unique:users,username_user',
-            'email'         => 'required|email|unique:users,email',
-            'password'      => 'required|min:3',
-            'role'          => 'required|in:admin,kasir',
+            'nama_user' => 'required|string|max:255',
+            'email'     => 'required|email|unique:users,email',
+            'password'  => 'required|min:3',
+            'role_user' => 'required|in:admin,kasir',
         ]);
 
         User::create([
-            'nama_user'     => $request->nama_user,
-            'username_user' => $request->username_user,
-            'email'         => $request->email,
-            'password'      => Hash::make($request->password),
-            'role'          => $request->role,
+            'nama_user' => $request->nama_user,
+            'email'     => $request->email,
+            'password'  => Hash::make($request->password),
+            'role_user' => $request->role_user,
         ]);
 
         return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
@@ -55,17 +53,15 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'nama_user'     => 'required|string|max:255',
-            'username_user' => 'required|string|max:255|unique:users,username_user,' . $user->id_user . ',id_user',
-            'email'         => 'required|email|unique:users,email,' . $user->id_user . ',id_user',
-            'role'          => 'required|in:admin,kasir',
+            'nama_user' => 'required|string|max:255',
+            'email'     => 'required|email|unique:users,email,' . $user->id_user . ',id_user',
+            'role_user' => 'required|in:admin,kasir',
         ]);
 
         $user->update([
-            'nama_user'     => $request->nama_user,
-            'username_user' => $request->username_user,
-            'email'         => $request->email,
-            'role'          => $request->role,
+            'nama_user' => $request->nama_user,
+            'email'     => $request->email,
+            'role_user' => $request->role_user,
         ]);
 
         return redirect()->route('users.index')->with('success', 'User berhasil diperbarui.');

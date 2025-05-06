@@ -21,10 +21,6 @@
                             <input type="text" name="nama_user" class="form-control" id="nama_user" required>
                         </div>
                         <div class="mb-3">
-                            <label for="username_user" class="form-label">Username</label>
-                            <input type="text" name="username_user" class="form-control" id="username_user" required>
-                        </div>
-                        <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
                             <input type="email" name="email" class="form-control" id="email" required>
                         </div>
@@ -33,8 +29,8 @@
                             <input type="password" name="password" class="form-control" id="password" required>
                         </div>
                         <div class="mb-3">
-                            <label for="role" class="form-label">Role</label>
-                            <select name="role" id="role" class="form-select" required>
+                            <label for="role_user" class="form-label">Role</label>
+                            <select name="role_user" id="role_user" class="form-select" required>
                                 <option value="admin">Admin</option>
                                 <option value="kasir">Kasir</option>
                             </select>

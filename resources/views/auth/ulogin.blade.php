@@ -34,17 +34,18 @@
                                     <p class="mb-5 text-center">Login untuk mengatur pembayaran Wi-Fi</p>
                                     <form method="POST" action="{{ url('/ulogin') }}">
                                         @csrf
-                                        @error('login')
-                                            <div class="alert alert-warning alert-dismissible fade show " role="alert">
-                                                <span> {{ $message }}</span>
+                                        @error('email')
+                                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                                <span>{{ $message }}</span>
                                                 <button type="button" class="btn-close btn-close-white"
                                                     data-bs-dismiss="alert" aria-label="Close"></button>
                                             </div>
                                         @enderror
+
                                         <div class="form-group">
-                                            <label for="login" class="form-label">Username atau Email</label>
-                                            <input type="text" name="login" class="form-control" id="login"
-                                                value="{{ old('login') }}" required autofocus>
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" name="email" class="form-control" id="email"
+                                                value="{{ old('email') }}" required autofocus>
                                         </div>
 
                                         <div class="form-group">
@@ -57,8 +58,6 @@
                                             <button type="submit" class="btn btn-primary">Login</button>
                                         </div>
                                     </form>
-
-
                                 </div>
                             </div>
                         </div>

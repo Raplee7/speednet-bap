@@ -61,9 +61,7 @@
                             <img src="{{ asset('assets/images/avatars/catprofile.png') }}" alt="User-Profile"
                                 class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded" />
                             <div class="caption ms-3 d-none d-md-block">
-                                <!-- Menampilkan nama pengguna yang sedang login -->
                                 <h6 class="mb-0 caption-title">{{ Auth::user()->nama_user }}</h6>
-                                <!-- Menampilkan role pengguna yang sedang login -->
                                 <p class="mb-0 caption-sub-title">{{ ucfirst(Auth::user()->role) }}</p>
                             </div>
                         </a>

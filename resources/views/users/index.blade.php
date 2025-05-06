@@ -22,7 +22,6 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Nama</th>
-                                    <th>Username</th>
                                     <th>Email</th>
                                     <th>Role</th>
                                     <th>Aksi</th>
@@ -33,17 +32,16 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $user->nama_user }}</td>
-                                        <td>{{ $user->username_user }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>
                                             @php
-                                                $badgeClass = match ($user->role) {
+                                                $badgeClass = match ($user->role_user) {
                                                     'admin' => 'bg-success-subtle',
                                                     'kasir' => 'bg-primary-subtle',
                                                 };
                                             @endphp
                                             <span class=" {{ $badgeClass }} rounded-pill px-3 text-capitalize">
-                                                {{ $user->role }}
+                                                {{ $user->role_user }}
                                             </span>
                                         </td>
                                         <td>
