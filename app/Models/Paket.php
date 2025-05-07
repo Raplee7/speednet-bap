@@ -8,6 +8,6 @@ class Paket extends Model
 {
     /** @use HasFactory<\Database\Factories\PaketFactory> */
     use HasFactory;
-    protected $primaryKey = 'id_pakets';
+    protected $primaryKey = 'id_paket';
     protected $fillable   = ['kecepatan_paket', 'harga_paket'];
 }

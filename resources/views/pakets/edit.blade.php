@@ -5,7 +5,7 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ route('pakets.update', $paket->id_pakets) }}" method="POST">
+                    <form action="{{ route('pakets.update', $paket->id_paket) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="mb-3">

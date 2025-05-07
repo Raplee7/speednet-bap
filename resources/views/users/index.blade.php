@@ -35,13 +35,13 @@
                                         <td>{{ $user->email }}</td>
                                         <td>
                                             @php
-                                                $badgeClass = match ($user->role_user) {
+                                                $badgeClass = match ($user->role) {
                                                     'admin' => 'bg-success-subtle',
                                                     'kasir' => 'bg-primary-subtle',
                                                 };
                                             @endphp
                                             <span class=" {{ $badgeClass }} rounded-pill px-3 text-capitalize">
-                                                {{ $user->role_user }}
+                                                {{ $user->role }}
                                             </span>
                                         </td>
                                         <td>

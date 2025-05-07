@@ -1,17 +1,17 @@
 <?php
-
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DeviceModelSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        DB::table('device_models')->insert([
+            ['nama_model' => 'Huawei HG8245H'],
+            ['nama_model' => 'ZTE F660'],
+            ['nama_model' => 'TP-Link Archer C6'],
+        ]);
     }
 }

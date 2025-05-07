@@ -19,10 +19,10 @@
                                 value="{{ $user->email }}" required>
                         </div>
                         <div class="mb-3">
-                            <label for="role_user" class="form-label">Role</label>
-                            <select name="role_user" id="role_user" class="form-select" required>
-                                <option value="admin" {{ $user->role_user === 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="kasir" {{ $user->role_user === 'kasir' ? 'selected' : '' }}>Kasir</option>
+                            <label for="role" class="form-label">Role</label>
+                            <select name="role" id="role" class="form-select" required>
+                                <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="kasir" {{ $user->role === 'kasir' ? 'selected' : '' }}>Kasir</option>
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Update</button>

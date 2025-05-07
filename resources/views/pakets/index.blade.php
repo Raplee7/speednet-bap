@@ -35,9 +35,9 @@
                                         <td>{{ $paket->kecepatan_paket }}</td>
                                         <td>Rp {{ number_format($paket->harga_paket, 0, ',', '.') }}</td>
                                         <td>
-                                            <a href="{{ route('pakets.edit', $paket->id_pakets) }}"
+                                            <a href="{{ route('pakets.edit', $paket->id_paket) }}"
                                                 class="btn btn-sm btn-warning">Edit</a>
-                                            <form action="{{ route('pakets.destroy', $paket->id_pakets) }}" method="POST"
+                                            <form action="{{ route('pakets.destroy', $paket->id_paket) }}" method="POST"
                                                 class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')

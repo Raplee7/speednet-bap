@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nama_user');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role_user', ['admin', 'kasir'])->default('kasir');
+            $table->enum('role', ['admin', 'kasir'])->default('kasir');
             $table->rememberToken();
             $table->timestamps();
         });
