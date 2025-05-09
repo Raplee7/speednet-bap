@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerSubmissionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviceModelController;
 use App\Http\Controllers\DeviceSnController;
@@ -9,10 +10,6 @@ use App\Http\Controllers\EwalletController;
 use App\Http\Controllers\PaketController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('landing.index');
-});
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -34,3 +31,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// customer
+Route::get('/', [CustomerSubmissionController::class, 'create']);
+Route::post('/form-pemasangan', [CustomerSubmissionController::class, 'store'])->name('form.pemasangan.store');

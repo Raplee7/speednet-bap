@@ -1,5 +1,50 @@
 @extends('layouts.app')
+<style>
+    @keyframes subtleShine {
+        0% {
+            box-shadow: 0 0 3px rgba(52, 152, 219, 0.3);
+            /* Biru muda lembut */
+            background-color: rgba(224, 242, 254, 0.7);
+            /* Warna dasar sedikit transparan */
+        }
 
+        50% {
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.7);
+            /* Biru lebih bersinar */
+            background-color: rgba(186, 230, 253, 0.9);
+        }
+
+        100% {
+            box-shadow: 0 0 3px rgba(52, 152, 219, 0.3);
+            background-color: rgba(224, 242, 254, 0.7);
+        }
+    }
+
+    tr.shine-effect>td {
+        /* Terapkan animasi pada sel agar efeknya lebih baik */
+        animation: subtleShine 2s infinite alternate ease-in-out;
+        /* background-color dasar bisa diatur di sini atau di keyframes */
+    }
+
+    /* Pastikan hover tetap berfungsi dan mungkin menghentikan animasi untuk UX yang lebih baik */
+    .table-hover>tbody>tr.shine-effect:hover>td {
+        animation-play-state: paused;
+        /* Hentikan animasi saat hover */
+        background-color: #bae6fd !important;
+        /* Warna hover yang solid */
+        box-shadow: none;
+        /* Hapus shadow saat hover jika diinginkan */
+    }
+
+    /* Untuk baris yang hanya 'row-baru' tanpa 'shine-effect' jika Anda memisahkannya */
+    tr.row-baru:not(.shine-effect) {
+        background-color: #e0f2fe !important;
+    }
+
+    .table-hover>tbody>tr.row-baru:not(.shine-effect):hover {
+        background-color: #bae6fd !important;
+    }
+</style>
 @section('content')
     <div class="row">
         <div class="col-sm-12">
@@ -32,7 +77,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($customers as $customer)
-                                    <tr>
+                                    <tr class="{{ $customer->status == 'baru' ? 'row-baru shine-effect' : '' }}">
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $customer->id_customer }}</td>
                                         <td>{{ $customer->nama_customer }}</td>

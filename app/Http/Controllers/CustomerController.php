@@ -58,6 +58,9 @@ class CustomerController extends Controller
 
         Customer::create($validated);
 
+        Device_sn::where('id_dsn', $validated['device_sn_id'])
+            ->update(['status' => 'dipakai']);
+
         return redirect()->route('customers.index')->with('success', 'Pelanggan berhasil ditambahkan!');
     }
 
@@ -89,7 +92,13 @@ class CustomerController extends Controller
     public function edit(Customer $customer)
     {
         $pakets    = Paket::all();
-        $deviceSns = Device_sn::with('deviceModel')->get();
+        $deviceSns = Device_sn::where(function ($query) {
+            $query->where('status', 'tersedia')
+                ->orWhere('status', 'dipakai'); // Ambil perangkat dengan status 'dipakai' juga
+        })
+            ->with('deviceModel')
+            ->get();
+
         return view('customers.edit', [
             'customer'  => $customer,
             'pakets'    => $pakets,
@@ -135,6 +144,14 @@ class CustomerController extends Controller
                 Storage::delete($customer->foto_timestamp_rumah);
             }
             $validated['foto_timestamp_rumah'] = $request->file('foto_timestamp_rumah')->store('rumah', 'public');
+        }
+
+        if ($customer->device_sn_id !== $validated['device_sn_id']) {
+            // Kembalikan perangkat lama ke 'tersedia'
+            Device_sn::where('id_dsn', $customer->device_sn_id)->update(['status' => 'tersedia']);
+
+            // Jadikan perangkat baru jadi 'dipakai'
+            Device_sn::where('id_dsn', $validated['device_sn_id'])->update(['status' => 'dipakai']);
         }
 
         $customer->update($validated);

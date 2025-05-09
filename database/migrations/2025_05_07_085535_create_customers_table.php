@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->string('id_customer')->primary(); // SN00012505
             $table->string('nama_customer');
-            $table->string('nik_customer')->unique();
+            $table->string('nik_customer')->unique()->nullable();
             $table->text('alamat_customer');
             $table->string('wa_customer');
             $table->string('foto_ktp_customer')->nullable();
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('ip_ppoe')->nullable();
             $table->string('ip_onu')->nullable();
             $table->foreignId('paket_id')->constrained('pakets', 'id_paket')->onDelete('cascade');
-            $table->foreignId('device_sn_id')->constrained('device_sns', 'id_dsn')->onDelete('cascade');
+            $table->foreignId('device_sn_id')->nullable()->constrained('device_sns', 'id_dsn')->onDelete('cascade');
             $table->date('tanggal_aktivasi')->nullable();
             $table->enum('status', ['baru', 'belum', 'proses', 'terpasang'])->default('belum');
             $table->string('password'); // untuk login pelanggan

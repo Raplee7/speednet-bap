@@ -103,15 +103,16 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="device_sn_id" class="form-label">Perangkat</label>
-                                    <select name="device_sn_id" class="form-select" id="device-sn-select" required>
+                                    <select name="device_sn_id" class="form-select" required id="device-sn-select">
                                         @foreach ($deviceSns as $deviceSn)
                                             <option value="{{ $deviceSn->id_dsn }}"
-                                                {{ $customer->device_sn_id == $deviceSn->id_dsn ? 'selected' : '' }}>
+                                                @if ($deviceSn->id_dsn == $customer->device_sn_id) selected @endif>
                                                 {{ $deviceSn->nomor }} ({{ $deviceSn->deviceModel->nama_model }})
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
+
                                 <div class="mb-3">
                                     <label for="tanggal_aktivasi" class="form-label">Tanggal Aktivasi</label>
                                     <input type="date" name="tanggal_aktivasi" class="form-control"

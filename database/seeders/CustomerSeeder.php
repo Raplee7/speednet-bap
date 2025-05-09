@@ -23,7 +23,6 @@ class CustomerSeeder extends Seeder
                 'ip_ppoe'              => '10.0.0.' . $i,
                 'ip_onu'               => '192.168.1.' . $i,
                 'paket_id'             => rand(1, 3),
-                'device_sn_id'         => rand(1, 3),
                 'tanggal_aktivasi'     => now(),
                 'status'               => ['belum', 'proses', 'terpasang'][rand(0, 2)],
                 'password'             => Hash::make('password123'),
