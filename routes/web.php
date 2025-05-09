@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviceModelController;
 use App\Http\Controllers\DeviceSnController;
@@ -20,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('ewallets', EwalletController::class);
     Route::resource('pakets', PaketController::class);
     Route::resource('users', UserController::class);
+    Route::resource('customers', CustomerController::class);
 });
 
 Route::get('/login', function () {

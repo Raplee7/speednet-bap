@@ -28,6 +28,9 @@
     <!-- Toastr CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
 
@@ -77,6 +80,8 @@
     <script src="{{ asset('assets/js/plugins/flatpickr.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/prism.mini.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/circle-progress.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
 
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
@@ -99,6 +104,8 @@
             "hideMethod": "fadeOut"
         }
     </script>
+
+
 
     @stack('scripts')
 </body>

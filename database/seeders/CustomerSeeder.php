@@ -16,7 +16,7 @@ class CustomerSeeder extends Seeder
                 'nama_customer'        => fake('id_ID')->name(),
                 'nik_customer'         => fake('id_ID')->nik(),
                 'alamat_customer'      => fake('id_ID')->address(),
-                'wa_customer'          => '08' . rand(1111111111, 9999999999),
+                'wa_customer'          => '089520280405',
                 'foto_ktp_customer'    => 'ktp_' . $i . '.jpg',
                 'foto_timestamp_rumah' => 'rumah_' . $i . '.jpg',
                 'active_user'          => 'user' . $i,

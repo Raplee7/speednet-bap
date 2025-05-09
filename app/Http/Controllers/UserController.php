@@ -12,7 +12,7 @@ class UserController extends Controller
         $users = User::all();
         return view('users.index', [
             'users'     => $users,
-            'pageTitle' => 'Data User',
+            'pageTitle' => 'User',
         ]);
     }
 

@@ -19,7 +19,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive mt-4">
-                        <table id="basic-table" class="table table-striped mb-0">
+                        <table id="datatable" data-toggle="data-table" class="table table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>No</th>

@@ -10,29 +10,29 @@ class EwalletSeeder extends Seeder
     {
         DB::table('ewallets')->insert([
             [
-                'nama_ewallets' => 'DANA',
-                'no_ewallets'   => '089123456789',
-                'atas_nama'     => 'SpeedNet Payment',
+                'nama_ewallet' => 'DANA',
+                'no_ewallet'   => '089123456789',
+                'atas_nama'    => 'SpeedNet Payment',
             ],
             [
-                'nama_ewallets' => 'OVO',
-                'no_ewallets'   => '081234567890',
-                'atas_nama'     => 'SpeedNet Payment',
+                'nama_ewallet' => 'OVO',
+                'no_ewallet'   => '081234567890',
+                'atas_nama'    => 'SpeedNet Payment',
             ],
             [
-                'nama_ewallets' => 'GoPay',
-                'no_ewallets'   => '085612345678',
-                'atas_nama'     => 'SpeedNet Payment',
+                'nama_ewallet' => 'GoPay',
+                'no_ewallet'   => '085612345678',
+                'atas_nama'    => 'SpeedNet Payment',
             ],
             [
-                'nama_ewallets' => 'ShopeePay',
-                'no_ewallets'   => '082123456789',
-                'atas_nama'     => 'SpeedNet Payment',
+                'nama_ewallet' => 'ShopeePay',
+                'no_ewallet'   => '082123456789',
+                'atas_nama'    => 'SpeedNet Payment',
             ],
             [
-                'nama_ewallets' => 'Bank BCA',
-                'no_ewallets'   => '1234567890',
-                'atas_nama'     => 'SpeedNet Payment',
+                'nama_ewallet' => 'Bank BCA',
+                'no_ewallet'   => '1234567890',
+                'atas_nama'    => 'SpeedNet Payment',
             ],
         ]);
     }

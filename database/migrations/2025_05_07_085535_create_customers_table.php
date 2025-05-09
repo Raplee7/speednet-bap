@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreignId('paket_id')->constrained('pakets', 'id_paket')->onDelete('cascade');
             $table->foreignId('device_sn_id')->constrained('device_sns', 'id_dsn')->onDelete('cascade');
             $table->date('tanggal_aktivasi')->nullable();
-            $table->enum('status', ['belum', 'proses', 'terpasang'])->default('belum');
+            $table->enum('status', ['baru', 'belum', 'proses', 'terpasang'])->default('belum');
             $table->string('password'); // untuk login pelanggan
             $table->timestamps();
         });
