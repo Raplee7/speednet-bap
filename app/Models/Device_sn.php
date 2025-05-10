@@ -18,4 +18,9 @@ class Device_sn extends Model
     {
         return $this->belongsTo(Device_model::class, 'model_id', 'id_dm');
     }
+
+    public function customer()
+    {
+        return $this->hasOne(Customer::class, 'device_sn_id', 'id_dsn');
+    }
 }

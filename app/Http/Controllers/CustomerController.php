@@ -161,6 +161,11 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
+        // Ubah status perangkat menjadi 'tersedia' jika ada
+        if ($customer->device_sn_id) {
+            Device_sn::where('id_dsn', $customer->device_sn_id)->update(['status' => 'tersedia']);
+        }
+
         // Hapus foto KTP jika ada
         if ($customer->foto_ktp_customer && Storage::exists($customer->foto_ktp_customer)) {
             Storage::delete($customer->foto_ktp_customer);

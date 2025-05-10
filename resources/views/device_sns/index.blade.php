@@ -19,7 +19,6 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive mt-4">
-
                         <table id="datatable" data-toggle="data-table" class="table table-hover mb-0">
                             <thead>
                                 <tr>
@@ -27,6 +26,7 @@
                                     <th>Nomor</th>
                                     <th>Model</th>
                                     <th>Status</th>
+                                    <th>Dipakai oleh</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -47,6 +47,13 @@
                                             <span class=" {{ $badgeClass }} rounded-pill px-3 text-capitalize">
                                                 {{ $sn->status }}
                                             </span>
+                                        </td>
+                                        <td>
+                                            @if ($sn->status == 'dipakai' && $sn->customer)
+                                                {{ $sn->customer->nama_customer }}
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
                                         </td>
 
                                         <td>

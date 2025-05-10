@@ -9,7 +9,7 @@ class DeviceSnController extends Controller
 {
     public function index()
     {
-        $device_sns = Device_sn::with('deviceModel')->get();
+        $device_sns = Device_sn::with('deviceModel', 'customer')->get();
         return view('device_sns.index', [
             'device_sns' => $device_sns,
             'pageTitle'  => 'Serial Number Perangkat',

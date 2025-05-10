@@ -102,6 +102,7 @@
                                 <div class="mb-3">
                                     <label for="status" class="form-label">Status</label>
                                     <select name="status" class="form-select" required>
+                                        <option value="baru">Baru</option>
                                         <option value="belum">Belum</option>
                                         <option value="proses">Proses</option>
                                         <option value="terpasang">Terpasang</option>

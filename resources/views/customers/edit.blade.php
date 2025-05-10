@@ -121,8 +121,10 @@
                                 <div class="mb-3">
                                     <label for="status" class="form-label">Status</label>
                                     <select name="status" class="form-select" required>
-                                        <option value="belum" {{ $customer->status == 'belum' ? 'selected' : '' }}>Belum
-                                        </option>
+                                        <option value="baru" {{ $customer->status == 'baru' ? 'selected' : '' }}>
+                                            Baru</option>
+                                        <option value="belum" {{ $customer->status == 'belum' ? 'selected' : '' }}>
+                                            Belum</option>
                                         <option value="proses" {{ $customer->status == 'proses' ? 'selected' : '' }}>
                                             Proses</option>
                                         <option value="terpasang"
