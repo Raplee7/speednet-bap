@@ -32,7 +32,7 @@
                                 <div class="card-body z-3 px-md-0 px-lg-4">
                                     <h1 class="mb-2 text-center">LOGIN</h1>
                                     <p class="mb-5 text-center">Login untuk mengatur pembayaran Wi-Fi</p>
-                                    <form method="POST" action="{{ url('/ulogin') }}">
+                                    <form method="POST" action="{{ url('/login') }}">
                                         @csrf
                                         @error('email')
                                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
