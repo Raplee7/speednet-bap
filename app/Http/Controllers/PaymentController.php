@@ -234,4 +234,28 @@ class PaymentController extends Controller
         return redirect()->route('payments.index')
             ->with('info', 'Tagihan ' . $payment->nomor_invoice . ' telah dibatalkan.');
     }
+
+    /**
+     * Menampilkan halaman struk pembayaran untuk dicetak oleh Admin/Kasir.
+     * Hanya untuk pembayaran yang sudah LUNAS.
+     */
+    public function printInvoiceByAdmin(Payment $payment) // Menggunakan Route Model Binding
+    {
+        // Admin/Kasir bisa mencetak struk apa saja yang sudah lunas
+        if ($payment->status_pembayaran !== 'paid') {
+            return redirect()->route('admin.payments.show', $payment->id_payment) // Sesuaikan nama rute
+                ->with('error', 'Hanya struk untuk pembayaran yang LUNAS yang bisa dicetak.');
+        }
+
+        // Eager load relasi yang mungkin dibutuhkan di view struk
+        $payment->load(['customer', 'paket', 'ewallet']);
+
+        $pageTitle = 'Struk Pembayaran ' . $payment->nomor_invoice;
+
+        // Kita bisa menggunakan view yang sama dengan pelanggan jika struknya identik
+        // Atau buat view khusus admin jika ada perbedaan informasi
+        return view('customer_area.payments.invoice_print', compact('payment', 'pageTitle'));
+        // Jika Anda membuat view terpisah untuk admin, misalnya:
+        // return view('admin.payments.invoice_print', compact('payment', 'pageTitle'));
+    }
 }

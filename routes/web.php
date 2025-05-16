@@ -1,18 +1,21 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AuthCustomerController;       // Untuk Admin/Kasir
-use App\Http\Controllers\CustomerController;           // Untuk Pelanggan
-use App\Http\Controllers\CustomerDashboardController;  // Dashboard Admin
-use App\Http\Controllers\CustomerSubmissionController; // Dashboard Pelanggan (buat jika belum ada)
+use App\Http\Controllers\AuthCustomerController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\CustomerPaymentController;
+use App\Http\Controllers\CustomerSubmissionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviceModelController;
 use App\Http\Controllers\DeviceSnController;
-use App\Http\Controllers\EwalletController;
-use App\Http\Controllers\PaketController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\UserController; // CRUD Customer oleh Admin
+use App\Http\Controllers\EwalletController; // CRUD Customer oleh Admin
+use App\Http\Controllers\PaketController;   // Untuk Pelanggan
+use App\Http\Controllers\PaymentController; // Dashboard Admin
+use App\Http\Controllers\UserController;    // Untuk Admin/Kasir
 use Illuminate\Support\Facades\Route;
+
+// Dashboard Pelanggan (buat jika belum ada)
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +48,8 @@ Route::middleware(['auth'])->group(function () {                                
     Route::resource('users', UserController::class);
     Route::resource('pakets', PaketController::class);
     Route::resource('ewallets', EwalletController::class);
+    Route::patch('/ewallets/{id}/toggle-status', [EwalletController::class, 'toggleStatus'])->name('ewallets.toggle-status');
+
     Route::resource('device_models', DeviceModelController::class);
     Route::resource('device_sns', DeviceSnController::class);
     Route::resource('customers', CustomerController::class); // CRUD Customer oleh Admin
@@ -57,6 +62,8 @@ Route::middleware(['auth'])->group(function () {                                
     Route::post('payments/{payment}/verify', [PaymentController::class, 'processVerification'])->name('payments.processVerification');
     Route::post('payments/{payment}/pay-cash', [PaymentController::class, 'processCashPayment'])->name('payments.processCashPayment');
     Route::post('payments/{payment}/cancel', [PaymentController::class, 'cancelInvoice'])->name('payments.cancelInvoice');
+    Route::get('payments/{payment}/print-by-admin', [PaymentController::class, 'printInvoiceByAdmin'])->name('payments.print_invoice_admin');
+
 });
 
 /*
@@ -66,19 +73,19 @@ Route::middleware(['auth'])->group(function () {                                
 */
 Route::prefix('pelanggan')->name('customer.')->group(function () {
 
-    Route::middleware('guest:customer_web')->group(function () {                               // Hanya jika belum login sebagai pelanggan
-                                                                                                   // Rute ini dipanggil jika validasi modal gagal atau jika ingin ada halaman login khusus
-        Route::get('login', [AuthCustomerController::class, 'showLoginForm'])->name('login.form'); // URL: /pelanggan/login
-                                                                                                   // Rute ini yang akan dipanggil oleh form di modal
+    Route::middleware('guest:customer_web')->group(function () {
+        Route::get('login', [AuthCustomerController::class, 'showLoginForm'])->name('login.form');
         Route::post('login', [AuthCustomerController::class, 'login'])->name('login.attempt');
     });
 
-    Route::middleware('auth:customer_web')->group(function () {                       // Hanya jika sudah login sebagai pelanggan
-        Route::post('logout', [AuthCustomerController::class, 'logout'])->name('logout'); // URL: /pelanggan/logout
+    Route::middleware('auth:customer_web')->group(function () {
+        Route::post('logout', [AuthCustomerController::class, 'logout'])->name('logout');
+        Route::get('dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
 
-        // Anda perlu membuat CustomerDashboardController
-        // Route::get('dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard'); // URL: /pelanggan/dashboard
-//
-        // Tambahkan rute lain untuk pelanggan di sini (misal: lihat tagihan, upload bukti)
+        Route::get('tagihan', [CustomerPaymentController::class, 'index'])->name('payments.index');
+        Route::get('perpanjang-layanan', [CustomerPaymentController::class, 'showRenewalForm'])->name('renewal.form');
+        Route::post('perpanjang-layanan', [CustomerPaymentController::class, 'processRenewal'])->name('renewal.process');
+        Route::get('tagihan/{payment}/cetak', [CustomerPaymentController::class, 'printInvoice'])->name('payments.print_invoice');
+
     });
 });

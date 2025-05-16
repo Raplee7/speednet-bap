@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama_ewallet');
             $table->string('no_ewallet');
             $table->string('atas_nama');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
 

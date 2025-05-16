@@ -15,4 +15,7 @@ class Ewallet extends Model
         'no_ewallet',
         'atas_nama',
     ];
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 }

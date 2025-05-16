@@ -61,4 +61,14 @@ class EwalletController extends Controller
         $ewallet->delete();
         return redirect()->route('ewallets.index')->with('success', 'E-Wallet berhasil dihapus.');
     }
+
+    public function toggleStatus($id)
+    {
+        $ewallet            = Ewallet::findOrFail($id);
+        $ewallet->is_active = ! $ewallet->is_active;
+        $ewallet->save();
+
+        return redirect()->back()->with('success', 'Status e-wallet berhasil diperbarui.');
+    }
+
 }

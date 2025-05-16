@@ -26,6 +26,7 @@
                                     <th>Nama E-Wallet</th>
                                     <th>Nomor</th>
                                     <th>Atas Nama</th>
+                                    <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -36,6 +37,17 @@
                                         <td>{{ $ewallet->nama_ewallet }}</td>
                                         <td>{{ $ewallet->no_ewallet }}</td>
                                         <td>{{ $ewallet->atas_nama }}</td>
+                                        <td>
+                                            <form action="{{ route('ewallets.toggle-status', $ewallet->id_ewallet) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit"
+                                                    class="btn btn-sm {{ $ewallet->is_active ? 'btn-success' : 'btn-secondary' }}">
+                                                    {{ $ewallet->is_active ? 'Aktif' : 'Nonaktif' }}
+                                                </button>
+                                            </form>
+                                        </td>
                                         <td>
                                             <a href="{{ route('ewallets.edit', $ewallet->id_ewallet) }}"
                                                 class="btn btn-sm btn-warning">Edit</a>
@@ -49,6 +61,7 @@
                                         </td>
                                     </tr>
                                 @endforeach
+
                                 @if ($ewallets->isEmpty())
                                     <tr>
                                         <td colspan="5" class="text-center">Data kosong</td>

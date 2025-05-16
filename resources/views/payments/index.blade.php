@@ -94,7 +94,6 @@
                                     <th>Paket</th>
                                     <th>Periode</th>
                                     <th class="text-end">Jumlah Tagihan</th>
-                                    <th>Jatuh Tempo</th>
                                     <th class="text-center">Status Bayar</th>
                                     <th>Metode Bayar</th>
                                     <th class="text-center">Aksi</th>
@@ -134,7 +133,6 @@
                                         </td>
                                         <td class="text-end">Rp {{ number_format($payment->jumlah_tagihan, 0, ',', '.') }}
                                         </td>
-                                        <td>{{ Carbon\Carbon::parse($payment->tanggal_jatuh_tempo)->translatedFormat('d M Y') }}
                                         </td>
                                         <td class="text-center">
                                             @php

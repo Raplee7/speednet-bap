@@ -33,12 +33,12 @@
                     @endif
 
                     <div class="mb-3">
-                        <label for="modal_active_user_input" class="form-label">ID Pengguna (Active User)</label>
+                        <label for="modal_active_user_input" class="form-label">Active User</label>
                         {{-- ID input diubah --}}
                         <input id="modal_active_user_input" type="text"
                             class="form-control rounded-3 @error('active_user_modal', 'customer_login') is-invalid @enderror"
                             name="active_user_modal" value="{{ old('active_user_modal') }}" required
-                            autocomplete="username" autofocus placeholder="Masukkan ID Pengguna Anda">
+                            autocomplete="username" autofocus placeholder="Masukkan Active User Anda">
                     </div>
 
                     <div class="mb-3">
@@ -74,7 +74,7 @@
                     </div>
                 </form>
                 <div class="text-center mt-4">
-                    <small class="text-muted">Lupa ID Pengguna atau password? <br>Silakan hubungi layanan
+                    <small class="text-muted">Lupa Active User atau password? <br>Silakan hubungi layanan
                         pelanggan kami.</small>
                 </div>
             </div>

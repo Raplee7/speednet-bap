@@ -3,34 +3,20 @@
 
         <a href="{{ route('landing.page') }}" class="d-flex align-items-center me-auto">
             <img src="{{ asset('cust-assets/img/speednet-logo.png') }}" alt="Logo Speednet BAP" style="max-height: 50px;">
-            {{-- <h1 class="sitename ms-2">{{ config('app.name', 'Speednet BAP') }}</h1> --}}
         </a>
 
         <nav id="navmenu" class="navmenu">
             <ul>
-                {{-- Fungsi helper untuk menentukan kelas 'active' --}}
-                @php
-                    if (!function_exists('isActiveRoute')) {
-                        function isActiveRoute(string $fragmentName): string
-                        {
-                            // PERBAIKAN: Menggunakan helper request()
-                            return request()->fragment() === $fragmentName ||
-                                (request()->is('/') && empty(request()->fragment()) && $fragmentName === 'hero')
-                                ? 'active'
-                                : '';
-                        }
-                    }
-                @endphp
-                <li><a href="{{ route('landing.page') }}#hero" class="{{ isActiveRoute('hero') }}">Beranda</a></li>
-                <li><a href="{{ route('landing.page') }}#tentang" class="{{ isActiveRoute('tentang') }}">Tentang</a>
-                </li>
-                <li><a href="{{ route('landing.page') }}#paket" class="{{ isActiveRoute('paket') }}">Paket</a></li>
-                <li><a href="{{ route('landing.page') }}#faq" class="{{ isActiveRoute('faq') }}">FAQ</a></li>
-                <li><a href="{{ route('landing.page') }}#form" class="{{ isActiveRoute('form') }}">Form
-                        Pendaftaran</a></li>
 
+
+                <li><a href="{{ route('landing.page') }}#hero">Beranda</a>
+                </li>
+                <li><a href="{{ route('landing.page') }}#tentang">Tentang</a></li>
+                <li><a href="{{ route('landing.page') }}#paket">Paket</a></li>
+                <li><a href="{{ route('landing.page') }}#faq">FAQ</a></li>
+                <li><a href="{{ route('landing.page') }}#form">Form Pendaftaran</a></li>
+                <li><a href="{{ route('landing.page') }}#contact">Kontak</a></li>
                 @auth('customer_web')
-                    {{-- Menggunakan directive @auth dengan guard --}}
                     <li class="dropdown">
                         <a href="#" class="d-flex align-items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
@@ -43,9 +29,6 @@
                         </a>
                         <ul>
                             <li><a href="{{ route('customer.dashboard') }}">Dashboard Saya</a></li>
-                            {{-- Tambahkan link lain di sini, misalnya: --}}
-                            {{-- <li><a href="{{ route('customer.payments.index') }}">Tagihan Saya</a></li> --}}
-                            {{-- <li><a href="{{ route('customer.profile.show') }}">Profil Saya</a></li> --}}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -62,9 +45,6 @@
                         </ul>
                     </li>
                 @endauth
-
-                <li><a href="{{ route('landing.page') }}#contact" class="{{ isActiveRoute('contact') }}">Kontak</a>
-                </li>
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
