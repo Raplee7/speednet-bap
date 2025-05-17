@@ -61,7 +61,7 @@ class AuthCustomerController extends BaseController// PENTING: Pastikan extends 
 
         // Jika login gagal
         return redirect()->back()
-            ->withErrors(['active_user_modal' => 'Login gagal! Username atau password salah.'], 'customer_login')
+            ->withErrors(['active_user_modal' => 'Login gagal! Active User atau Password salah.'], 'customer_login')
             ->withInput($request->except('password_modal'))
             ->with('open_customer_login_modal', true);
     }

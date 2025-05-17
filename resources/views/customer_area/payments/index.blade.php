@@ -109,7 +109,11 @@
                         <div class="card-body p-4">
                             <div class="row align-items-center">
                                 <div class="col-md-3 mb-3 mb-md-0">
-                                    <h6 class="mb-1 text-primary">Invoice #{{ $payment->nomor_invoice }}</h6>
+                                    <h6 class="mb-1 text-primary"><a
+                                            href="{{ route('customer.payments.show', $payment->id_payment) }}"
+                                            class="fw-semibold text-decoration-none">
+                                            Invoice #{{ $payment->nomor_invoice }}
+                                        </a></h6>
                                     <small class="text-muted">Dibuat:
                                         {{ $payment->created_at->locale('id')->translatedFormat('d M Y') }}</small>
                                 </div>
@@ -263,7 +267,3 @@
         </div>
     </section>
 @endsection
-
-@push('scripts')
-    {{-- Script khusus jika ada --}}
-@endpush

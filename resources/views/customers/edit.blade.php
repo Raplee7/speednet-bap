@@ -116,7 +116,9 @@
                                 <div class="mb-3">
                                     <label for="tanggal_aktivasi" class="form-label">Tanggal Aktivasi</label>
                                     <input type="date" name="tanggal_aktivasi" class="form-control"
-                                        value="{{ $customer->tanggal_aktivasi }}" required>
+                                        value="{{ \Carbon\Carbon::parse($customer->tanggal_aktivasi)->format('Y-m-d') }}"
+                                        required>
+
                                 </div>
                                 <div class="mb-3">
                                     <label for="status" class="form-label">Status</label>

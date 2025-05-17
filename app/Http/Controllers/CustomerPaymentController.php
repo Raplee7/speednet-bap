@@ -276,4 +276,26 @@ class CustomerPaymentController extends BaseController
 
         return view('customer_area.payments.invoice_print', compact('payment', 'pageTitle'));
     }
+
+    public function show(Payment $payment) // Menggunakan Route Model Binding
+    {
+        $customer  = Auth::guard('customer_web')->user();
+        $pageTitle = 'Detail Tagihan #' . $payment->nomor_invoice;
+
+        // Pastikan payment ini milik customer yang sedang login
+        if ($payment->customer_id !== $customer->id_customer) {
+            // Jika bukan milik customer, kembalikan dengan error atau ke halaman 403/404
+            return redirect()->route('customer.payments.index')->with('error', 'Anda tidak memiliki akses ke tagihan ini.');
+        }
+
+        // Eager load relasi yang mungkin dibutuhkan di view detail
+        $payment->load(['paket', 'ewallet', 'pembuatTagihan', 'pengonfirmasiPembayaran']);
+
+        // Jika status 'unpaid' dan pelanggan ingin membayar/upload bukti dari halaman ini,
+        // kita bisa arahkan ke form renewal/pembayaran yang sudah ada.
+        // Atau, tampilkan detail saja dan tombol upload bukti ada di halaman lain.
+        // Untuk sekarang, kita tampilkan detailnya.
+
+        return view('customer_area.payments.show', compact('payment', 'customer', 'pageTitle'));
+    }
 }

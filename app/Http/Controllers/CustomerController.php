@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Device_sn;
 use App\Models\Paket;
+use App\Models\Payment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -81,11 +83,40 @@ class CustomerController extends Controller
 
     public function show(Customer $customer)
     {
-        $customer->load(['paket', 'deviceSn.deviceModel']);
+        $customer->load(['paket', 'deviceSn.deviceModel']); // Load relasi yang sudah ada
 
-        return view('customers.show', [
-            'customer'  => $customer,
-            'pageTitle' => 'Detail Pelanggan',
+        // Ambil pembayaran terakhir yang lunas untuk menghitung masa aktif
+        $latestPaidPayment = Payment::where('customer_id', $customer->id_customer)
+            ->where('status_pembayaran', 'paid')
+            ->orderBy('periode_tagihan_selesai', 'desc')
+            ->first();
+
+        $layananBerakhirPada = null;
+        $sisaHariLayanan     = null;
+        $statusLayananText   = 'Tidak Ada Layanan Aktif';
+        $statusLayananClass  = 'text-danger bg-danger-subtle';
+
+        if ($latestPaidPayment) {
+            $periodeSelesai = Carbon::parse($latestPaidPayment->periode_tagihan_selesai);
+            if ($periodeSelesai->isFuture() || $periodeSelesai->isToday()) {
+                $layananBerakhirPada = $periodeSelesai;
+                $sisaHariLayanan     = Carbon::today()->diffInDays($layananBerakhirPada, false) + 1; // +1 agar hari H jadi 1 hari
+                $statusLayananText   = 'Aktif';
+                $statusLayananClass  = 'text-success bg-success-subtle';
+            } else {
+                $statusLayananText   = 'Layanan Telah Berakhir';
+                $layananBerakhirPada = $periodeSelesai; // Tetap tampilkan tanggal berakhirnya
+            }
+        }
+
+        return view('customers.show', [ // Pastikan path view ini benar (sesuai struktur Anda)
+            'customer'            => $customer,
+            'pageTitle'           => 'Detail Pelanggan: ' . $customer->nama_customer,
+            'latestPaidPayment'   => $latestPaidPayment,   // Kirim data pembayaran terakhir
+            'layananBerakhirPada' => $layananBerakhirPada, // Kirim tanggal berakhir
+            'sisaHariLayanan'     => $sisaHariLayanan,     // Kirim sisa hari
+            'statusLayananText'   => $statusLayananText,
+            'statusLayananClass'  => $statusLayananClass,
         ]);
     }
 

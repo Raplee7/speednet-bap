@@ -86,6 +86,6 @@ Route::prefix('pelanggan')->name('customer.')->group(function () {
         Route::get('perpanjang-layanan', [CustomerPaymentController::class, 'showRenewalForm'])->name('renewal.form');
         Route::post('perpanjang-layanan', [CustomerPaymentController::class, 'processRenewal'])->name('renewal.process');
         Route::get('tagihan/{payment}/cetak', [CustomerPaymentController::class, 'printInvoice'])->name('payments.print_invoice');
-
+        Route::get('tagihan/{payment}', [CustomerPaymentController::class, 'show'])->name('payments.show');
     });
 });

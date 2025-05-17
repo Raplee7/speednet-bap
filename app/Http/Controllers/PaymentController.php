@@ -56,7 +56,7 @@ class PaymentController extends Controller
         $payments = $query->paginate(15);
         $statuses = ['unpaid' => 'Belum Bayar', 'pending_confirmation' => 'Menunggu Konfirmasi', 'paid' => 'Lunas', 'failed' => 'Gagal', 'cancelled' => 'Dibatalkan'];
 
-        return view('payments.index', compact('payments', 'statuses', 'pageTitle'));
+        return view('payments.index', compact('payments', 'statuses', 'pageTitle', 'request'));
     }
 
     public function create()

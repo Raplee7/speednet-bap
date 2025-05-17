@@ -58,18 +58,18 @@
         }
     </style>
 @endpush
-
 @section('content')
     <section class="customer-content-area">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-9 col-md-10">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2 class="fw-light">{{ $pageTitle }}</h2>
+                    <!-- Header Section with Back Button -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="fw-semibold m-0">{{ $pageTitle }}</h2>
                         <a href="{{ $existingPayment ? route('customer.payments.index', ['status' => 'unpaid']) : route('customer.dashboard') }}"
-                            class="btn btn-sm btn-outline-secondary rounded-pill">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                            class="btn btn-outline-secondary rounded-pill px-3 d-flex align-items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                class="bi bi-arrow-left-short me-1" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd"
                                     d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
                             </svg>
@@ -82,20 +82,22 @@
                     </div>
                     <hr class="mb-4">
 
+                    <!-- Alert Messages -->
                     @if (session('info'))
-                        <div class="alert alert-info alert-dismissible fade show rounded-3" role="alert">
+                        <div class="alert alert-info alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
                             {!! session('info') !!}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
                     @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+                        <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
                             {{ session('error') }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
-                    <div class="card shadow-sm border-0 rounded-3">
+                    <!-- Main Card -->
+                    <div class="card shadow border-0 rounded-4 mb-5">
                         <div class="card-body p-4 p-lg-5">
                             <form action="{{ route('customer.renewal.process') }}" method="POST"
                                 enctype="multipart/form-data">
@@ -106,35 +108,40 @@
                                     <input type="hidden" name="existing_payment_id"
                                         value="{{ $existingPayment->id_payment }}">
                                     <div class="mb-4 pb-3 border-bottom">
-                                        <h5 class="text-primary mb-3 fw-bold">
+                                        <h5 class="text-primary mb-3 fw-bold d-flex align-items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
-                                                fill="currentColor" class="bi bi-file-earmark-ruled-fill me-2 align-middle"
+                                                fill="currentColor" class="bi bi-file-earmark-ruled-fill me-2"
                                                 viewBox="0 0 16 16">
                                                 <path
                                                     d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM3 5.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5z" />
                                             </svg>
                                             Detail Invoice #{{ $existingPayment->nomor_invoice }}
                                         </h5>
-                                        <div class="card invoice-details-card rounded-3 p-3 mb-3">
-                                            <dl class="row payment-info gy-2 mb-0">
-                                                <dt class="col-sm-4">Pelanggan:</dt>
-                                                <dd class="col-sm-8">{{ $customer->nama_customer }}</dd>
-                                                <dt class="col-sm-4">Periode Tagihan:</dt>
-                                                <dd class="col-sm-8">
+                                        <div class="card invoice-details-card bg-light rounded-4 p-4 mb-3 border">
+                                            <dl class="row payment-info gy-3 mb-0">
+                                                <dt class="col-sm-4 text-muted">Pelanggan:</dt>
+                                                <dd class="col-sm-8 fw-medium">{{ $customer->nama_customer }}</dd>
+
+                                                <dt class="col-sm-4 text-muted">Periode Tagihan:</dt>
+                                                <dd class="col-sm-8 fw-medium">
                                                     {{ \Carbon\Carbon::parse($existingPayment->periode_tagihan_mulai)->locale('id')->translatedFormat('d M Y') }}
                                                     &mdash;
                                                     {{ \Carbon\Carbon::parse($existingPayment->periode_tagihan_selesai)->addDay()->locale('id')->translatedFormat('d M Y') }}
-                                                    <small class="d-block text-muted" style="font-size: 0.75rem;">
+                                                    <small class="d-block text-muted mt-1" style="font-size: 0.8rem;">
                                                         (Layanan hingga akhir hari
                                                         {{ \Carbon\Carbon::parse($existingPayment->periode_tagihan_selesai)->locale('id')->translatedFormat('d M Y') }})
                                                     </small>
                                                 </dd>
-                                                <dt class="col-sm-4">Durasi:</dt>
-                                                <dd class="col-sm-8">{{ $existingPayment->durasi_pembayaran_bulan }} bulan
+
+                                                <dt class="col-sm-4 text-muted">Durasi:</dt>
+                                                <dd class="col-sm-8 fw-medium">
+                                                    {{ $existingPayment->durasi_pembayaran_bulan }} bulan
                                                 </dd>
-                                                <dt class="col-sm-4">Jumlah Tagihan:</dt>
-                                                <dd class="col-sm-8 fw-bolder text-danger fs-5">Rp
-                                                    {{ number_format($existingPayment->jumlah_tagihan, 0, ',', '.') }}</dd>
+
+                                                <dt class="col-sm-4 text-muted">Jumlah Tagihan:</dt>
+                                                <dd class="col-sm-8 fw-bold text-danger fs-5">
+                                                    Rp {{ number_format($existingPayment->jumlah_tagihan, 0, ',', '.') }}
+                                                </dd>
                                             </dl>
                                         </div>
                                     </div>
@@ -151,9 +158,9 @@
                                 @else
                                     {{-- Jika ini PERPANJANGAN BARU --}}
                                     <div class="mb-4 pb-3 border-bottom">
-                                        <h5 class="text-primary mb-3 fw-bold">
+                                        <h5 class="text-primary mb-3 fw-bold d-flex align-items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
-                                                fill="currentColor" class="bi bi-person-check-fill me-2 align-middle"
+                                                fill="currentColor" class="bi bi-person-check-fill me-2"
                                                 viewBox="0 0 16 16">
                                                 <path fill-rule="evenodd"
                                                     d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z" />
@@ -162,157 +169,195 @@
                                             </svg>
                                             Informasi Layanan Anda Saat Ini
                                         </h5>
-                                        <dl class="row payment-info gy-2">
-                                            <dt class="col-sm-4">Pelanggan:</dt>
-                                            <dd class="col-sm-8">{{ $customer->nama_customer }}
-                                                ({{ $customer->id_customer }})</dd>
-                                            <dt class="col-sm-4">Paket Aktif:</dt>
-                                            <dd class="col-sm-8">
-                                                {{ $customer->paket->nama_paket ?? $customer->paket->kecepatan_paket }}
-                                            </dd>
-                                            <dt class="col-sm-4">Harga per Bulan:</dt>
-                                            <dd class="col-sm-8">Rp
-                                                {{ number_format($customer->paket->harga_paket, 0, ',', '.') }}</dd>
-
-                                            @php
-                                                $latestPaymentInfo = $customer->latestPaidPayment();
-                                                $currentServicePeriodInfoText =
-                                                    '<span class="text-danger">Tidak ada layanan aktif saat ini.</span>';
-                                                $currentServiceEndDateDbText = null;
-
-                                                if ($latestPaymentInfo) {
-                                                    $currentPeriodStart = \Carbon\Carbon::parse(
-                                                        $latestPaymentInfo->periode_tagihan_mulai,
-                                                    )->locale('id');
-                                                    $currentPeriodEndDbCarbon = \Carbon\Carbon::parse(
-                                                        $latestPaymentInfo->periode_tagihan_selesai,
-                                                    )->locale('id');
-                                                    $currentPeriodEndVisual = $currentPeriodEndDbCarbon
-                                                        ->copy()
-                                                        ->addDay();
-
-                                                    if (now()->startOfDay()->lte($currentPeriodEndDbCarbon)) {
-                                                        $currentServicePeriodInfoText =
-                                                            "Layanan Anda saat ini aktif untuk periode: <strong class='text-success'>" .
-                                                            $currentPeriodStart->translatedFormat('d M Y') .
-                                                            ' &mdash; ' .
-                                                            $currentPeriodEndVisual->translatedFormat('d M Y') .
-                                                            '</strong>.';
-                                                        $currentServiceEndDateDbText = $currentPeriodEndDbCarbon->translatedFormat(
-                                                            'd M Y',
-                                                        );
-                                                    } else {
-                                                        $currentServicePeriodInfoText =
-                                                            'Layanan terakhir Anda telah berakhir pada ' .
-                                                            $currentPeriodEndVisual->translatedFormat('d M Y') .
-                                                            '.';
-                                                        $currentServiceEndDateDbText = $currentPeriodEndDbCarbon->translatedFormat(
-                                                            'd M Y',
-                                                        );
-                                                    }
-                                                }
-                                            @endphp
-                                            <dt class="col-12 mt-2">Status Layanan Saat Ini:</dt>
-                                            <dd class="col-12 highlight-info">{!! $currentServicePeriodInfoText !!}
-
-                                            </dd>
-                                            @if ($nextPeriodStartDate)
-                                                <dt class="col-sm-4 mt-2">Perpanjangan akan dimulai dari:</dt>
-                                                <dd class="col-sm-8 mt-2 fw-bold text-info">
-                                                    {{ \Carbon\Carbon::parse($nextPeriodStartDate)->locale('id')->translatedFormat('d F Y') }}
+                                        <div class="card bg-light rounded-4 p-4 mb-3 border">
+                                            <dl class="row payment-info gy-3 mb-0">
+                                                <dt class="col-sm-4 text-muted">Pelanggan:</dt>
+                                                <dd class="col-sm-8 fw-medium">{{ $customer->nama_customer }}
+                                                    <span class="text-muted">({{ $customer->id_customer }})</span>
                                                 </dd>
-                                            @endif
-                                        </dl>
+
+                                                <dt class="col-sm-4 text-muted">Paket Aktif:</dt>
+                                                <dd class="col-sm-8 fw-medium">
+                                                    {{ $customer->paket->nama_paket ?? $customer->paket->kecepatan_paket }}
+                                                </dd>
+
+                                                <dt class="col-sm-4 text-muted">Harga per Bulan:</dt>
+                                                <dd class="col-sm-8 fw-medium">
+                                                    Rp {{ number_format($customer->paket->harga_paket, 0, ',', '.') }}
+                                                </dd>
+
+                                                @php
+                                                    $latestPaymentInfo = $customer->latestPaidPayment();
+                                                    $currentServicePeriodInfoText =
+                                                        '<span class="text-danger">Tidak ada layanan aktif saat ini.</span>';
+                                                    $currentServiceEndDateDbText = null;
+
+                                                    if ($latestPaymentInfo) {
+                                                        $currentPeriodStart = \Carbon\Carbon::parse(
+                                                            $latestPaymentInfo->periode_tagihan_mulai,
+                                                        )->locale('id');
+                                                        $currentPeriodEndDbCarbon = \Carbon\Carbon::parse(
+                                                            $latestPaymentInfo->periode_tagihan_selesai,
+                                                        )->locale('id');
+                                                        $currentPeriodEndVisual = $currentPeriodEndDbCarbon
+                                                            ->copy()
+                                                            ->addDay();
+
+                                                        if (now()->startOfDay()->lte($currentPeriodEndDbCarbon)) {
+                                                            $currentServicePeriodInfoText =
+                                                                "Aktif untuk periode: <strong class='text-success'>" .
+                                                                $currentPeriodStart->translatedFormat('d M Y') .
+                                                                ' &mdash; ' .
+                                                                $currentPeriodEndVisual->translatedFormat('d M Y') .
+                                                                '</strong>.';
+                                                            $currentServiceEndDateDbText = $currentPeriodEndDbCarbon->translatedFormat(
+                                                                'd M Y',
+                                                            );
+                                                        } else {
+                                                            $currentServicePeriodInfoText =
+                                                                'Layanan terakhir Anda telah berakhir pada ' .
+                                                                $currentPeriodEndVisual->translatedFormat('d M Y') .
+                                                                '.';
+                                                            $currentServiceEndDateDbText = $currentPeriodEndDbCarbon->translatedFormat(
+                                                                'd M Y',
+                                                            );
+                                                        }
+                                                    }
+                                                @endphp
+
+                                                <dt class="col-sm-4 text-muted">Status Layanan:</dt>
+                                                <dd class="col-sm-8 highlight-info fw-medium">{!! $currentServicePeriodInfoText !!}</dd>
+
+                                                @if ($nextPeriodStartDate)
+                                                    <dt class="col-sm-4 text-muted">Perpanjangan dimulai dari:</dt>
+                                                    <dd class="col-sm-8 fw-bold text-primary">
+                                                        {{ \Carbon\Carbon::parse($nextPeriodStartDate)->locale('id')->translatedFormat('d F Y') }}
+                                                    </dd>
+                                                @endif
+                                            </dl>
+                                        </div>
                                     </div>
 
-                                    <h5 class="text-primary mb-3 mt-4 fw-bold">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
-                                            fill="currentColor" class="bi bi-calendar-plus-fill me-2 align-middle"
-                                            viewBox="0 0 16 16">
-                                            <path
-                                                d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zM8.5 8.5V10H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V11H6a.5.5 0 0 1 0-1h1.5V8.5a.5.5 0 0 1 1 0z" />
-                                        </svg>
-                                        Formulir Perpanjangan Layanan
-                                    </h5>
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <label for="durasi_pembayaran_bulan_input"
-                                                class="form-label fw-semibold">Perpanjang Berapa Bulan? <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="number" name="durasi_pembayaran_bulan"
-                                                id="durasi_pembayaran_bulan_input"
-                                                class="form-control rounded-3 @error('durasi_pembayaran_bulan') is-invalid @enderror"
-                                                value="{{ old('durasi_pembayaran_bulan', 1) }}" min="1"
-                                                max="24" required>
-                                            @error('durasi_pembayaran_bulan')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Diperpanjang Hingga</label>
-                                            <div id="new_expiry_date_display"
-                                                class="form-control readonly-display bg-light rounded-3 new-expiry-date d-flex align-items-center">
-                                                (Pilih durasi)
-                                            </div>
-                                            <small class="form-text text-muted" id="new_expiry_date_clarification"
-                                                style="font-size: 0.75rem; display: block; min-height: 1.2em;"></small>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Perkiraan Total Biaya</label>
-                                            <div id="total_biaya_display"
-                                                class="form-control readonly-display bg-light rounded-3 total-amount d-flex align-items-center">
-                                                Rp
-                                                {{ number_format($customer->paket->harga_paket * old('durasi_pembayaran_bulan', 1), 0, ',', '.') }}
+                                    <div class="mt-4 mb-4">
+                                        <h5 class="text-primary mb-3 fw-bold d-flex align-items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                fill="currentColor" class="bi bi-calendar-plus-fill me-2"
+                                                viewBox="0 0 16 16">
+                                                <path
+                                                    d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zM8.5 8.5V10H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V11H6a.5.5 0 0 1 0-1h1.5V8.5a.5.5 0 0 1 1 0z" />
+                                            </svg>
+                                            Formulir Perpanjangan Layanan
+                                        </h5>
+                                        <div class="card border rounded-4 p-4 mb-3">
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <label for="durasi_pembayaran_bulan_input"
+                                                        class="form-label fw-semibold">Perpanjang Berapa Bulan? <span
+                                                            class="text-danger">*</span></label>
+                                                    <input type="number" name="durasi_pembayaran_bulan"
+                                                        id="durasi_pembayaran_bulan_input"
+                                                        class="form-control rounded-3 @error('durasi_pembayaran_bulan') is-invalid @enderror"
+                                                        value="{{ old('durasi_pembayaran_bulan', 1) }}" min="1"
+                                                        max="24" required>
+                                                    @error('durasi_pembayaran_bulan')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold">Diperpanjang Hingga</label>
+                                                    <div id="new_expiry_date_display"
+                                                        class="form-control bg-light rounded-3 new-expiry-date d-flex align-items-center">
+                                                        (Pilih durasi)
+                                                    </div>
+                                                    <small class="form-text text-muted" id="new_expiry_date_clarification"
+                                                        style="font-size: 0.75rem; display: block; min-height: 1.2em;"></small>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold">Perkiraan Total Biaya</label>
+                                                    <div id="total_biaya_display"
+                                                        class="form-control bg-light rounded-3 total-amount d-flex align-items-center fw-bold text-primary">
+                                                        Rp
+                                                        {{ number_format($customer->paket->harga_paket * old('durasi_pembayaran_bulan', 1), 0, ',', '.') }}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 @endif
 
-                                {{-- Bagian E-Wallet dan Upload Bukti (Sama untuk kedua skenario) --}}
-                                <div class="mt-4 mb-3">
-                                    <label for="ewallet_id" class="form-label fw-semibold">Pilih E-Wallet Tujuan Transfer
-                                        <span class="text-danger">*</span></label>
-                                    <select name="ewallet_id" id="ewallet_id"
-                                        class="form-select rounded-3 @error('ewallet_id') is-invalid @enderror" required>
-                                        <option value="">-- Pilih E-Wallet --</option>
-                                        @foreach ($ewallets as $ewallet)
-                                            <option value="{{ $ewallet->id_ewallet }}"
-                                                data-nomor="{{ $ewallet->no_ewallet }}"
-                                                data-atasnama="{{ $ewallet->atas_nama }}"
-                                                {{ old('ewallet_id') == $ewallet->id_ewallet ? 'selected' : '' }}>
-                                                {{ $ewallet->nama_ewallet }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('ewallet_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <div id="ewallet_details" class="mt-2 p-3 bg-light-subtle border rounded-3"
-                                        style="display: none;">
-                                        <small class="d-block">Silakan transfer sejumlah <strong class="text-danger"
-                                                id="transfer_amount_info"></strong> ke:</small>
-                                        <strong id="detail_nama_ewallet" class="d-block fs-5 mt-1"></strong>
-                                        Nomor: <strong id="detail_no_ewallet"></strong><br>
-                                        Atas Nama: <strong id="detail_atas_nama"></strong>
+                                <!-- Pembayaran -->
+                                <div class="card border bg-light rounded-4 p-4 mb-4">
+                                    <h5 class="text-primary mb-3 fw-bold d-flex align-items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                            fill="currentColor" class="bi bi-credit-card-fill me-2" viewBox="0 0 16 16">
+                                            <path
+                                                d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0V4zm0 3v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7H0zm3 2h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1z" />
+                                        </svg>
+                                        Informasi Pembayaran
+                                    </h5>
+
+                                    <div class="mb-4">
+                                        <label for="ewallet_id" class="form-label fw-semibold">Pilih E-Wallet Tujuan
+                                            Transfer
+                                            <span class="text-danger">*</span></label>
+                                        <select name="ewallet_id" id="ewallet_id"
+                                            class="form-select rounded-3 @error('ewallet_id') is-invalid @enderror"
+                                            required>
+                                            <option value="">-- Pilih E-Wallet --</option>
+                                            @foreach ($ewallets as $ewallet)
+                                                <option value="{{ $ewallet->id_ewallet }}"
+                                                    data-nomor="{{ $ewallet->no_ewallet }}"
+                                                    data-atasnama="{{ $ewallet->atas_nama }}"
+                                                    {{ old('ewallet_id') == $ewallet->id_ewallet ? 'selected' : '' }}>
+                                                    {{ $ewallet->nama_ewallet }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('ewallet_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+
+                                        <div id="ewallet_details" class="mt-3 p-4 bg-white border rounded-3 shadow-sm"
+                                            style="display: none;">
+                                            <div class="mb-2">Silakan transfer sejumlah <strong class="text-danger fs-5"
+                                                    id="transfer_amount_info"></strong> ke:</div>
+                                            <div class="card border-primary border-opacity-25 rounded-3 p-3 mb-0">
+                                                <h5 id="detail_nama_ewallet" class="mb-3 fw-bold"></h5>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-2">
+                                                            <span class="text-muted">Nomor:</span>
+                                                            <div class="fw-bold fs-5" id="detail_no_ewallet"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div>
+                                                            <span class="text-muted">Atas Nama:</span>
+                                                            <div class="fw-bold" id="detail_atas_nama"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label for="bukti_pembayaran" class="form-label fw-semibold">Upload Bukti Transfer
+                                            <span class="text-danger">*</span></label>
+                                        <input type="file" name="bukti_pembayaran" id="bukti_pembayaran"
+                                            class="form-control rounded-3 @error('bukti_pembayaran') is-invalid @enderror"
+                                            required accept="image/*">
+                                        <small class="form-text text-muted">Format: JPG, PNG, GIF. Maksimal 2MB.</small>
+                                        @error('bukti_pembayaran')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
 
-                                <div class="mb-4">
-                                    <label for="bukti_pembayaran" class="form-label fw-semibold">Upload Bukti Transfer
-                                        <span class="text-danger">*</span></label>
-                                    <input type="file" name="bukti_pembayaran" id="bukti_pembayaran"
-                                        class="form-control rounded-3 @error('bukti_pembayaran') is-invalid @enderror"
-                                        required accept="image/*">
-                                    <small class="form-text text-muted">Format: JPG, PNG, GIF. Maksimal 2MB.</small>
-                                    @error('bukti_pembayaran')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-semibold py-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-send-check-fill me-1" viewBox="0 0 16 16">
+                                <div class="d-grid mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-semibold py-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            fill="currentColor" class="bi bi-send-check-fill me-2" viewBox="0 0 16 16">
                                             <path
                                                 d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" />
                                             <path
