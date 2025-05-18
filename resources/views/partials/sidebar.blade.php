@@ -211,7 +211,8 @@
 
                 <!-- Laporan -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#reports-menu" role="button"
+                        aria-expanded="false" aria-controls="reports-menu">
                         <i class="icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                 fill="currentColor" class="bi bi-file-earmark-ruled-fill" viewBox="0 0 16 16">
@@ -220,8 +221,31 @@
                             </svg>
                         </i>
                         <span class="item-name">Laporan</span>
+                        <i class="right-icon">
+                            <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
+                        </i>
                     </a>
+                    <ul class="sub-nav collapse" id="reports-menu" data-bs-parent="#sidebar-menu">
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('reports.customer') ? 'active' : '' }}"
+                                href="{{ route('reports.customer') }}">
+                                <i class="icon">
+                                    <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10"
+                                        fill="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="8" />
+                                    </svg>
+                                </i>
+                                <i class="sidenav-mini-icon">P</i>
+                                <span class="item-name">Pelanggan</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+
             </ul>
             <!-- Sidebar Menu End -->
         </div>

@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Pengguna yang TIDAK TEROTENTIKASI mencoba mengakses rute yang butuh login
         // akan diarahkan ke rute bernama 'login' (yaitu GET /login untuk Admin/Kasir)
-        $middleware->redirectUsersTo(fn(Request $request) => route('login'));
+        $middleware->redirectUsersTo(fn(Request $request) => route('/'));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

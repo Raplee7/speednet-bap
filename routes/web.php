@@ -9,11 +9,14 @@ use App\Http\Controllers\CustomerSubmissionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviceModelController;
 use App\Http\Controllers\DeviceSnController;
-use App\Http\Controllers\EwalletController; // CRUD Customer oleh Admin
-use App\Http\Controllers\PaketController;   // Untuk Pelanggan
-use App\Http\Controllers\PaymentController; // Dashboard Admin
+use App\Http\Controllers\EwalletController;
+use App\Http\Controllers\PaketController;
+use App\Http\Controllers\PaymentController; // Untuk Pelanggan
+use App\Http\Controllers\ReportController;  // Dashboard Admin
 use App\Http\Controllers\UserController;    // Untuk Admin/Kasir
 use Illuminate\Support\Facades\Route;
+
+// CRUD Customer oleh Admin
 
 // Dashboard Pelanggan (buat jika belum ada)
 
@@ -27,24 +30,23 @@ Route::post('/form-pemasangan', [CustomerSubmissionController::class, 'store'])-
 
 /*
 |--------------------------------------------------------------------------
-| Rute Otentikasi Admin/Kasir (User) - Menggunakan URL /login standar
+| Rute Otentikasi Admin/Kasir (User)
 |--------------------------------------------------------------------------
 */
-Route::middleware('guest')->group(function () {                               // Hanya bisa diakses jika belum login (sebagai admin/kasir)
-    Route::get('login', [AuthController::class, 'showLoginForm'])->name('login'); // URL: /login
-    Route::post('login', [AuthController::class, 'login']);                       // Proses POST dari form /login
+Route::middleware('guest')->group(function () {
+    Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [AuthController::class, 'login']);
 });
 
 /*
 |--------------------------------------------------------------------------
-| Rute Admin/Kasir yang Terproteksi - Tanpa prefix URL /admin
+| Rute Admin/Kasir yang Terproteksi ]]
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {                                   // Menggunakan guard 'web' default
-    Route::post('logout', [AuthController::class, 'logout'])->name('logout');          // URL: /logout (untuk admin)
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard'); // URL: /dashboard
+Route::middleware(['auth'])->group(function () {
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Resourceful routes Anda yang sudah ada
     Route::resource('users', UserController::class);
     Route::resource('pakets', PaketController::class);
     Route::resource('ewallets', EwalletController::class);
@@ -63,6 +65,13 @@ Route::middleware(['auth'])->group(function () {                                
     Route::post('payments/{payment}/pay-cash', [PaymentController::class, 'processCashPayment'])->name('payments.processCashPayment');
     Route::post('payments/{payment}/cancel', [PaymentController::class, 'cancelInvoice'])->name('payments.cancelInvoice');
     Route::get('payments/{payment}/print-by-admin', [PaymentController::class, 'printInvoiceByAdmin'])->name('payments.print_invoice_admin');
+
+    Route::prefix('laporan')->name('reports.')->group(function () {
+        Route::get('pelanggan', [ReportController::class, 'customerReport'])->name('customer');
+        Route::get('pelanggan/pdf', [ReportController::class, 'exportCustomerReportPdf'])->name('customer.pdf');
+        Route::get('pelanggan/excel', [ReportController::class, 'exportCustomerReportExcel'])->name('customer.excel');
+
+    });
 
 });
 
