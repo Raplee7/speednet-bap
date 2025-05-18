@@ -72,6 +72,7 @@
                                     <th>Aktif User</th>
                                     <th>Paket</th>
                                     <th>Status</th>
+                                    <th>Layanan Berakhir</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -102,6 +103,53 @@
                                             <span class=" {{ $badgeClass }} rounded-pill px-3 text-capitalize">
                                                 {{ $customer->status }}
                                             </span>
+                                        </td>
+                                        <td>
+                                            @php
+                                                $latestPaidPayment = $customer->payments
+                                                    ->where('status_pembayaran', 'paid')
+                                                    ->sortByDesc('periode_tagihan_selesai')
+                                                    ->first();
+                                                $layananBerakhir = null;
+                                                $isExpired = false;
+                                                if ($latestPaidPayment) {
+                                                    $layananBerakhir = \Carbon\Carbon::parse(
+                                                        $latestPaidPayment->periode_tagihan_selesai,
+                                                    );
+                                                    if (
+                                                        $layananBerakhir->isPast() &&
+                                                        $customer->status == 'terpasang'
+                                                    ) {
+                                                        // Cek apakah ada tagihan berikutnya yang belum lunas atau pending
+                                                        $futurePaymentExists = $customer->payments
+                                                            ->where(
+                                                                'periode_tagihan_mulai',
+                                                                '>',
+                                                                $layananBerakhir->toDateString(),
+                                                            )
+                                                            ->whereIn('status_pembayaran', [
+                                                                'unpaid',
+                                                                'pending_confirmation',
+                                                                'paid',
+                                                            ])
+                                                            ->isNotEmpty();
+                                                        if (!$futurePaymentExists) {
+                                                            $isExpired = true;
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
+
+                                            @if ($layananBerakhir)
+                                                {{ $layananBerakhir->locale('id')->translatedFormat('d M Y') }}
+                                                @if ($isExpired)
+                                                    <span class="badge bg-danger ms-1">Expired</span>
+                                                @elseif ($layananBerakhir->isFuture())
+                                                    {{-- <span class="badge bg-success ms-1">Aktif</span> --}}
+                                                @endif
+                                            @else
+                                                -
+                                            @endif
                                         </td>
                                         <td>
                                             <a href="{{ route('customers.show', $customer->id_customer) }}"

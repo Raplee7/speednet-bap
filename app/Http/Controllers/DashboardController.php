@@ -16,16 +16,13 @@ class DashboardController extends Controller
         $totalCustomers       = Customer::count();
         $totalActiveCustomers = Customer::where('status', 'terpasang')->count();
 
-        // BARU: Pelanggan dengan status 'baru' yang butuh konfirmasi
-        $newCustomersNeedingConfirmation = Customer::where('status', 'baru')->count();
-
         $pendingConfirmationPayments = Payment::where('status_pembayaran', 'pending_confirmation')->count();
 
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth   = Carbon::now()->endOfMonth();
-        // $incomeThisMonth = Payment::where('status_pembayaran', 'paid')
-        //     ->whereBetween('tanggal_pembayaran', [$startOfMonth, $endOfMonth])
-        //     ->sum('jumlah_tagihan');
+        $newCustomersNeedingConfirmationList = Customer::where('status', 'baru')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+        $countNewCustomersNeedingConfirmation = Customer::where('status', 'baru')->count();
 
         // --- Data untuk Pelanggan yang Akan Segera Habis Masa Aktif ---
         $daysThreshold    = 5;
@@ -75,16 +72,18 @@ class DashboardController extends Controller
         }
 
         return view('dashboard', [
-            'pageTitle'                       => $pageTitle,
-            'totalCustomers'                  => $totalCustomers,
-            'totalActiveCustomers'            => $totalActiveCustomers,
-            'newCustomersNeedingConfirmation' => $newCustomersNeedingConfirmation, // BARU
-            'pendingConfirmationPayments'     => $pendingConfirmationPayments,
+            'pageTitle'                            => $pageTitle,
+            'totalCustomers'                       => $totalCustomers,
+            'totalActiveCustomers'                 => $totalActiveCustomers,
+            'pendingConfirmationPayments'          => $pendingConfirmationPayments,
             // 'incomeThisMonth'                 => $incomeThisMonth,
-            'expiringSoonCustomers'           => $expiringSoonCustomers,
-            'daysThreshold'                   => $daysThreshold,
-            'latestPendingPayments'           => $latestPendingPayments,
-            'monthlyIncomeData'               => $monthlyIncomeData,
+            'expiringSoonCustomers'                => $expiringSoonCustomers,
+            'daysThreshold'                        => $daysThreshold,
+            'latestPendingPayments'                => $latestPendingPayments,
+            'monthlyIncomeData'                    => $monthlyIncomeData,
+            'newCustomersNeedingConfirmationList'  => $newCustomersNeedingConfirmationList,
+            'countNewCustomersNeedingConfirmation' => $countNewCustomersNeedingConfirmation,
+
         ]);
     }
 }

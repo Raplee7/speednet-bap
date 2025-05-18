@@ -13,7 +13,10 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::with('paket', 'deviceSn')->latest()->get();
+        $customers = Customer::with(['paket', 'deviceSn.deviceModel', 'payments' => function ($q) {
+            $q->where('status_pembayaran', 'paid')->orderBy('periode_tagihan_selesai', 'desc');
+        }])->latest()->paginate(15)->withQueryString();
+
         return view('customers.index', [
             'customers' => $customers,
             'pageTitle' => 'Pelanggan',

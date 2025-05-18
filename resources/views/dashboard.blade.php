@@ -23,71 +23,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-6 col-md-6 ">
-            <div class="card border-0 rounded-4 shadow-sm hover-shadow ">
-                <div class="card-body d-flex align-items-center p-4">
-                    <div class="flex-shrink-0 me-3 rounded-circle bg-info bg-opacity-10 p-3 icon-wrapper">
-                        <i class="fa fa-user-plus text-info fa-2x"></i>
-                    </div>
-                    <div>
-                        <h3 class="mb-0 fw-bold card-title-num">{{ $newCustomersNeedingConfirmation }}</h3>
-                        <p class="mb-0 text-muted small card-text-label">Pelanggan Baru (Butuh Konfirmasi)</p>
-                    </div>
-                </div>
-                @if ($newCustomersNeedingConfirmation > 0)
-                    <div class="card-footer bg-transparent text-center py-2 border-0 rounded-bottom-4">
-                        <a href="{{ route('customers.index', ['status' => 'baru']) }}"
-                            class="text-info small text-decoration-none link-muted">
-                            <span class="me-1">Lihat & Proses</span>
-                            <i class="fa fa-arrow-right"></i>
-                        </a>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-
-
-        {{-- <div class="col-xl-4 col-md-6 mb-3">
-            <div class="card border-0 rounded-4 shadow-sm hover-shadow h-100">
-                <div class="card-body d-flex align-items-center p-4">
-                    <div class="flex-shrink-0 me-3 rounded-circle bg-warning bg-opacity-10 p-3 icon-wrapper">
-                        <i class="fa fa-clock-o text-warning fa-2x"></i>
-                    </div>
-                    <div>
-                        <h3 class="mb-0 fw-bold card-title-num">{{ $pendingConfirmationPayments }}</h3>
-                        <p class="mb-0 text-muted small card-text-label">Tagihan Menunggu Konfirmasi</p>
-                    </div>
-                </div>
-                @if ($pendingConfirmationPayments > 0)
-                    <div class="card-footer bg-transparent text-center py-2 border-0 rounded-bottom-4">
-                        <a href="{{ route('payments.index', ['status_pembayaran' => 'pending_confirmation']) }}"
-                            class="text-warning small text-decoration-none link-muted">
-                            <span class="me-1">Lihat & Verifikasi</span>
-                            <i class="fa fa-arrow-right"></i>
-                        </a>
-                    </div>
-                @endif
-            </div>
-        </div> --}}
-        {{--         
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-0 rounded-4 shadow-sm hover-shadow h-100">
-                <div class="card-body d-flex align-items-center p-4">
-                    <div class="flex-shrink-0 me-3 rounded-circle bg-success bg-opacity-10 p-3 icon-wrapper">
-                        <i class="fa fa-money text-success fa-2x"></i>
-                    </div>
-                    <div>
-                        <h3 class="mb-0 fw-bold card-title-num">Rp {{ number_format($incomeThisMonth, 0, ',', '.') }}
-                        </h3>
-                        <p class="mb-0 text-muted small card-text-label">Pendapatan Bulan Ini</p>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
     </div>
-
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-lg-6">
             <div class="card border-0 rounded-4 shadow-sm card-dashboard-table">
                 <div class="card-header p-3 rounded-top-4 bg-white">
@@ -159,8 +96,68 @@
                 </div>
             </div>
         </div>
-
         <div class="col-lg-6">
+            <div class="card border-0 rounded-4 shadow-sm card-dashboard-table h-100">
+                <div class="card-header p-3 rounded-top-4 bg-white">
+                    <h5 class="mb-0 fw-semibold d-flex align-items-center fs-6">
+                        <i class="fa fa-user-plus text-info me-2 fa-lg table-shortcut-icon"></i>
+                        Pelanggan Baru (Butuh Konfirmasi)
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    @if ($newCustomersNeedingConfirmationList->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">Nama</th>
+                                        <th class="text-center">Tgl Daftar</th>
+                                        <th class="text-center pe-3">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($newCustomersNeedingConfirmationList as $customer)
+                                        <tr class="{{ $customer->status == 'baru' ? 'row-baru shine-effect' : '' }}">
+                                            <td class="ps-3">
+                                                {{ Str::limit($customer->nama_customer, 20) }}
+                                                <small class="d-block text-muted">{{ $customer->id_customer }}</small>
+                                            </td>
+                                            <td class="text-center">
+                                                <span
+                                                    class="badge bg-light text-dark">{{ $customer->created_at->locale('id')->diffForHumans() }}</span>
+                                            </td>
+                                            <td class="text-center pe-3">
+                                                {{-- Sesuaikan nama rute --}}
+                                                <a href="{{ route('customers.show', $customer->id_customer) }}"
+                                                    class="btn btn-sm btn-outline-info rounded-pill py-1 px-2"
+                                                    title="Proses/Detail">
+                                                    <i class="fa fa-arrow-right"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @if ($countNewCustomersNeedingConfirmation > $newCustomersNeedingConfirmationList->count())
+                            <div class="card-footer bg-transparent text-center p-2 border-0 rounded-bottom-4">
+                                {{-- Sesuaikan nama rute --}}
+                                <a href="{{ route('customers.index', ['status' => 'baru']) }}"
+                                    class="text-info small text-decoration-none link-muted">
+                                    Lihat Semua ({{ $countNewCustomersNeedingConfirmation }}) <i
+                                        class="fa fa-angle-double-right ms-1"></i>
+                                </a>
+                            </div>
+                        @endif
+                    @else
+                        <div class="p-3 text-center text-muted small">Tidak ada pelanggan baru yang butuh konfirmasi.</div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
             <div class="card border-0 rounded-4 shadow-sm card-dashboard-table">
                 <div class="card-header p-3 rounded-top-4 bg-white">
                     <h5 class="mb-0 fs-6 fw-semibold d-flex align-items-center">
@@ -211,6 +208,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-12">
             <div class="card border-0 rounded-4 shadow-sm p-3 mb-4">
                 <h5 class="mb-4 fw-semibold text-center text-primary">
@@ -223,7 +222,6 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 @push('scripts')
