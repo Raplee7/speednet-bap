@@ -177,7 +177,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="paymentDataTable"> {{-- ID diubah agar tidak konflik jika ada datatable lain --}}
+                        <table class="table table-hover mb-0" id="paymentDataTable">
                             <thead>
                                 <tr>
                                     <th>No.</th>

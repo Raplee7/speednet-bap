@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>{{ $pageTitle ?? 'Laporan Pelanggan' }} - {{ $selectedYear }}</title>
+    <title>{{ $pageTitle ?? 'Laporan Pembayaran Pelanggan' }} - {{ $selectedYear }}</title>
     <style>
         body {
             font-family: 'DejaVu Sans', sans-serif;

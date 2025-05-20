@@ -22,7 +22,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border as PhpSpreadsheetBorder;
 use PhpOffice\PhpSpreadsheet\Style\Fill as PhpSpreadsheetFill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class CustomerReportExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithEvents
+class CustomerPaymentReportExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithEvents
 {
     protected Collection $reportData;
     protected array $displayedMonths;

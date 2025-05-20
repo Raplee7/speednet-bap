@@ -67,9 +67,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('payments/{payment}/print-by-admin', [PaymentController::class, 'printInvoiceByAdmin'])->name('payments.print_invoice_admin');
 
     Route::prefix('laporan')->name('reports.')->group(function () {
-        Route::get('pelanggan', [ReportController::class, 'customerReport'])->name('customer');
-        Route::get('pelanggan/pdf', [ReportController::class, 'exportCustomerReportPdf'])->name('customer.pdf');
-        Route::get('pelanggan/excel', [ReportController::class, 'exportCustomerReportExcel'])->name('customer.excel');
+        Route::get('pembayaran-pelanggan', [ReportController::class, 'customerPaymentReport'])->name('customer_payment');
+        Route::get('pembayaran-pelanggan/pdf', [ReportController::class, 'exportCustomerPaymentReportPdf'])->name('customer_payment.pdf');
+        Route::get('pembayaran-pelanggan/excel', [ReportController::class, 'exportCustomerPaymentReportExcel'])->name('customer_payment.excel');
+        Route::get('pendapatan', [ReportController::class, 'financialReport'])->name('financial');
+        Route::get('pendapatan/pdf', [ReportController::class, 'exportFinancialReportPdf'])->name('financial.pdf');
+        Route::get('pendapatan/excel', [ReportController::class, 'exportFinancialReportExcel'])->name('financial.excel');
 
     });
 

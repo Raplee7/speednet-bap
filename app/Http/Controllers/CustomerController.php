@@ -56,10 +56,20 @@ class CustomerController extends Controller
             'password'             => 'required|min:3',
         ]);
 
-        $validated['id_customer']          = $this->generateCustomerId();
-        $validated['password']             = bcrypt($validated['password']);
-        $validated['foto_ktp_customer']    = $request->file('foto_ktp_customer')->store('ktp', 'public');
-        $validated['foto_timestamp_rumah'] = $request->file('foto_timestamp_rumah')->store('rumah', 'public');
+        $validated['id_customer'] = $this->generateCustomerId();
+        $validated['password']    = bcrypt($validated['password']);
+
+        if ($request->hasFile('foto_ktp_customer')) {
+            $validated['foto_ktp_customer'] = $request->file('foto_ktp_customer')->store('ktp', 'public');
+        } else {
+            $validated['foto_ktp_customer'] = null;
+        }
+
+        if ($request->hasFile('foto_timestamp_rumah')) {
+            $validated['foto_timestamp_rumah'] = $request->file('foto_timestamp_rumah')->store('rumah', 'public');
+        } else {
+            $validated['foto_timestamp_rumah'] = null;
+        }
 
         Customer::create($validated);
 

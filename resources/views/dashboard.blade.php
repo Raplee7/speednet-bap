@@ -100,7 +100,7 @@
             <div class="card border-0 rounded-4 shadow-sm card-dashboard-table h-100">
                 <div class="card-header p-3 rounded-top-4 bg-white">
                     <h5 class="mb-0 fw-semibold d-flex align-items-center fs-6">
-                        <i class="fa fa-user-plus text-info me-2 fa-lg table-shortcut-icon"></i>
+                        <i class="fa fa-user-plus text-info me-2 table-shortcut-icon"></i>
                         Pelanggan Baru (Butuh Konfirmasi)
                     </h5>
                 </div>
