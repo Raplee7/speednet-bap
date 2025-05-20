@@ -326,7 +326,7 @@
 
                                     <div class="col-md-12">
                                         <label for="wa_customer" class="form-label fs-6 fw-medium">Nomor WhatsApp
-                                            (Contoh: 628123456789) <span class="text-danger">*</span></label>
+                                            <span class="text-danger">*</span></label>
                                         <div class="input-group has-validation">
                                             <span class="input-group-text bg-light border-end-0">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -337,7 +337,6 @@
                                             </span>
                                             <input type="tel" id="wa_customer" name="wa_customer"
                                                 class="form-control form-control-lg border-start-0 @error('wa_customer') is-invalid @enderror"
-                                                required pattern="^(628[1-9][0-9]{7,11})$" placeholder="628xxxxxxxxxx"
                                                 value="{{ old('wa_customer') }}">
                                             @error('wa_customer')
                                                 <div class="invalid-feedback">
@@ -349,9 +348,6 @@
                                                     628123456789).
                                                 </div>
                                             @enderror
-                                        </div>
-                                        <div class="form-text">
-                                            Mulai dengan 62, tanpa + atau 0 di depan.
                                         </div>
                                     </div>
 
