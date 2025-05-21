@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Exports\AllInvoicesReportExport;
 use App\Exports\CustomerPaymentReportExport;
 use App\Exports\FinancialReportExport;
 use App\Models\Customer;
@@ -378,5 +379,191 @@ class ReportController extends BaseController
 
         return Excel::download(new FinancialReportExport($data), $fileName);
         return redirect()->route('reports.financial', $request->query())->with('info', 'Fitur Export Excel untuk Laporan Keuangan sedang dalam pengembangan.');
+    }
+
+    private function getAllInvoicesReportData(Request $request, $forExport = false)
+    {
+        $customersForFilter       = Customer::orderBy('nama_customer', 'asc')->get(['id_customer', 'nama_customer']);
+        $paketsForFilter          = Paket::orderBy('kecepatan_paket', 'asc')->get(['id_paket', 'kecepatan_paket']);
+        $paymentStatusesForFilter = [
+            'unpaid' => 'Belum Bayar', 'pending_confirmation' => 'Menunggu Konfirmasi',
+            'paid'   => 'Lunas', 'failed'                     => 'Gagal', 'cancelled' => 'Dibatalkan',
+        ];
+
+        $filterStartDate  = $request->input('start_date');
+        $filterEndDate    = $request->input('end_date');
+        $filterStatus     = $request->input('status_pembayaran');
+        $filterCustomerId = $request->input('customer_id');
+        $filterPaketId    = $request->input('paket_id');
+        $searchQueryInput = $request->input('search_query'); // Digunakan untuk pencarian gabungan
+
+        // Query utama untuk daftar tagihan (Eloquent)
+        $mainPaymentsQuery = Payment::query()
+            ->select([ // Pilih kolom yang dibutuhkan untuk tampilan dan relasi
+                'id_payment', 'nomor_invoice', 'customer_id', 'paket_id', 'jumlah_tagihan',
+                'durasi_pembayaran_bulan', 'periode_tagihan_mulai', 'periode_tagihan_selesai',
+                'tanggal_jatuh_tempo', 'tanggal_pembayaran', 'metode_pembayaran', 'ewallet_id',
+                'status_pembayaran', 'created_at', 'updated_at',
+                'created_by_user_id', 'confirmed_by_user_id', 'catatan_admin',
+            ])
+            ->with([
+                'customer:id_customer,nama_customer',
+                'paket:id_paket,kecepatan_paket',
+                'ewallet:id_ewallet,nama_ewallet',
+                'pembuatTagihan',          // Tidak memilih kolom spesifik, biarkan Laravel ambil semua
+                'pengonfirmasiPembayaran', // Tidak memilih kolom spesifik
+            ])
+            ->orderBy($request->input('sort_by', 'payments.created_at'), $request->input('sort_direction', 'desc'));
+
+        // Query builder dasar untuk summary (langsung ke tabel 'payments')
+        $summaryQueryBuilder = DB::table('payments');
+
+        // Terapkan filter ke kedua query
+        $applyFiltersClosure = function ($queryBuilderInstance) use ($request, $filterStartDate, $filterEndDate, $filterStatus, $filterCustomerId, $filterPaketId, $searchQueryInput) {
+            if ($filterStartDate) {
+                $queryBuilderInstance->whereDate('created_at', '>=', Carbon::parse($filterStartDate)->startOfDay());
+            }
+
+            if ($filterEndDate) {
+                $queryBuilderInstance->whereDate('created_at', '<=', Carbon::parse($filterEndDate)->endOfDay());
+            }
+
+            if ($filterStatus) {
+                $queryBuilderInstance->where('status_pembayaran', $filterStatus);
+            }
+
+            if ($filterCustomerId) {
+                $queryBuilderInstance->where('customer_id', $filterCustomerId);
+            }
+
+            if ($filterPaketId) {
+                $queryBuilderInstance->where('paket_id', $filterPaketId);
+            }
+
+            if ($searchQueryInput) {
+                if ($queryBuilderInstance instanceof \Illuminate\Database\Eloquent\Builder) { // Untuk Eloquent
+                    $queryBuilderInstance->where(function ($q) use ($searchQueryInput) {
+                        $q->where('nomor_invoice', 'like', "%{$searchQueryInput}%")
+                            ->orWhereHas('customer', function ($cq) use ($searchQueryInput) {
+                                $cq->where('nama_customer', 'like', "%{$searchQueryInput}%")
+                                    ->orWhere('id_customer', 'like', "%{$searchQueryInput}%");
+                            });
+                    });
+                } else { // Untuk Query Builder (DB::table)
+                             // Untuk summary, kita sederhanakan pencarian hanya pada nomor_invoice
+                             // Jika ingin lebih kompleks, perlu join manual di $summaryQueryBuilder
+                    $queryBuilderInstance->where('nomor_invoice', 'like', '%' . $searchQueryInput . '%');
+                }
+            }
+        };
+
+        $applyFiltersClosure($mainPaymentsQuery);
+        $applyFiltersClosure($summaryQueryBuilder);
+
+        // Hitung Summary/Kesimpulan dari Query Builder
+        $totalInvoices = (clone $summaryQueryBuilder)->count();
+
+        $summaryByStatus = (clone $summaryQueryBuilder)
+            ->select('status_pembayaran', DB::raw('COUNT(*) as count'), DB::raw('SUM(jumlah_tagihan) as total_amount'))
+            ->groupBy('status_pembayaran')
+            ->get()
+            ->keyBy('status_pembayaran')->map(function ($item, $key) use ($paymentStatusesForFilter) {
+            // $item di sini adalah objek stdClass
+            $item->label = $paymentStatusesForFilter[$key] ?? Str::title(str_replace('_', ' ', $key));
+            return $item;
+        });
+
+        $totalAmountAll = (clone $summaryQueryBuilder)->sum('jumlah_tagihan');
+
+        // Ambil data utama (dengan paginasi untuk HTML, semua untuk export)
+        $payments = $forExport ? $mainPaymentsQuery->get() : $mainPaymentsQuery->paginate(20)->withQueryString();
+
+        $filterInfo = [
+            'start_date'        => $filterStartDate,
+            'end_date'          => $filterEndDate,
+            'status_pembayaran' => $filterStatus ? ($paymentStatusesForFilter[$filterStatus] ?? $filterStatus) : null,
+            'customer_name'     => $filterCustomerId ? (Customer::find($filterCustomerId)->nama_customer ?? $filterCustomerId) : null,
+            'paket_info'        => $filterPaketId ? (Paket::find($filterPaketId)->kecepatan_paket ?? $filterPaketId) : null,
+            'search_query'      => $searchQueryInput,
+        ];
+
+        return [
+            'payments'        => $payments,
+            'customers'       => $customersForFilter,
+            'pakets'          => $paketsForFilter,
+            'paymentStatuses' => $paymentStatusesForFilter,
+            'request'         => $request,
+            'totalInvoices'   => $totalInvoices,
+            'summaryByStatus' => $summaryByStatus,
+            'totalAmountAll'  => $totalAmountAll,
+            'filterInfo'      => $filterInfo,
+        ];
+    }
+
+    // ... (method allInvoicesReport, exportAllInvoicesReportPdf, exportAllInvoicesReportExcel tetap ada di sini) ...
+    public function allInvoicesReport(Request $request)
+    {
+        $pageTitle = 'Laporan Semua Tagihan';
+        $data      = $this->getAllInvoicesReportData($request, false);
+        return view('reports.all_invoices_report', array_merge(['pageTitle' => $pageTitle], $data));
+    }
+
+    public function exportAllInvoicesReportPdf(Request $request)
+    {
+        $pageTitle = 'Laporan Semua Tagihan';
+        $data      = $this->getAllInvoicesReportData($request, true);
+        if ($data['payments']->isEmpty() && ! $request->hasAny(['start_date', 'end_date', 'status_pembayaran', 'customer_id', 'paket_id', 'search_query'])) {
+            return redirect()->route('reports.invoices.all', $request->query())->with('error', 'Tidak ada data untuk diexport atau filter belum diterapkan.');
+        }
+        $pdf = PDF::loadView('reports.all_invoices_report_pdf', array_merge(['pageTitle' => $pageTitle], $data));
+        $pdf->setPaper('a4', 'landscape');
+        $fileName = 'laporan_semua_tagihan_';
+        $datePart = [];
+        if ($request->filled('start_date')) {
+            $datePart[] = Carbon::parse($request->start_date)->format('Ymd');
+        }
+
+        if ($request->filled('end_date')) {
+            $fileName .= ($request->filled('start_date') ? '-sd-' : '') . Carbon::parse($request->end_date)->format('Ymd');
+        }
+
+        if (! $request->filled('start_date') && ! $request->filled('end_date')) {
+            $fileName .= Carbon::now()->format('YmdHis');
+        }
+
+        if ($request->filled('status_pembayaran')) {
+            $fileName .= '_status-' . Str::slug($request->status_pembayaran);
+        }
+
+        $fileName .= '.pdf';
+        return $pdf->download($fileName);
+    }
+
+    public function exportAllInvoicesReportExcel(Request $request)
+    {
+        $pageTitle = 'Laporan Semua Tagihan';
+        $data      = $this->getAllInvoicesReportData($request, true);
+        if ($data['payments']->isEmpty() && ! $request->hasAny(['start_date', 'end_date', 'status_pembayaran', 'customer_id', 'paket_id', 'search_query'])) {
+            return redirect()->route('reports.invoices.all', $request->query())->with('error', 'Tidak ada data untuk diexport atau filter belum diterapkan.');
+        }
+        $fileName = 'laporan_semua_tagihan_';
+        if ($request->filled('start_date')) {
+            $fileName .= Carbon::parse($request->start_date)->format('Ymd');
+        }
+
+        if ($request->filled('end_date')) {
+            $fileName .= ($request->filled('start_date') ? '-sd-' : '') . Carbon::parse($request->end_date)->format('Ymd');
+        }
+
+        if (! $request->filled('start_date') && ! $request->filled('end_date')) {
+            $fileName .= Carbon::now()->format('YmdHis');
+        }
+
+        if ($request->filled('status_pembayaran')) {
+            $fileName .= '_status-' . Str::slug($request->status_pembayaran);
+        }
+
+        $fileName .= '.xlsx';
+        return Excel::download(new AllInvoicesReportExport(array_merge(['pageTitle' => $pageTitle], $data)), $fileName);
     }
 }

@@ -233,7 +233,7 @@
                             @if ($payment->catatan_admin)
                                 <div class="card shadow-sm border-light rounded-3">
                                     <div class="card-body p-4">
-                                        <h6 class="card-title mb-3 text-primary fw-bold d-flex align-items-center">
+                                        <h6 class="card-title text-primary fw-bold d-flex align-items-center">
                                             Catatan Admin
                                         </h6>
                                         <p class="text-muted mb-0" style="white-space: pre-wrap;">

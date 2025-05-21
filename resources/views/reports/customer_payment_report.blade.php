@@ -156,6 +156,7 @@
 
 @section('content')
     <div class="card shadow-sm border-0 rounded-4">
+        {{-- Status Pembayaran --}}
         <div class="card-header p-4 rounded-top-4">
             <div class="row g-3">
                 <!-- Judul Laporan -->

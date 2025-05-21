@@ -229,9 +229,6 @@
             </div>
         </div>
     </div>
-
-    {{-- Bootstrap JS Bundle (jika diperlukan untuk elemen Bootstrap lain, tapi untuk print biasanya tidak) --}}
-    {{-- <script src="{{ asset('cust-assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script> --}}
 </body>
 
 </html>

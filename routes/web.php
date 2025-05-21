@@ -73,6 +73,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('pendapatan', [ReportController::class, 'financialReport'])->name('financial');
         Route::get('pendapatan/pdf', [ReportController::class, 'exportFinancialReportPdf'])->name('financial.pdf');
         Route::get('pendapatan/excel', [ReportController::class, 'exportFinancialReportExcel'])->name('financial.excel');
+        Route::get('semua-tagihan', [ReportController::class, 'allInvoicesReport'])->name('invoices.all');
+        Route::get('semua-tagihan/pdf', [ReportController::class, 'exportAllInvoicesReportPdf'])->name('invoices.all.pdf');
+        Route::get('semua-tagihan/excel', [ReportController::class, 'exportAllInvoicesReportExcel'])->name('invoices.all.excel');
 
     });
 

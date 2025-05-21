@@ -1,6 +1,4 @@
-@extends('layouts.app') {{-- Sesuaikan dengan layout admin utama Anda --}}
-
-@section('title', $pageTitle ?? 'Laporan Keuangan Pendapatan')
+@extends('layouts.app')
 
 @push('styles')
     <style>
@@ -68,6 +66,7 @@
 
 @section('content')
     <div class="card shadow-sm border-0 rounded-4">
+        {{-- Pandapatan --}}
         <div class="card-header p-3 rounded-top-4">
             <div class="row g-3">
                 <!-- Judul Laporan -->
