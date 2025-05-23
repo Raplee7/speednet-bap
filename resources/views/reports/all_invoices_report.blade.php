@@ -1,17 +1,96 @@
 @extends('layouts.app')
 @push('styles')
     <style>
+        .table-report {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
         .table-report th,
         .table-report td {
-            font-size: 0.8rem;
-            padding: 0.5rem;
+            font-size: 0.82rem;
+            padding: 0.75rem 1rem;
             vertical-align: middle;
+            border: 1px solid #e5e7eb;
         }
 
         .table-report thead th {
-            white-space: nowrap;
-            background-color: #f8f9fa;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #2d3748;
+            font-weight: 600;
             text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            border-bottom: 2px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-report tbody tr:hover {
+            background-color: rgba(249, 250, 251, 0.8);
+            transition: all 0.2s ease;
+        }
+
+        .table-report tbody td {
+            transition: all 0.2s ease;
+        }
+
+        .table-report tbody td.customer-name {
+            min-width: 200px;
+            white-space: normal;
+            font-weight: 500;
+        }
+
+        .table-report tbody td.customer-id {
+            min-width: 110px;
+            font-family: 'Consolas', monospace;
+            color: #666;
+        }
+
+        .table-report tbody td.customer-info {
+            min-width: 130px;
+            white-space: nowrap;
+        }
+
+        .table-report .month-col {
+            min-width: 120px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .badge.status-badge {
+            font-size: 0.72rem;
+            padding: 0.4em 0.8em;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Status Colors */
+        .status-paid {
+            background: linear-gradient(45deg, #28a745, #34ce57);
+        }
+
+        .status-unpaid {
+            background: linear-gradient(45deg, #ffc107, #ffdb4a);
+        }
+
+        .status-pending_confirmation {
+            background: linear-gradient(45deg, #17a2b8, #1fc8e3);
+        }
+
+        .status-failed {
+            background: linear-gradient(45deg, #dc3545, #f05565);
+        }
+
+        .status-cancelled {
+            background: linear-gradient(45deg, #6c757d, #868e96);
+        }
+
+        .status-menunggak {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            font-weight: 600;
         }
 
         .filter-form .form-select,
@@ -303,29 +382,28 @@
                                         $statusText = Str::title(str_replace('_', ' ', $payment->status_pembayaran));
                                         switch ($payment->status_pembayaran) {
                                             case 'unpaid':
-                                                $statusClass = 'bg-warning text-dark';
+                                                $statusClass = 'status-unpaid';
                                                 $statusText = 'Belum Bayar';
                                                 break;
                                             case 'pending_confirmation':
-                                                $statusClass = 'bg-info text-dark';
+                                                $statusClass = 'status-pending_confirmation';
                                                 $statusText = 'Pending';
                                                 break;
                                             case 'paid':
-                                                $statusClass = 'bg-success text-white';
+                                                $statusClass = 'status-paid';
                                                 $statusText = 'Lunas';
                                                 break;
                                             case 'failed':
-                                                $statusClass = 'bg-danger text-white';
+                                                $statusClass = 'status-failed';
                                                 $statusText = 'Gagal';
                                                 break;
                                             case 'cancelled':
-                                                $statusClass = 'bg-secondary text-white';
+                                                $statusClass = 'status-cancelled';
                                                 $statusText = 'Dibatalkan';
                                                 break;
                                         }
                                     @endphp
-                                    <span
-                                        class="badge status-badge rounded-pill {{ $statusClass }}">{{ $statusText }}</span>
+                                    <span class="badge status-badge {{ $statusClass }}">{{ $statusText }}</span>
                                 </td>
                                 <td>{{ $payment->tanggal_pembayaran ? \Carbon\Carbon::parse($payment->tanggal_pembayaran)->locale('id')->translatedFormat('d M Y') : '-' }}
                                 </td>

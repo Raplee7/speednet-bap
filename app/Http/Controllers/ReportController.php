@@ -23,21 +23,16 @@ class ReportController extends BaseController
         $this->middleware('auth');
     }
 
-    /**
-     * Method private untuk mengambil dan memproses data laporan pembayaran pelanggan.
-     */
-    private function getCustomerPaymentReportData(Request $request, $forExport = false) // Nama method diubah
+    private function getCustomerPaymentReportData(Request $request, $forExport = false)
     {
-        $currentCarbon       = Carbon::now();
-        $requestedYear       = $request->input('year');
-        $requestedStartMonth = $request->input('start_month');
-        $requestedEndMonth   = $request->input('end_month');
+        $currentCarbon = Carbon::now();
 
-        $selectedYear       = $requestedYear ? (int) $requestedYear : null;
-        $selectedStartMonth = $requestedStartMonth ? (int) $requestedStartMonth : null;
-        $selectedEndMonth   = $requestedEndMonth ? (int) $requestedEndMonth : null;
+        // Ambil nilai filter dari request. Jika tidak ada, nilai default akan di-set di method pemanggil.
+        $selectedYear       = $request->input('year');
+        $selectedStartMonth = $request->input('start_month');
+        $selectedEndMonth   = $request->input('end_month');
 
-        Log::info("Laporan Pembayaran Pelanggan: Year={$selectedYear}, StartM={$selectedStartMonth}, EndM={$selectedEndMonth}");
+        Log::info("Laporan Pembayaran Pelanggan (getCustomerPaymentReportData): Year={$selectedYear}, StartM={$selectedStartMonth}, EndM={$selectedEndMonth}");
 
         $availableYears = [];
         for ($year = $currentCarbon->year + 1; $year >= $currentCarbon->year - 4; $year--) {
@@ -53,14 +48,19 @@ class ReportController extends BaseController
         $customersCollectionOrPaginator = collect();
         $displayedMonths                = [];
 
+        // Hanya proses jika semua filter (tahun, bulan mulai, bulan akhir) sudah valid
         if ($selectedYear && $selectedStartMonth && $selectedEndMonth) {
-            if ($selectedStartMonth > $selectedEndMonth) {
+            // Pastikan start_month tidak lebih besar dari end_month
+            if ((int) $selectedStartMonth > (int) $selectedEndMonth) {
                 $temp               = $selectedStartMonth;
                 $selectedStartMonth = $selectedEndMonth;
                 $selectedEndMonth   = $temp;
             }
-            for ($m = $selectedStartMonth; $m <= $selectedEndMonth; $m++) {
-                if (isset($allMonthNames[$m])) {$displayedMonths[$m] = $allMonthNames[$m];}
+
+            for ($m = (int) $selectedStartMonth; $m <= (int) $selectedEndMonth; $m++) {
+                if (isset($allMonthNames[$m])) {
+                    $displayedMonths[$m] = $allMonthNames[$m];
+                }
             }
 
             $targetPeriodStart = Carbon::create($selectedYear, $selectedStartMonth, 1)->startOfMonth();
@@ -74,10 +74,11 @@ class ReportController extends BaseController
             }])->orderBy('nama_customer', 'asc');
 
             $customersData                  = $forExport ? $customersQuery->get() : $customersQuery->paginate(10)->withQueryString();
-            $customersCollectionOrPaginator = $customersData; // Tetap gunakan nama ini untuk konsistensi dengan return
+            $customersCollectionOrPaginator = $customersData;
 
             foreach ($customersData as $customer) {
                 $monthlyStatus = [];
+                // Loop berdasarkan $displayedMonths yang sudah difilter rentangnya
                 foreach ($displayedMonths as $monthNumber => $monthName) {
                     $currentIterationMonthStart = Carbon::create($selectedYear, $monthNumber, 1)->startOfMonth();
                     $currentIterationMonthEnd   = Carbon::create($selectedYear, $monthNumber, 1)->endOfMonth();
@@ -123,41 +124,69 @@ class ReportController extends BaseController
             'reportData'         => $reportDataProcessed,
             'customersPaginator' => $customersCollectionOrPaginator,
             'availableYears'     => $availableYears,
-            'selectedYear'       => $selectedYear,
+            'selectedYear'       => $selectedYear, // Ini akan berisi nilai dari request atau default dari pemanggil
             'allMonthNames'      => $allMonthNames,
-            'selectedStartMonth' => $selectedStartMonth,
-            'selectedEndMonth'   => $selectedEndMonth,
+            'selectedStartMonth' => $selectedStartMonth, // Ini akan berisi nilai dari request atau default dari pemanggil
+            'selectedEndMonth'   => $selectedEndMonth,   // Ini akan berisi nilai dari request atau default dari pemanggil
             'displayedMonths'    => $displayedMonths,
         ];
     }
 
-    /**
-     * Menampilkan Laporan Pembayaran Pelanggan (HTML).
-     */
-    public function customerPaymentReport(Request $request) // Nama method diubah
+    public function customerPaymentReport(Request $request)
     {
-        $pageTitle = 'Laporan Pembayaran Pelanggan';                                                     // Judul diubah
-        $data      = $this->getCustomerPaymentReportData($request, false);                               // Memanggil method yang sudah direfaktor
-        return view('reports.customer_payment_report', array_merge(['pageTitle' => $pageTitle], $data)); // View diubah
+        $pageTitle = 'Laporan Pembayaran Pelanggan';
+
+        // Set nilai default jika tidak ada input dari request (untuk tampilan awal)
+        $defaultYear       = Carbon::now()->year;
+        $defaultStartMonth = 1;  // Januari
+        $defaultEndMonth   = 12; // Desember
+
+        // Buat request baru atau modifikasi yang ada untuk dikirim ke getCustomerPaymentReportData
+        // Ini memastikan bahwa getCustomerPaymentReportData selalu menerima parameter filter yang valid.
+        $modifiedRequest = new Request(array_merge($request->all(), [
+            'year'        => $request->input('year', $defaultYear),
+            'start_month' => $request->input('start_month', $defaultStartMonth),
+            'end_month'   => $request->input('end_month', $defaultEndMonth),
+        ]));
+
+        $data = $this->getCustomerPaymentReportData($modifiedRequest, false);
+
+        // Pastikan nilai filter yang aktif (default atau dari user) juga dikirim ke view
+        // untuk pre-fill form filter.
+        $data['selectedYear']       = $modifiedRequest->input('year');
+        $data['selectedStartMonth'] = $modifiedRequest->input('start_month');
+        $data['selectedEndMonth']   = $modifiedRequest->input('end_month');
+
+        return view('reports.customer_payment_report', array_merge(['pageTitle' => $pageTitle], $data));
     }
 
-    /**
-     * Export Laporan Pembayaran Pelanggan ke PDF.
-     */
-    public function exportCustomerPaymentReportPdf(Request $request) // Nama method diubah
+    // ... (method exportCustomerPaymentReportPdf dan exportCustomerPaymentReportExcel menggunakan $modifiedRequest juga jika perlu default) ...
+    public function exportCustomerPaymentReportPdf(Request $request)
     {
-        $pageTitle = 'Laporan Pembayaran Pelanggan'; // Judul diubah
-        $data      = $this->getCustomerPaymentReportData($request, true);
+        $pageTitle         = 'Laporan Pembayaran Pelanggan';
+        $defaultYear       = Carbon::now()->year;
+        $defaultStartMonth = 1;
+        $defaultEndMonth   = 12;
 
-        if ($data['reportData']->isEmpty() && (! $data['selectedYear'] || ! $data['selectedStartMonth'] || ! $data['selectedEndMonth'])) {
-            return redirect()->route('reports.customer_payment', $request->query())->with('error', 'Silakan pilih filter tahun dan rentang bulan terlebih dahulu untuk export PDF.'); // Rute diubah
+        $modifiedRequest = new Request(array_merge($request->all(), [
+            'year'        => $request->input('year', $defaultYear),
+            'start_month' => $request->input('start_month', $defaultStartMonth),
+            'end_month'   => $request->input('end_month', $defaultEndMonth),
+        ]));
+
+        $data = $this->getCustomerPaymentReportData($modifiedRequest, true);
+
+        if ($data['reportData']->isEmpty()) { // Cek jika reportData kosong setelah filter default/user
+            return redirect()->route('reports.customer_payment', $request->query())->with('error', 'Tidak ada data untuk diexport pada periode yang dipilih.');
         }
 
-        // View untuk PDF juga perlu diubah namanya jika file view-nya diubah
-        $pdf = PDF::loadView('reports.customer_payment_report_pdf', array_merge(['pageTitle' => $pageTitle], $data))
-            ->setPaper('a4', 'landscape');
+        // Menambahkan data filter yang aktif ke PDF view
+        $data['selectedYear']       = $modifiedRequest->input('year');
+        $data['selectedStartMonth'] = $modifiedRequest->input('start_month');
+        $data['selectedEndMonth']   = $modifiedRequest->input('end_month');
 
-        $fileName = 'laporan_pembayaran_pelanggan_' . $data['selectedYear']; // Nama file diubah
+        $pdf      = PDF::loadView('reports.customer_payment_report_pdf', array_merge(['pageTitle' => $pageTitle], $data))->setPaper('a4', 'landscape');
+        $fileName = 'laporan_pembayaran_pelanggan_' . $data['selectedYear'];
         if ($data['selectedStartMonth'] && isset($data['allMonthNames'][$data['selectedStartMonth']])) {
             $fileName .= '_' . Str::slug($data['allMonthNames'][$data['selectedStartMonth']]);
         }
@@ -165,22 +194,34 @@ class ReportController extends BaseController
             $fileName .= '-sd-' . Str::slug($data['allMonthNames'][$data['selectedEndMonth']]);
         }
         $fileName .= '.pdf';
-
         return $pdf->download($fileName);
     }
 
-    /**
-     * Export Laporan Pembayaran Pelanggan ke Excel.
-     */
-    public function exportCustomerPaymentReportExcel(Request $request) // Nama method diubah
+    public function exportCustomerPaymentReportExcel(Request $request)
     {
-        $data = $this->getCustomerPaymentReportData($request, true);
+        $pageTitle         = 'Laporan Pembayaran Pelanggan';
+        $defaultYear       = Carbon::now()->year;
+        $defaultStartMonth = 1;
+        $defaultEndMonth   = 12;
 
-        if ($data['reportData']->isEmpty() && (! $data['selectedYear'] || ! $data['selectedStartMonth'] || ! $data['selectedEndMonth'])) {
-            return redirect()->route('reports.customer_payment', $request->query())->with('error', 'Silakan pilih filter tahun dan rentang bulan terlebih dahulu untuk export Excel.'); // Rute diubah
+        $modifiedRequest = new Request(array_merge($request->all(), [
+            'year'        => $request->input('year', $defaultYear),
+            'start_month' => $request->input('start_month', $defaultStartMonth),
+            'end_month'   => $request->input('end_month', $defaultEndMonth),
+        ]));
+
+        $data = $this->getCustomerPaymentReportData($modifiedRequest, true);
+
+        if ($data['reportData']->isEmpty()) {
+            return redirect()->route('reports.customer_payment', $request->query())->with('error', 'Tidak ada data untuk diexport pada periode yang dipilih.');
         }
 
-        $fileName = 'laporan_pembayaran_pelanggan_' . $data['selectedYear']; // Nama file diubah
+        // Menambahkan data filter yang aktif ke Export Class
+        $data['selectedYear']       = $modifiedRequest->input('year');
+        $data['selectedStartMonth'] = $modifiedRequest->input('start_month');
+        $data['selectedEndMonth']   = $modifiedRequest->input('end_month');
+
+        $fileName = 'laporan_pembayaran_pelanggan_' . $data['selectedYear'];
         if ($data['selectedStartMonth'] && isset($data['allMonthNames'][$data['selectedStartMonth']])) {
             $fileName .= '_' . Str::slug($data['allMonthNames'][$data['selectedStartMonth']]);
         }
@@ -188,8 +229,6 @@ class ReportController extends BaseController
             $fileName .= '-sd-' . Str::slug($data['allMonthNames'][$data['selectedEndMonth']]);
         }
         $fileName .= '.xlsx';
-
-        // Pastikan nama export class sesuai jika Anda mengubahnya juga
         return Excel::download(new CustomerPaymentReportExport($data), $fileName);
     }
 
