@@ -16,7 +16,8 @@ class DatabaseSeeder extends Seeder
             DeviceModelSeeder::class,
             DeviceSnSeeder::class,
             EwalletSeeder::class,
-            CustomerSeeder::class,
+            // CustomerSeeder::class,
+            CustomerAndPaymentSeeder::class,
         ]);
     }
 

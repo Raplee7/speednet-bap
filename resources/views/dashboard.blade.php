@@ -79,7 +79,7 @@
                                                 <a href="{{ route('payments.create', ['customer_id' => $customer->id_customer, 'auto_fill_next_period' => 'true']) }}"
                                                     class="btn btn-sm btn-outline-success rounded-pill py-1 px-2 ms-1"
                                                     title="Buat Tagihan">
-                                                    <i class="fa fa-file-text-o"></i>
+                                                    <i class="fa fa-file-text"></i>
                                                 </a>
                                             </td>
                                         </tr>
