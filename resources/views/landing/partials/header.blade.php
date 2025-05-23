@@ -13,8 +13,8 @@
                 </li>
                 <li><a href="{{ route('landing.page') }}#tentang">Tentang</a></li>
                 <li><a href="{{ route('landing.page') }}#paket">Paket</a></li>
+                <li><a href="{{ route('landing.page') }}#form-pemasangan">Form Pendaftaran</a></li>
                 <li><a href="{{ route('landing.page') }}#faq">FAQ</a></li>
-                <li><a href="{{ route('landing.page') }}#form">Form Pendaftaran</a></li>
                 <li><a href="{{ route('landing.page') }}#contact">Kontak</a></li>
                 @auth('customer_web')
                     <li class="dropdown">

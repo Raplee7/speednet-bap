@@ -9,7 +9,7 @@
     <meta name="description" content="{{ $metaDescription ?? 'Layanan internet cepat dan handal untuk Anda.' }}">
     <meta name="keywords" content="{{ $metaKeywords ?? 'internet, wifi, speednet, pontianak' }}">
 
-    <link href="{{ asset('cust-assets/img/favicon.png') }}" rel="icon">
+    <link rel="icon" href="{{ asset('assets/images/wifiiconspeednet.ico') }}">
     <link href="{{ asset('cust-assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
 
     <link href="https://fonts.googleapis.com" rel="preconnect">

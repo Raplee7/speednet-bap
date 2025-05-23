@@ -10,10 +10,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviceModelController;
 use App\Http\Controllers\DeviceSnController;
 use App\Http\Controllers\EwalletController;
-use App\Http\Controllers\PaketController;
-use App\Http\Controllers\PaymentController; // Untuk Pelanggan
-use App\Http\Controllers\ReportController;  // Dashboard Admin
-use App\Http\Controllers\UserController;    // Untuk Admin/Kasir
+use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\PaketController;   // Untuk Pelanggan
+use App\Http\Controllers\PaymentController; // Dashboard Admin
+use App\Http\Controllers\ReportController;  // Untuk Admin/Kasir
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // CRUD Customer oleh Admin
@@ -25,8 +26,9 @@ use Illuminate\Support\Facades\Route;
 | Rute Publik (Landing Page)
 |--------------------------------------------------------------------------
 */
-Route::get('/', [CustomerSubmissionController::class, 'create'])->name('landing.page');
+// Route::get('/', [CustomerSubmissionController::class, 'create'])->name('landing.page');
 Route::post('/form-pemasangan', [CustomerSubmissionController::class, 'store'])->name('form.pemasangan.store');
+Route::get('/', [LandingPageController::class, 'index'])->name('landing.page');
 
 /*
 |--------------------------------------------------------------------------

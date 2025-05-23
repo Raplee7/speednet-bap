@@ -59,94 +59,169 @@
     <!-- Paket Section -->
     <section id="paket" class="pricing section">
 
-        <!-- Section Title -->
         <div class="container section-title" data-aos="fade-up">
             <h2>Paket</h2>
-            <p>Paket Kecepatan Internet<br></p>
-        </div><!-- End Section Title -->
+            <p>Pilih Paket Kecepatan Internet Terbaik untuk Kebutuhan Anda<br></p>
+        </div>
 
         <div class="container">
-
             <div class="row gy-4">
 
-                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="pricing-tem">
-                        <h3 style="color: #20c997;">Free Plan</h3>
-                        <div class="price"><sup>$</sup>0<span> / mo</span></div>
-                        <div class="icon">
-                            <i class="bi bi-wifi" style="color: #20c997;"></i>
+                @php
+                    $paketIconColors = ['#20c997', '#0dcaf0', '#fd7e14', '#0d6efd', '#6f42c1', '#ffc107'];
+                @endphp
+
+                @forelse ($pakets as $index => $paket)
+                    <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="{{ ($index + 1) * 100 }}">
+                        <div class="pricing-tem h-100 d-flex flex-column">
+                            @php
+                                $iconColor = $paketIconColors[$index % count($paketIconColors)];
+                            @endphp
+
+                            <h3 style="color: {{ $iconColor }};">{{ $paket->kecepatan_paket }}</h3>
+
+                            <div class="price"><sup>Rp</sup>{{ number_format($paket->harga_paket, 0, ',', '.') }}<span> /
+                                    bulan</span></div>
+
+                            <div class="icon my-3">
+                                <i class="bi bi-wifi" style="color: {{ $iconColor }}; font-size: 3rem;"></i>
+                            </div>
+
+                            <ul class="flex-grow-1">
+                                <li>Kecepatan hingga {{ $paket->kecepatan_paket }}</li>
+                                <li>Unlimited Kuota</li>
+                                <li>Gratis Biaya Pemasangan*</li>
+                                <li>Support 24/7</li>
+                            </ul>
+
+                            <div class="mt-auto">
+                                {{-- Tombol memanggil fungsi JavaScript untuk memilih paket di form dan scroll --}}
+                                <a href="#form-pemasangan" class="btn-buy"
+                                    onclick="pilihPaket('{{ $paket->id_paket }}')">Pilih Paket Ini</a>
+                            </div>
                         </div>
-                        <ul>
-                            <li>Aida dere</li>
-                            <li>Nec feugiat nisl</li>
-                            <li>Nulla at volutpat dola</li>
-                            <li class="na">Pharetra massa</li>
-                            <li class="na">Massa ultricies mi</li>
-                        </ul>
-                        <a href="#" class="btn-buy">Buy Now</a>
                     </div>
-                </div><!-- End Pricing Item -->
-
-                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="pricing-tem">
-                        <span class="featured">Featured</span>
-                        <h3 style="color: #0dcaf0;">Starter Plan</h3>
-                        <div class="price"><sup>$</sup>19<span> / mo</span></div>
-                        <div class="icon">
-                            <i class="bi bi-send" style="color: #0dcaf0;"></i>
-                        </div>
-                        <ul>
-                            <li>Aida dere</li>
-                            <li>Nec feugiat nisl</li>
-                            <li>Nulla at volutpat dola</li>
-                            <li>Pharetra massa</li>
-                            <li class="na">Massa ultricies mi</li>
-                        </ul>
-                        <a href="#" class="btn-buy">Buy Now</a>
+                @empty
+                    <div class="col-12">
+                        <p class="text-center">Belum ada paket yang tersedia saat ini. Silakan kembali lagi nanti.</p>
                     </div>
-                </div><!-- End Pricing Item -->
+                @endforelse
 
-                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="300">
-                    <div class="pricing-tem">
-                        <h3 style="color: #fd7e14;">Business Plan</h3>
-                        <div class="price"><sup>$</sup>29<span> / mo</span></div>
-                        <div class="icon">
-                            <i class="bi bi-airplane" style="color: #fd7e14;"></i>
-                        </div>
-                        <ul>
-                            <li>Aida dere</li>
-                            <li>Nec feugiat nisl</li>
-                            <li>Nulla at volutpat dola</li>
-                            <li>Pharetra massa</li>
-                            <li>Massa ultricies mi</li>
-                        </ul>
-                        <a href="#" class="btn-buy">Buy Now</a>
-                    </div>
-                </div><!-- End Pricing Item -->
-
-                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="400">
-                    <div class="pricing-tem">
-                        <h3 style="color: #0d6efd;">Ultimate Plan</h3>
-                        <div class="price"><sup>$</sup>49<span> / mo</span></div>
-                        <div class="icon">
-                            <i class="bi bi-rocket" style="color: #0d6efd;"></i>
-                        </div>
-                        <ul>
-                            <li>Aida dere</li>
-                            <li>Nec feugiat nisl</li>
-                            <li>Nulla at volutpat dola</li>
-                            <li>Pharetra massa</li>
-                            <li>Massa ultricies mi</li>
-                        </ul>
-                        <a href="#" class="btn-buy">Buy Now</a>
-                    </div>
-                </div><!-- End Pricing Item -->
-
-            </div><!-- End pricing row -->
-
+            </div>
         </div>
 
     </section><!-- /Paket Section -->
+
+    <!-- Formulir Section -->
+    <section id="form-pemasangan" class="contact section">
+
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Formulir</h2>
+            <p>Formulir Pemasangan Baru</p>
+        </div>
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-0 rounded-4">
+                        <div class="card-body p-4 p-md-5">
+                            <form action="{{ route('form.pemasangan.store') }}" method="POST" class="needs-validation"
+                                novalidate>
+                                @csrf
+                                <div class="row gy-4">
+                                    <div class="col-md-12">
+                                        <label for="nama_customer" class="form-label fs-6 fw-medium">Nama Lengkap <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group has-validation">
+                                            <span class="input-group-text bg-light border-end-0"><i
+                                                    class="bi bi-person"></i></span>
+                                            <input type="text" id="nama_customer" name="nama_customer"
+                                                class="form-control form-control-lg border-start-0 @error('nama_customer') is-invalid @enderror"
+                                                required value="{{ old('nama_customer') }}">
+                                            @error('nama_customer')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @else
+                                                <div class="invalid-feedback">Nama lengkap wajib diisi.</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label for="alamat_customer" class="form-label fs-6 fw-medium">Alamat Lengkap
+                                            Pemasangan <span class="text-danger">*</span></label>
+                                        <div class="input-group has-validation">
+                                            <span class="input-group-text bg-light border-end-0"><i
+                                                    class="bi bi-geo-alt-fill"></i></span>
+                                            <textarea id="alamat_customer" name="alamat_customer"
+                                                class="form-control form-control-lg border-start-0 @error('alamat_customer') is-invalid @enderror" rows="3"
+                                                required>{{ old('alamat_customer') }}</textarea>
+                                            @error('alamat_customer')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @else
+                                                <div class="invalid-feedback">Alamat lengkap wajib diisi.</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label for="wa_customer" class="form-label fs-6 fw-medium">Nomor WhatsApp<span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group has-validation">
+                                            <span class="input-group-text bg-light border-end-0"><i
+                                                    class="bi bi-whatsapp"></i></span>
+                                            <input type="tel" id="wa_customer" name="wa_customer"
+                                                class="form-control form-control-lg border-start-0">
+                                        </div>
+                                    </div>
+
+                                    {{-- Dropdown paket di dalam form --}}
+                                    <div class="col-md-12" id="form_paket_selection_wrapper">
+                                        <label for="form_paket_id" class="form-label fs-6 fw-medium">Paket Dipilih <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group has-validation">
+                                            <span class="input-group-text bg-light border-end-0"><i
+                                                    class="bi bi-wifi"></i></span>
+                                            {{-- Mengubah name menjadi "paket_id" --}}
+                                            <select name="paket_id" id="form_paket_id"
+                                                class="form-select form-select-lg border-start-0 @error('paket_id') is-invalid @enderror"
+                                                required>
+                                                <option value="" disabled {{ old('paket_id') ? '' : 'selected' }}>--
+                                                    Pilih Paket Layanan --</option>
+                                                @foreach ($pakets as $paket_option)
+                                                    {{-- Menggunakan variabel berbeda untuk loop agar tidak konflik --}}
+                                                    <option value="{{ $paket_option->id_paket }}"
+                                                        {{ old('paket_id') == $paket_option->id_paket ? 'selected' : '' }}>
+                                                        {{ $paket_option->kecepatan_paket }} -
+                                                        Rp{{ number_format($paket_option->harga_paket, 0, ',', '.') }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('paket_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @else
+                                                <div class="invalid-feedback">Anda harus memilih paket layanan.</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 text-center mt-5">
+                                        <button type="submit"
+                                            class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                fill="currentColor" class="bi bi-send-fill me-2" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                                            </svg>
+                                            Kirim Pengajuan Pemasangan
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Faq Section -->
     <section id="faq" class="faq section">
@@ -247,274 +322,100 @@
 
     </section><!-- /Faq Section -->
 
-    <!-- Formulir Section -->
-    <section id="form" class="contact section">
-
-        <!-- Section Title -->
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Formulir</h2>
-            <p>Formulir Pemasangan Baru</p>
-        </div>
-        <div class="container" data-aos="fade-up" data-aos-delay="100">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    {{-- Tambahkan card untuk membungkus form agar lebih rapi --}}
-                    <div class="card shadow-lg border-0 rounded-4">
-                        <div class="card-body p-4 p-md-5"> {{-- Padding lebih besar di layar medium ke atas --}}
-                            {{-- Anda bisa menambahkan judul di dalam card jika mau --}}
-                            {{-- <h5 class="card-title text-center mb-4">Detail Pemasangan</h5> --}}
-
-                            <form action="{{ route('form.pemasangan.store') }}" method="POST" class="needs-validation"
-                                novalidate>
-                                @csrf
-                                <div class="row gy-4"> {{-- Menambah jarak antar baris input (gy-4) --}}
-
-                                    <div class="col-md-12">
-                                        <label for="nama_customer" class="form-label fs-6 fw-medium">Nama Lengkap
-                                            <span class="text-danger">*</span></label>
-                                        <div class="input-group has-validation">
-                                            {{-- Tambahkan ikon jika diinginkan --}}
-                                            <span class="input-group-text bg-light border-end-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
-                                                </svg>
-                                            </span>
-                                            <input type="text" id="nama_customer" name="nama_customer"
-                                                class="form-control form-control-lg border-start-0 @error('nama_customer') is-invalid @enderror"
-                                                required value="{{ old('nama_customer') }}">
-                                            @error('nama_customer')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @else
-                                                <div class="invalid-feedback">
-                                                    Nama lengkap wajib diisi.
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <label for="alamat_customer" class="form-label fs-6 fw-medium">Alamat
-                                            Lengkap <span class="text-danger">*</span></label>
-                                        <div class="input-group has-validation">
-                                            <span class="input-group-text bg-light border-end-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10" />
-                                                    <path
-                                                        d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                                                </svg>
-                                            </span>
-                                            <textarea id="alamat_customer" name="alamat_customer"
-                                                class="form-control form-control-lg border-start-0 @error('alamat_customer') is-invalid @enderror" rows="3"
-                                                required>{{ old('alamat_customer') }}</textarea>
-                                            @error('alamat_customer')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @else
-                                                <div class="invalid-feedback">
-                                                    Alamat lengkap wajib diisi.
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <label for="wa_customer" class="form-label fs-6 fw-medium">Nomor WhatsApp
-                                            <span class="text-danger">*</span></label>
-                                        <div class="input-group has-validation">
-                                            <span class="input-group-text bg-light border-end-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.575 6.575 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
-                                                </svg>
-                                            </span>
-                                            <input type="tel" id="wa_customer" name="wa_customer"
-                                                class="form-control form-control-lg border-start-0 @error('wa_customer') is-invalid @enderror"
-                                                value="{{ old('wa_customer') }}">
-                                            @error('wa_customer')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @else
-                                                <div class="invalid-feedback">
-                                                    Nomor WhatsApp wajib diisi dengan format yang benar (Contoh:
-                                                    628123456789).
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <label for="paket_id" class="form-label fs-6 fw-medium">Pilih Paket <span
-                                                class="text-danger">*</span></label>
-                                        <div class="input-group has-validation">
-                                            <span class="input-group-text bg-light border-end-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-wifi" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M15.384 6.115a.485.485 0 0 0-.047-.736A12.44 12.44 0 0 0 8 3C5.259 3 2.723 3.882.663 5.379a.485.485 0 0 0-.048.736.52.52 0 0 0 .668.05A11.45 11.45 0 0 1 8 4c2.507 0 4.827.802 6.716 2.164.205.148.49.13.668-.049" />
-                                                    <path
-                                                        d="M13.229 8.271a.482.482 0 0 0-.063-.745A9.46 9.46 0 0 0 8 6c-1.905 0-3.68.56-5.166 1.526a.48.48 0 0 0-.063.745.525.525 0 0 0 .652.065A8.46 8.46 0 0 1 8 7a8.46 8.46 0 0 1 4.576 1.336c.206.132.48.108.653-.065m-2.183 2.183c.226-.226.185-.605-.1-.75A6.5 6.5 0 0 0 8 9c-1.06 0-2.062.254-2.946.704-.285.145-.326.524-.1.75l.015.015c.16.16.407.19.611.09A5.5 5.5 0 0 1 8 10c.868 0 1.69.201 2.42.56.203.1.45.07.61-.091zM9.06 12.44c.196-.196.198-.52-.04-.66A2 2 0 0 0 8 11.5a2 2 0 0 0-1.02.28c-.238.14-.236.464-.04.66l.706.706a.5.5 0 0 0 .707 0l.707-.707z" />
-                                                </svg>
-                                            </span>
-                                            <select name="paket_id" id="paket_id"
-                                                class="form-select form-select-lg border-start-0 @error('paket_id') is-invalid @enderror"
-                                                required>
-                                                <option value="" disabled {{ old('paket_id') ? '' : 'selected' }}>--
-                                                    Pilih Paket Layanan
-                                                    --</option>
-                                                @foreach ($pakets as $paket)
-                                                    <option value="{{ $paket->id_paket }}"
-                                                        {{ old('paket_id') == $paket->id_paket ? 'selected' : '' }}>
-                                                        {{ $paket->kecepatan_paket }} -
-                                                        Rp{{ number_format($paket->harga_paket, 0, ',', '.') }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('paket_id')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @else
-                                                <div class="invalid-feedback">
-                                                    Anda harus memilih paket layanan.
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-12 text-center mt-5">
-                                        {{-- Tombol yang lebih besar dan menarik --}}
-                                        <button type="submit"
-                                            class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                                fill="currentColor" class="bi bi-send-fill me-2" viewBox="0 0 16 16">
-                                                <path
-                                                    d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
-                                            </svg>
-                                            Kirim Pengajuan
-                                        </button>
-                                    </div>
-
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
-        <!-- Section Title -->
         <div class="container section-title" data-aos="fade-up">
             <h2>Kontak</h2>
-            <p>Kontak Kami</p>
-        </div><!-- End Section Title -->
-
+            <p>Hubungi Kami</p> {{-- Sedikit modifikasi teks --}}
+        </div>
         <div class="container" data-aos="fade-up" data-aos-delay="100">
             <div class="row gy-4">
 
-                <div class="col-lg-6">
-
+                <div class="col-lg-6"> {{-- Kolom untuk Info Kontak (Alamat, Telepon, Email, Jam Buka) --}}
                     <div class="row gy-4">
                         <div class="col-md-6">
-                            <div class="info-item" data-aos="fade" data-aos-delay="200">
+                            <div class="info-item h-100" data-aos="fade" data-aos-delay="200"> {{-- Tambah h-100 jika ingin sama tinggi --}}
                                 <i class="bi bi-geo-alt"></i>
-                                <h3>Address</h3>
-                                <p>A108 Adam Street</p>
-                                <p>New York, NY 535022</p>
+                                <h3>Alamat</h3>
+                                <p>Jl. Contoh Alamat No. 123</p> {{-- GANTI DENGAN ALAMATMU --}}
+                                <p>Pontianak, Kalimantan Barat</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                         <div class="col-md-6">
-                            <div class="info-item" data-aos="fade" data-aos-delay="300">
+                            <div class="info-item h-100" data-aos="fade" data-aos-delay="300">
                                 <i class="bi bi-telephone"></i>
-                                <h3>Call Us</h3>
-                                <p>+1 5589 55488 55</p>
-                                <p>+1 6678 254445 41</p>
+                                <h3>Telepon Kami</h3>
+                                <p>+62 812 3456 7890</p> {{-- GANTI DENGAN NOMORMU --}}
+                                <p>+62 561 123 456</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                         <div class="col-md-6">
-                            <div class="info-item" data-aos="fade" data-aos-delay="400">
+                            <div class="info-item h-100" data-aos="fade" data-aos-delay="400">
                                 <i class="bi bi-envelope"></i>
-                                <h3>Email Us</h3>
-                                <p>info@example.com</p>
-                                <p>contact@example.com</p>
+                                <h3>Email Kami</h3>
+                                <p>info@speednetbap.test</p> {{-- GANTI DENGAN EMAILMU --}}
+                                <p>dukungan@speednetbap.test</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                         <div class="col-md-6">
-                            <div class="info-item" data-aos="fade" data-aos-delay="500">
+                            <div class="info-item h-100" data-aos="fade" data-aos-delay="500">
                                 <i class="bi bi-clock"></i>
-                                <h3>Open Hours</h3>
-                                <p>Monday - Friday</p>
-                                <p>9:00AM - 05:00PM</p>
+                                <h3>Jam Buka</h3>
+                                <p>Senin - Jumat</p>
+                                <p>08:00 - 16:00 WIB</p> {{-- Sesuaikan jam buka --}}
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                     </div>
-
                 </div>
 
-                <div class="col-lg-6">
-                    <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up"
-                        data-aos-delay="200">
-                        <div class="row gy-4">
-
-                            <div class="col-md-6">
-                                <input type="text" name="name" class="form-control" placeholder="Your Name"
-                                    required="">
-                            </div>
-
-                            <div class="col-md-6 ">
-                                <input type="email" class="form-control" name="email" placeholder="Your Email"
-                                    required="">
-                            </div>
-
-                            <div class="col-12">
-                                <input type="text" class="form-control" name="subject" placeholder="Subject"
-                                    required="">
-                            </div>
-
-                            <div class="col-12">
-                                <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
-                            </div>
-
-                            <div class="col-12 text-center">
-                                <div class="loading">Loading</div>
-                                <div class="error-message"></div>
-                                <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                                <button type="submit">Send Message</button>
-                            </div>
-
-                        </div>
-                    </form>
-                </div><!-- End Contact Form -->
-
+                {{-- Kolom untuk Peta Google Maps --}}
+                <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d844.4518182848843!2d109.37395865009101!3d-0.08544102025188481!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e1d5b28610226db%3A0xb7ddb1324f5bf648!2sYayasan%20Karsa%20Cipta%20Mandiri%20Indonesia!5e0!3m2!1sen!2sid!4v1747985914999!5m2!1sen!2sid"
+                        width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
             </div>
-
         </div>
 
     </section><!-- /Contact Section -->
 @endsection
 
 @push('scripts')
-    {{-- Script spesifik untuk halaman landing index jika ada --}}
-@endpush
+    <script>
+        // Fungsi untuk menangani pemilihan paket
+        function pilihPaket(paketId) { // Hanya perlu paketId sekarang
+            const formPaketSelectionDropdown = document.getElementById('form_paket_id'); // Dropdown di form
 
-@push('styles')
-    {{-- Style spesifik untuk halaman landing index jika ada --}}
+            if (formPaketSelectionDropdown) {
+                formPaketSelectionDropdown.value = paketId; // Otomatis pilih paket di dropdown form
+            }
+
+            // Scroll ke formulir
+            const formulirSection = document.getElementById('form-pemasangan');
+            if (formulirSection) {
+                formulirSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                }); // block: 'start' agar bagian atas form terlihat
+            }
+        }
+
+        // Untuk validasi Bootstrap
+        (function() {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
 @endpush

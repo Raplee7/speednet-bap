@@ -109,7 +109,7 @@
                                         <div class="card-body">
                                             <h6 class="card-title fw-bold mb-3 text-primary">Network Configuration</h6>
                                             <div class="mb-2">
-                                                <label class="text-muted small mb-1">IP PPPoE</label>
+                                                <label class="text-muted small mb-1">IP PPOE</label>
                                                 <p class="mb-2 fw-semibold">
                                                     <span class="badge bg-secondary-subtle">{{ $customer->ip_ppoe }}</span>
                                                 </p>

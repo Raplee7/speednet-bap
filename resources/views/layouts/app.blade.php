@@ -8,7 +8,8 @@
 
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/logobpp.ico') }}">
+    {{-- <link rel="shortcut icon" href="{{ asset('assets/images/logobpp.ico') }}"> --}}
+    <link rel="shortcut icon" href="{{ asset('assets/images/wifiiconspeednet.ico') }}">
 
     <!-- CSS Libraries -->
     <link rel="stylesheet" href="{{ asset('assets/css/core/libs.min.css') }}">
