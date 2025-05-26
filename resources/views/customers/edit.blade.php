@@ -115,10 +115,13 @@
 
                                 <div class="mb-3">
                                     <label for="tanggal_aktivasi" class="form-label">Tanggal Aktivasi</label>
-                                    <input type="date" name="tanggal_aktivasi" class="form-control"
-                                        value="{{ \Carbon\Carbon::parse($customer->tanggal_aktivasi)->format('Y-m-d') }}"
-                                        required>
-
+                                    <input type="date" name="tanggal_aktivasi" id="tanggal_aktivasi"
+                                        class="form-control @error('tanggal_aktivasi') is-invalid @enderror"
+                                        value="{{ old('tanggal_aktivasi', $customer->tanggal_aktivasi ? \Carbon\Carbon::parse($customer->tanggal_aktivasi)->format('Y-m-d') : '') }}"
+                                        {{-- Atribut 'required' mungkin perlu dipertimbangkan ulang jika tanggal aktivasi bisa kosong saat edit untuk status tertentu --}}>
+                                    @error('tanggal_aktivasi')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label for="status" class="form-label">Status</label>

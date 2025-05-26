@@ -78,6 +78,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('semua-tagihan', [ReportController::class, 'allInvoicesReport'])->name('invoices.all');
         Route::get('semua-tagihan/pdf', [ReportController::class, 'exportAllInvoicesReportPdf'])->name('invoices.all.pdf');
         Route::get('semua-tagihan/excel', [ReportController::class, 'exportAllInvoicesReportExcel'])->name('invoices.all.excel');
+        Route::get('data-pelanggan', [ReportController::class, 'customerProfileReport'])->name('customer_profile');
+        Route::get('data-pelanggan/pdf', [ReportController::class, 'exportCustomerProfileReportPdf'])->name('customer_profile.pdf');
+        Route::get('data-pelanggan/excel', [ReportController::class, 'exportCustomerProfileReportExcel'])->name('customer_profile.excel');
 
     });
 

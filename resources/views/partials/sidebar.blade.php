@@ -261,6 +261,19 @@
                                 <span class="item-name">Semua Tagihan</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('reports.customer_profile') ? 'active' : '' }}"
+                                href="{{ route('reports.customer_profile') }}">
+                                <i class="icon">
+                                    <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10"
+                                        fill="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="8" />
+                                    </svg>
+                                </i>
+                                <i class="sidenav-mini-icon">DP</i>
+                                <span class="item-name">Data Pelanggan</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

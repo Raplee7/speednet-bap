@@ -67,143 +67,74 @@
 @section('content')
     <div class="card shadow-sm border-0 rounded-4">
         {{-- Pandapatan --}}
-        <div class="card-header p-3 rounded-top-4">
-            <div class="row g-3">
-                <!-- Judul Laporan -->
-                <div class="col-lg-12">
+        <div class="card-header bg-light-subtle p-3 rounded-top-4">
+            <div class="row align-items-center">
+                <div class="col-lg-4">
+                    <h4 class="card-title mb-1 fw-semibold">{{ $pageTitle ?? 'Laporan Keuangan Pendapatan' }}</h4>
+                    {{-- Menampilkan label periode yang aktif --}}
                     @if (isset($reportPeriodLabel) && !empty($reportPeriodLabel))
-                        <h4 class="text-muted mb-0">
-                            <i class="fa fa-calendar-check me-2"></i>
-                            Laporan Periode: <strong>{{ $reportPeriodLabel }}</strong>
-                        </h4>
+                        <p class="text-muted mb-0 small">Periode: <strong>{{ $reportPeriodLabel }}</strong></p>
                     @else
-                        <h5 class="text-muted mb-0">
-                            <i class="fa fa-info-circle me-2"></i>
-                            Silakan pilih filter periode untuk menampilkan laporan
-                        </h5>
+                        <p class="text-muted mb-0 small">Pilih filter periode untuk menampilkan laporan.</p>
                     @endif
                 </div>
+                <div class="col-lg-8">
+                    {{-- Form Filter Periode --}}
+                    <form action="{{ route('reports.financial') }}" method="GET"
+                        class="row gx-2 gy-2 align-items-end justify-content-lg-end filter-form">
 
-                <!-- Form Filter -->
-                <div class="col-lg-12">
-                    <form action="{{ route('reports.financial') }}" method="GET" class="filter-form">
-                        <div class="row g-2 align-items-center">
-                            <!-- Jenis Periode -->
-                            <div class="col-md-3 col-sm-4">
-                                <div class="form-group">
-                                    <label for="period_type" class="form-label small mb-1">Jenis Periode</label>
-                                    <select name="period_type" id="period_type"
-                                        class="form-select form-select-sm rounded-3">
-                                        <option value="monthly"
-                                            {{ ($periodType ?? 'monthly') == 'monthly' ? 'selected' : '' }}>Bulanan
-                                        </option>
-                                        <option value="daily" {{ ($periodType ?? '') == 'daily' ? 'selected' : '' }}>
-                                            Harian</option>
-                                        <option value="weekly" {{ ($periodType ?? '') == 'weekly' ? 'selected' : '' }}>
-                                            Mingguan</option>
-                                        <option value="yearly" {{ ($periodType ?? '') == 'yearly' ? 'selected' : '' }}>
-                                            Tahunan</option>
-                                        <option value="custom" {{ ($periodType ?? '') == 'custom' ? 'selected' : '' }}>
-                                            Rentang Kustom</option>
-                                    </select>
-                                </div>
-                            </div>
+                        {{-- Include Partial Filter Periode --}}
+                        {{-- Pastikan variabel $availableYears dan $allMonthNames dikirim dari controller jika partial membutuhkannya --}}
+                        @include('reports.partials._period_filter', [
+                            'periodPrefix' => '', // Tidak ada prefix untuk filter utama laporan ini
+                            'periodData' => $request->all(), // Mengirim semua request agar nilai filter lama terbaca oleh partial
+                            // atau kirim array spesifik dari controller:
+                            // 'periodData' => [
+                            //    'period_type' => $periodType,
+                            //    'selected_date' => $selectedDate,
+                            //    // ...dst...
+                            // ]
+                            'availableYears' => $availableYears ?? [],
+                            'allMonthNames' => $allMonthNames ?? [],
+                        ])
 
-                            <!-- Filter Harian -->
-                            <div id="filter_daily" class="col-md-3 col-sm-4"
-                                style="display: {{ ($periodType ?? '') == 'daily' ? 'block' : 'none' }};">
-                                <div class="form-group">
-                                    <label for="selected_date" class="form-label small mb-1">Tanggal</label>
-                                    <input type="date" name="selected_date" id="selected_date"
-                                        class="form-control form-control-sm rounded-3" value="{{ $selectedDate ?? '' }}">
-                                </div>
-                            </div>
-
-                            <!-- Filter Bulanan -->
-                            <div id="filter_monthly" class="col-md-3 col-sm-4"
-                                style="display: {{ ($periodType ?? 'monthly') == 'monthly' ? 'block' : 'none' }};">
-                                <div class="form-group">
-                                    <label for="selected_month_year" class="form-label small mb-1">Tahun & Bulan
-                                        (YYYY-MM)</label>
-                                    <input type="month" name="selected_month_year" id="selected_month_year"
-                                        class="form-control form-control-sm rounded-3"
-                                        value="{{ $selectedMonthYear ?? '' }}">
-                                </div>
-                            </div>
-
-                            <!-- Filter Tahunan -->
-                            <div id="filter_yearly" class="col-md-3 col-sm-4"
-                                style="display: {{ ($periodType ?? '') == 'yearly' ? 'block' : 'none' }};">
-                                <div class="form-group">
-                                    <label for="selected_year_only" class="form-label small mb-1">Tahun</label>
-                                    <input type="number" name="selected_year_only" id="selected_year_only"
-                                        class="form-control form-control-sm rounded-3" placeholder="YYYY"
-                                        value="{{ $selectedYearOnly ?? '' }}" min="2020" max="{{ date('Y') + 1 }}">
-                                </div>
-                            </div>
-
-                            <!-- Filter Rentang Kustom -->
-                            <div id="filter_custom_range" class="col-md-6 col-sm-8"
-                                style="display: {{ ($periodType ?? '') == 'custom' ? 'block' : 'none' }};">
-                                <div class="row g-2">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <label for="custom_start_date" class="form-label small mb-1">Dari
-                                                Tanggal</label>
-                                            <input type="date" name="custom_start_date" id="custom_start_date"
-                                                class="form-control form-control-sm rounded-3"
-                                                value="{{ $customStartDate ?? '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <label for="custom_end_date" class="form-label small mb-1">Sampai
-                                                Tanggal</label>
-                                            <input type="date" name="custom_end_date" id="custom_end_date"
-                                                class="form-control form-control-sm rounded-3"
-                                                value="{{ $customEndDate ?? '' }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Tombol Aksi -->
-                            <div class="col-md-3 col-sm-12 d-flex gap-2 align-items-end mt-2">
-                                <button type="submit"
-                                    class="btn btn-primary btn-sm flex-grow-0 d-flex align-items-center gap-1">
-                                    <i class="fa fa-filter"></i>
-
-                                    <span>Tampilkan</span>
+                        <div class="col-lg-auto col-md-12 d-flex gap-2 mt-md-3 mt-lg-0 justify-content-end">
+                            <button type="submit"
+                                class="btn btn-primary btn-sm rounded-pill flex-grow-1 flex-md-grow-0 px-4">
+                                <i class="fa fa-filter me-1"></i> Tampilkan
+                            </button>
+                            <a href="{{ route('reports.financial') }}" class="btn btn-secondary btn-sm rounded-pill px-4"
+                                title="Reset Filter">
+                                <i class="fa fa-refresh"></i> Reset
+                            </a>
+                            <div class="btn-group flex-grow-1 flex-md-grow-0">
+                                <button type="button" id="mainFinancialExportButton"
+                                    class="btn btn-dark btn-sm rounded-pill dropdown-toggle w-100 px-4"
+                                    data-bs-toggle="dropdown" aria-expanded="false" {{-- Tombol export disable jika tidak ada data DAN filter belum valid --}}
+                                    {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0 && $periodType !== 'all' && ($periodType === 'custom' ? $customStartDate && $customEndDate : true)) ? 'disabled' : '' }}>
+                                    <i class="fa fa-download me-1"></i> Export
                                 </button>
-
-                                <div class="dropdown">
-                                    <button type="button" id="mainFinancialExportButton"
-                                        class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                        {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0) ? 'disabled' : '' }}>
-                                        <i class="fa fa-download me-1"></i> Export
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <a class="dropdown-item {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0) ? 'disabled' : '' }}"
-                                                href="#" id="exportFinancialPdfButtonLink" target="_blank">
-                                                <i class="fa fa-file-pdf me-2 text-danger"></i>PDF
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0) ? 'disabled' : '' }}"
-                                                href="#" id="exportFinancialExcelButtonLink" target="_blank">
-                                                <i class="fa fa-file-excel me-2 text-success"></i>Excel
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0 && $periodType !== 'all' && ($periodType === 'custom' ? $customStartDate && $customEndDate : true)) ? 'disabled' : '' }}"
+                                            href="#" id="exportFinancialPdfButtonLink" target="_blank">
+                                            <i class="fa fa-file-pdf-o me-2 text-danger"></i>Ke PDF
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0 && $periodType !== 'all' && ($periodType === 'custom' ? $customStartDate && $customEndDate : true)) ? 'disabled' : '' }}"
+                                            href="#" id="exportFinancialExcelButtonLink" target="_blank">
+                                            <i class="fa fa-file-excel-o me-2 text-success"></i>Ke Excel
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+
 
         <div class="card-body p-4">
             @if (isset($reportPeriodLabel) && !empty($reportPeriodLabel))

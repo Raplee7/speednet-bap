@@ -163,106 +163,108 @@
 @section('content')
     <div class="card shadow-sm border-0 rounded-4">
         {{-- Semua Tagihan --}}
-        <div class="card-header p-4 rounded-top-4">
-            <div class="row g-3">
-                <!-- Judul Laporan -->
-                <div class="col-lg-12 mb-2">
-                    <h4 class="text-muted mb-0">
-                        <i class="fa fa-calendar-check me-2"></i>
-                        {{ $pageTitle }}
-                    </h4>
+        <div class="card-header bg-light-subtle p-3 rounded-top-4">
+            <div class="row align-items-center">
+                <div class="col-lg-3">
+                    <h4 class="card-title mb-1 fw-semibold">{{ $pageTitle ?? 'Laporan Semua Tagihan' }}</h4>
+                    {{-- Menampilkan keterangan filter periode pembuatan invoice --}}
+                    @if (isset($creation_reportPeriodLabel) &&
+                            !empty($creation_reportPeriodLabel) &&
+                            ($creation_periodType ?? 'all') !== 'all')
+                        <p class="text-muted mb-0 small">Tgl. Pembuatan: <strong>{{ $creation_reportPeriodLabel }}</strong>
+                        </p>
+                    @elseif(isset($creation_periodType) && $creation_periodType === 'all')
+                        <p class="text-muted mb-0 small">Tgl. Pembuatan: <strong>Semua Periode</strong></p>
+                    @else
+                        <p class="text-muted mb-0 small">Filter tanggal pembuatan tidak aktif.</p>
+                    @endif
                 </div>
+                <div class="col-lg-9">
+                    <form action="{{ route('reports.invoices.all') }}" method="GET"
+                        class="row gx-2 gy-2 align-items-end justify-content-lg-end filter-form">
 
-                <!-- Form Filter -->
-                <div class="col-lg-12">
-                    <form action="{{ route('reports.invoices.all') }}" method="GET" class="filter-form">
-                        <div class="row g-2 align-items-end flex-wrap">
-                            <!-- Filter Tanggal Mulai -->
-                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-                                <div class="form-group mb-0">
-                                    <label for="start_date_all_inv" class="form-label small mb-1">Dari Tgl Buat</label>
-                                    <input type="date" name="start_date" id="start_date_all_inv"
-                                        class="form-control form-control-sm rounded-3"
-                                        value="{{ $request->start_date ?? '' }}" title="Tanggal Mulai Pembuatan Invoice">
-                                </div>
-                            </div>
+                        {{-- Include Partial Filter Periode untuk Tanggal Pembuatan Invoice --}}
+                        @include('reports.partials._period_filter', [
+                            'periodPrefix' => 'creation_',
+                            'periodData' => [
+                                // Mengirim data periode yang aktif/dipilih dengan prefix
+                                'creation_period_type' => $creation_periodType ?? 'all',
+                                'creation_selected_date' =>
+                                    $creation_selected_date ??
+                                    old('creation_selected_date', \Carbon\Carbon::now()->toDateString()),
+                                'creation_selected_month_year' =>
+                                    $creation_selectedMonthYear ??
+                                    old('creation_selected_month_year', \Carbon\Carbon::now()->format('Y-m')),
+                                'creation_selected_year_only' =>
+                                    $creation_selectedYearOnly ??
+                                    old('creation_selected_year_only', \Carbon\Carbon::now()->year),
+                                'creation_custom_start_date' =>
+                                    $creation_custom_start_date ?? old('creation_custom_start_date'),
+                                'creation_custom_end_date' =>
+                                    $creation_custom_end_date ?? old('creation_custom_end_date'),
+                            ],
+                            'availableYears' => $availableYears ?? [],
+                            'allMonthNames' => $allMonthNames ?? [],
+                        ])
 
-                            <!-- Filter Tanggal Akhir -->
-                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-                                <div class="form-group mb-0">
-                                    <label for="end_date_all_inv" class="form-label small mb-1">Sampai Tgl Buat</label>
-                                    <input type="date" name="end_date" id="end_date_all_inv"
-                                        class="form-control form-control-sm rounded-3"
-                                        value="{{ $request->end_date ?? '' }}" title="Tanggal Akhir Pembuatan Invoice">
-                                </div>
-                            </div>
-
-                            <!-- Filter Status Pembayaran -->
-                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-                                <div class="form-group mb-0">
-                                    <label for="status_pembayaran_all_inv" class="form-label small mb-1">Status
-                                        Bayar</label>
-                                    <select name="status_pembayaran" id="status_pembayaran_all_inv"
-                                        class="form-select form-select-sm rounded-3">
-                                        <option value="">Semua Status</option>
-                                        @foreach ($paymentStatuses as $value => $label)
-                                            <option value="{{ $value }}"
-                                                {{ $request->status_pembayaran == $value ? 'selected' : '' }}>
-                                                {{ $label }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Filter Pelanggan -->
-                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-                                <div class="form-group mb-0">
-                                    <label for="customer_id_all_inv" class="form-label small mb-1">Pelanggan</label>
-                                    <select name="customer_id" id="customer_id_all_inv"
-                                        class="form-select form-select-sm rounded-3">
-                                        <option value="">Semua Pelanggan</option>
-                                        @foreach ($customers as $customer)
-                                            <option value="{{ $customer->id_customer }}"
-                                                {{ $request->customer_id == $customer->id_customer ? 'selected' : '' }}>
-                                                {{ Str::limit($customer->nama_customer, 25) }}
-                                                ({{ $customer->id_customer }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Tombol Aksi -->
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 d-flex align-items-end gap-2 mt-2">
-                                <button type="submit"
-                                    class="btn btn-primary btn-sm flex-grow-1 d-flex align-items-center justify-content-center">
-                                    <i class="fa fa-filter me-1"></i>
-                                    <span>Tampilkan</span>
+                        <div class="col-lg-auto col-md-4 col-sm-6">
+                            <label for="status_pembayaran_all_inv" class="form-label">Status Bayar:</label>
+                            <select name="status_pembayaran" id="status_pembayaran_all_inv"
+                                class="form-select form-select-sm rounded-pill">
+                                <option value="">Semua Status</option>
+                                {{-- Pastikan $paymentStatuses dikirim dari controller --}}
+                                @foreach ($paymentStatuses as $value => $label)
+                                    <option value="{{ $value }}"
+                                        {{ $request->status_pembayaran == $value ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-auto col-md-4 col-sm-6" style="min-width: 180px;">
+                            <label for="customer_id_all_inv" class="form-label">Pelanggan:</label>
+                            <select name="customer_id" id="customer_id_all_inv"
+                                class="form-select form-select-sm rounded-pill">
+                                <option value="">Semua Pelanggan</option>
+                                {{-- Pastikan $customers dikirim dari controller --}}
+                                @foreach ($customers as $customer)
+                                    <option value="{{ $customer->id_customer }}"
+                                        {{ $request->customer_id == $customer->id_customer ? 'selected' : '' }}>
+                                        {{ Str::limit($customer->nama_customer, 20) }} ({{ $customer->id_customer }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-auto col-md-4 col-sm-6">
+                            <label for="search_query_all_inv" class="form-label">Cari Invoice/Pelanggan:</label>
+                            <input type="text" name="search_query" id="search_query_all_inv"
+                                class="form-control form-control-sm rounded-pill"
+                                value="{{ $request->search_query ?? '' }}" placeholder="No. Inv/Nama/ID Pel...">
+                        </div>
+                        <div class="col-lg-auto col-md-12 d-flex gap-2 mt-md-3 mt-lg-0 justify-content-end">
+                            <button type="submit"
+                                class="btn btn-primary btn-sm rounded-pill flex-grow-1 flex-md-grow-0 px-4">
+                                <i class="fa fa-filter me-1"></i> Filter
+                            </button>
+                            <a href="{{ route('reports.invoices.all') }}"
+                                class="btn btn-secondary btn-sm rounded-pill px-4" title="Reset Filter">
+                                <i class="fa fa-refresh"></i> Reset
+                            </a>
+                            <div class="btn-group flex-grow-1 flex-md-grow-0">
+                                <button type="button" id="mainAllInvoicesExportButton"
+                                    class="btn btn-dark btn-sm rounded-pill dropdown-toggle w-100 px-4"
+                                    data-bs-toggle="dropdown" aria-expanded="false" {{-- Tombol export disable jika tidak ada data DAN tidak ada filter aktif --}}
+                                    {{ $payments->isEmpty() && !$request->hasAny(array_keys(array_filter($request->except('page')))) ? 'disabled' : '' }}>
+                                    <i class="fa fa-download me-1"></i> Export
                                 </button>
-
-                                <div class="dropdown flex-grow-1">
-                                    <button type="button" id="mainAllInvoicesExportButton"
-                                        class="btn btn-secondary btn-sm dropdown-toggle w-100" data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                        {{ $payments->isEmpty() && !$request->hasAny(array_keys($request->query())) ? 'disabled' : '' }}>
-                                        <i class="fa fa-download me-1"></i> Export
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end w-100">
-                                        <li>
-                                            <a class="dropdown-item {{ $payments->isEmpty() && !$request->hasAny(array_keys($request->query())) ? 'disabled' : '' }}"
-                                                href="#" id="exportAllInvoicesPdfButtonLink" target="_blank">
-                                                <i class="fa fa-file-pdf me-2 text-danger"></i>PDF
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item {{ $payments->isEmpty() && !$request->hasAny(array_keys($request->query())) ? 'disabled' : '' }}"
-                                                href="#" id="exportAllInvoicesExcelButtonLink" target="_blank">
-                                                <i class="fa fa-file-excel me-2 text-success"></i>Excel
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item {{ $payments->isEmpty() && !$request->hasAny(array_keys(array_filter($request->except('page')))) ? 'disabled' : '' }}"
+                                            href="#" id="exportAllInvoicesPdfButtonLink" target="_blank">Ke PDF</a>
+                                    </li>
+                                    <li><a class="dropdown-item {{ $payments->isEmpty() && !$request->hasAny(array_keys(array_filter($request->except('page')))) ? 'disabled' : '' }}"
+                                            href="#" id="exportAllInvoicesExcelButtonLink" target="_blank">Ke
+                                            Excel</a></li>
+                                </ul>
                             </div>
                         </div>
                     </form>

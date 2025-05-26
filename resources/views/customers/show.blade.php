@@ -68,7 +68,11 @@
                                             <div class="mb-2">
                                                 <label class="text-muted small mb-1">Tanggal Aktivasi</label>
                                                 <p class="mb-2 fw-semibold">
-                                                    {{ \Carbon\Carbon::parse($customer->tanggal_aktivasi)->format('d M Y') }}
+                                                    @if ($customer->tanggal_aktivasi)
+                                                        {{ \Carbon\Carbon::parse($customer->tanggal_aktivasi)->locale('id')->translatedFormat('d F Y') }}
+                                                    @else
+                                                        -
+                                                    @endif
                                                 </p>
                                             </div>
                                             <div class="mb-2">
