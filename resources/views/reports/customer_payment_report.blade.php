@@ -238,7 +238,7 @@
 
                                 <div class="dropdown flex-grow-1">
                                     <button type="button" id="mainExportButton"
-                                        class="btn btn-secondary btn-sm dropdown-toggle w-100" data-bs-toggle="dropdown"
+                                        class="btn btn-success btn-sm dropdown-toggle w-100" data-bs-toggle="dropdown"
                                         aria-expanded="false"
                                         {{ !$selectedYear || !$selectedStartMonth || !$selectedEndMonth ? 'disabled' : '' }}>
                                         <i class="fa fa-download me-1"></i> Export

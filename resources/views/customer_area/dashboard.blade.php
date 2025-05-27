@@ -241,8 +241,6 @@
                                     <strong>{{ \Carbon\Carbon::parse($mostRecentUnpaidInvoice->periode_tagihan_mulai)->locale('id')->translatedFormat('d M Y') }}
                                         &mdash;
                                         {{ \Carbon\Carbon::parse($mostRecentUnpaidInvoice->periode_tagihan_selesai)->addDay()->locale('id')->translatedFormat('d M Y') }}</strong>
-                                    jatuh tempo pada
-                                    <strong>{{ \Carbon\Carbon::parse($mostRecentUnpaidInvoice->tanggal_jatuh_tempo)->locale('id')->translatedFormat('d F Y') }}</strong>.
                                 @endif
                             </p>
                             <a href="{{ route('customer.payments.index', ['status' => 'unpaid']) }}"

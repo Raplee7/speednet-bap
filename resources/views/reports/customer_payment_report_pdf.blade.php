@@ -9,45 +9,53 @@
             font-family: 'DejaVu Sans', sans-serif;
             margin: 0;
             padding: 0;
-            font-size: 9px;
+            font-size: 7px;
         }
 
-        /* DejaVu Sans untuk karakter non-latin, font lebih kecil */
         .container-fluid {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
         }
 
         .report-title {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .report-title h2 {
-            margin: 0;
-            font-size: 1.3em;
+            margin: 0 0 2px 0;
+            font-size: 1.2em;
         }
 
         .report-title p {
-            margin: 3px 0;
-            font-size: 0.8em;
+            margin: 1px 0;
+            font-size: 0.7em;
             color: #555;
+        }
+
+        .filter-info {
+            font-size: 0.65em;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px dotted #ccc;
+            text-align: left;
+            line-height: 1.3;
         }
 
         .table-report {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-top: 8px;
         }
 
         .table-report th,
         .table-report td {
-            border: 1px solid #999;
-            /* Border lebih jelas untuk PDF */
-            padding: 4px 5px;
+            border: 1px solid #888;
+            padding: 2px 3px;
             text-align: left;
-            font-size: 0.8em;
+            font-size: 0.6em;
             word-wrap: break-word;
+            vertical-align: top;
         }
 
         .table-report thead th {
@@ -55,82 +63,107 @@
             font-weight: bold;
             text-align: center;
             white-space: nowrap;
+            padding: 3px 2px;
+            height: 4mm;
+            vertical-align: middle;
         }
 
-        .table-report tbody td.customer-name {
-            min-width: 100px;
+        /* Column Widths */
+        .customer-id {
+            width: 30pt;
         }
 
-        .table-report tbody td.customer-id {
-            min-width: 60px;
+        .customer-name {
+            width: 60pt;
         }
 
-        .table-report tbody td.customer-info {
-            min-width: 80px;
+        .customer-status {
+            width: 25pt;
         }
 
-        .table-report .month-col {
+        .customer-info {
+            width: 40pt;
+        }
+
+        .month-col {
+            width: 35pt;
+            padding: 1mm !important;
             text-align: center;
-            min-width: 60px;
         }
 
-        .table-report .month-col .status-text {
-            display: block;
-            font-size: 0.9em;
-        }
-
-        .table-report .month-col .sub-text {
-            font-size: 0.75em;
-            color: #444;
-            display: block;
-        }
-
-
+        /* Status Colors */
         .status-paid {
-            color: green;
-            font-weight: bold;
+            color: #048848;
         }
 
         .status-unpaid {
-            color: #c67c00;
+            color: #c05621;
         }
 
-        /* Warna oranye lebih tua */
         .status-pending_confirmation {
-            color: #0069d9;
+            color: #2b6cb0;
         }
 
-        /* Biru lebih tua */
         .status-failed {
-            color: #dc3545;
+            color: #c53030;
         }
 
         .status-cancelled {
-            color: #6c757d;
+            color: #718096;
         }
 
         .status-menunggak {
-            color: #dc3545;
+            color: #c53030;
             font-weight: bold;
         }
 
+        /* Month Column Styling */
+        .month-col .status-text {
+            font-size: 0.6em;
+            line-height: 1.2;
+            margin: 0.5mm 0;
+            display: block;
+        }
+
+        .month-col .sub-text {
+            font-size: 0.55em;
+            line-height: 1.1;
+            display: block;
+            margin: 0.3mm 0;
+        }
+
+        /* Utilities */
         .text-center {
-            text-align: center;
+            text-align: center !important;
         }
 
-        /* Hilangkan elemen yang tidak perlu di PDF */
-        .no-print,
-        .pagination,
-        .alert,
-        form {
-            display: none !important;
+        .text-truncate {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
+        .wrap-text {
+            white-space: normal;
+        }
+
+        /* Page Settings */
         @page {
-            margin: 20px;
+            margin: 10mm 5mm;
+            size: a4 landscape;
         }
 
-        /* Margin halaman PDF */
+        /* Small Text */
+        small {
+            font-size: 0.55em;
+        }
+
+        /* Invoice Number Style */
+        .invoice-number {
+            font-family: 'DejaVu Sans Mono', monospace;
+            font-size: 0.55em;
+        }
     </style>
 </head>
 
@@ -142,7 +175,7 @@
                 <p>Periode: <strong>{{ $allMonthNames[$selectedStartMonth] }} - {{ $allMonthNames[$selectedEndMonth] }}
                         {{ $selectedYear }}</strong></p>
             @endif
-            <p style="font-size: 0.7em;">Dicetak pada:
+            <p>Dicetak pada:
                 {{ \Carbon\Carbon::now()->locale('id')->setTimezone('Asia/Pontianak')->translatedFormat('d F Y, H:i') }}
             </p>
         </div>
@@ -151,52 +184,64 @@
             <table class="table-report">
                 <thead>
                     <tr>
-                        <th rowspan="2" style="vertical-align: middle;">ID Pel.</th>
-                        <th rowspan="2" style="vertical-align: middle;">Nama Pelanggan</th>
-                        <th rowspan="2" style="vertical-align: middle;">Status</th>
-                        <th rowspan="2" style="vertical-align: middle;">Paket</th>
-                        <th rowspan="2" style="vertical-align: middle;">Tgl Aktivasi</th>
-                        <th rowspan="2" style="vertical-align: middle;">Layanan Habis Terakhir</th>
+                        <th rowspan="2">ID</th>
+                        <th rowspan="2">Nama</th>
+                        <th rowspan="2">Sts</th>
+                        <th rowspan="2">Pkt</th>
+                        <th rowspan="2">Tgl<br>Aktif</th>
+                        <th rowspan="2">Layan<br>Habis</th>
                         @foreach ($displayedMonths as $monthNumber => $monthName)
-                            <th colspan="1" class="month-col">{{ $monthName }}</th>
+                            <th class="month-col">{{ substr($monthName, 0, 3) }}</th>
                         @endforeach
                     </tr>
                     <tr>
                         @foreach ($displayedMonths as $monthName)
-                            <th class="month-col" style="font-size:0.6em;">TglByr | Status | Inv</th>
+                            <th class="month-col">Tgl|St|Inv</th>
                         @endforeach
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($reportData as $data)
                         <tr>
-                            <td class="customer-id">{{ $data['customer']->id_customer }}</td>
-                            <td class="customer-name">{{ $data['customer']->nama_customer }}</td>
-                            <td class="text-center">
-                                {{ Str::title(str_replace('_', ' ', $data['customer']->status)) }}
+                            <td class="customer-id text-center">{{ $data['customer']->id_customer }}</td>
+                            <td class="customer-name">{{ Str::limit($data['customer']->nama_customer, 20) }}</td>
+                            <td class="customer-status text-center">  <!-- Change this line -->
+                                <span class="status-{{ strtolower($data['customer']->status) }}">
+                                    {{ Str::title(str_replace('_', ' ', $data['customer']->status)) }}
+                                </span>
                             </td>
                             <td class="customer-info">{{ $data['paket_info'] }}</td>
                             <td class="text-center customer-info">{{ $data['tgl_aktivasi'] }}</td>
                             <td class="text-center customer-info">
                                 {{ $data['tgl_layanan_habis_terakhir_visual'] }}
-                                @if ($data['tgl_layanan_habis_sebenarnya'])
-                                    <br><small style="font-size:0.7em;">(s/d
-                                        {{ $data['tgl_layanan_habis_sebenarnya'] }})</small>
-                                @endif
                             </td>
                             @foreach ($displayedMonths as $monthNameKey => $monthDisplayName)
-                                @php $monthData = $data['monthly_status'][$monthDisplayName] ?? ['text' => '-', 'class' => 'text-muted', 'tgl_bayar' => null, 'invoice_no' => null, 'payment_id' => null]; @endphp
+                                @php
+                                    $monthData = $data['monthly_status'][$monthDisplayName] ?? [
+                                        'text' => '-',
+                                        'class' => 'text-muted',
+                                        'tgl_bayar' => null,
+                                        'invoice_no' => null,
+                                    ];
+                                    $tanggalBayar = null;
+                                    if ($monthData['tgl_bayar']) {
+                                        try {
+                                            $tanggalBayar = \Carbon\Carbon::createFromFormat(
+                                                'd/m/Y',
+                                                $monthData['tgl_bayar'],
+                                            )->format('d/m');
+                                        } catch (\Exception $e) {
+                                            $tanggalBayar = '-';
+                                        }
+                                    }
+                                @endphp
                                 <td class="month-col {{ $monthData['class'] }}">
-                                    @if ($monthData['tgl_bayar'])
-                                        <span class="sub-text">{{ $monthData['tgl_bayar'] }}</span>
+                                    @if($tanggalBayar && $tanggalBayar != '-')
+                                        <span class="sub-text">{{ $tanggalBayar }}</span>
                                     @endif
                                     <span class="status-text">{{ $monthData['text'] }}</span>
-
-                                    @if (!empty($monthData['invoice_no']) && $monthData['text'] != '-')
-                                        <span
-                                            class="sub-text">{{ Str::limit($monthData['invoice_no'], 10, '...') }}</span>
-                                    @elseif($monthData['text'] == '-' && empty($monthData['tgl_bayar']))
-                                        <span class="sub-text">&nbsp;</span>
+                                    @if(!empty($monthData['invoice_no']) && $monthData['text'] != '-')
+                                        <span class="sub-text invoice-number">{{ $monthData['invoice_no'] }}</span>
                                     @endif
                                 </td>
                             @endforeach

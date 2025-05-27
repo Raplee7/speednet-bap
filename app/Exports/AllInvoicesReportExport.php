@@ -10,10 +10,8 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate as PhpSpreadsheetCoordinate;
-use PhpOffice\PhpSpreadsheet\Style\Alignment as PhpSpreadsheetAlignment;
 use PhpOffice\PhpSpreadsheet\Style\Border as PhpSpreadsheetBorder;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat as PhpSpreadsheetNumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Fill as PhpSpreadsheetFill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class AllInvoicesReportExport implements FromArray, ShouldAutoSize, WithStyles, WithTitle, WithEvents
@@ -22,10 +20,10 @@ class AllInvoicesReportExport implements FromArray, ShouldAutoSize, WithStyles, 
     protected string $pageTitle;
     protected array $filterInfo;
     protected int $summaryDataRowCount = 0;
-    protected int $summaryHeaderRowPosition;
-    protected int $mainTableHeaderRowPosition;
-    protected int $summaryTitleRowPosition;
-    protected int $mainTableDataStartRow;
+    protected int $summaryHeaderRowPosition = 0;
+    protected int $mainTableHeaderRowPosition = 0;
+    protected int $summaryTitleRowPosition = 0;
+    protected int $mainTableDataStartRow = 0;
 
     public function __construct(array $dataFromController)
     {
@@ -42,15 +40,15 @@ class AllInvoicesReportExport implements FromArray, ShouldAutoSize, WithStyles, 
 
     protected function prepareExportDataArray(iterable $payments, int $totalInvoices, float $totalAmountAll, Collection $summaryByStatus, array $paymentStatusesForFilter): void
     {
-        $this->exportDataArray     = [];
-        $this->summaryDataRowCount = 0;
-        $currentBuildRow           = 1;
+        $this->exportDataArray = [];
+        $currentBuildRow = 1;
 
-        // Baris 1: Judul Utama Laporan
-        $this->exportDataArray[] = [$this->pageTitle];
+        // Title Row - Start from column B
+        $this->exportDataArray[] = ['', $this->pageTitle];
         $currentBuildRow++;
-        // Baris 2: Info Filter
-        $filterText    = "Filter Aktif: ";
+
+        // Filter Info Row - Start from column B
+        $filterText = "Filter Aktif: ";
         $activeFilters = [];
         if (! empty($this->filterInfo['start_date'])) {
             $activeFilters[] = "Dari Tgl Buat: " . Carbon::parse($this->filterInfo['start_date'])->format('d/m/Y');
@@ -76,48 +74,82 @@ class AllInvoicesReportExport implements FromArray, ShouldAutoSize, WithStyles, 
             $activeFilters[] = "Cari Invoice: " . $this->filterInfo['search_query'];
         }
 
-        $this->exportDataArray[] = [! empty($activeFilters) ? $filterText . implode(', ', $activeFilters) : $filterText . "Tidak ada filter"];
-        $currentBuildRow++;
-                                                 // Baris 3: Baris kosong
-        $this->exportDataArray[] = ["", "", ""]; // Beri 3 elemen agar konsisten untuk merge C jika perlu
+        $this->exportDataArray[] = ['', !empty($activeFilters) ? $filterText . implode(', ', $activeFilters) : $filterText . "Tidak ada filter"];
         $currentBuildRow++;
 
-        // Baris 4: Judul Ringkasan
+        // Empty Row
+        $this->exportDataArray[] = ['', ''];
+        $currentBuildRow++;
+
+        // Main Summary Section - Start from column B
         $this->summaryTitleRowPosition = $currentBuildRow;
-        $this->exportDataArray[]       = ["RINGKASAN LAPORAN (BERDASARKAN FILTER)", "", ""]; // Kolom B & C kosong untuk merge
+        $this->exportDataArray[] = ['', "RINGKASAN LAPORAN TAGIHAN"];
         $currentBuildRow++;
-        // Baris 5: Header untuk Ringkasan
+
+        // Total Summary - Start from column B
+        $this->exportDataArray[] = ['', "Total Invoice", number_format($totalInvoices)];
+        $this->exportDataArray[] = ['', "Total Nilai Tagihan", "Rp " . number_format($totalAmountAll, 0, ',', '.')];
+        $currentBuildRow += 2;
+
+        // Empty Row
+        $this->exportDataArray[] = ['', ''];
+        $currentBuildRow++;
+
+        // Status Summary Section - Start from column B
         $this->summaryHeaderRowPosition = $currentBuildRow;
-        $this->exportDataArray[]        = ['Deskripsi', 'Jumlah Invoice', 'Total Nilai (Rp)'];
+        $this->exportDataArray[] = ['', "DETAIL STATUS PEMBAYARAN"];
         $currentBuildRow++;
-        // Baris 6: Data Ringkasan Total
-        $this->exportDataArray[] = ["Total Semua Tagihan Dibuat", $totalInvoices, $totalAmountAll];
-        $this->summaryDataRowCount++;
-        // Baris 7 dst: Data Ringkasan per Status
-        foreach ($paymentStatusesForFilter as $statusKey => $statusLabel) {
+
+        // Status Summary Headers - Start from column B
+        $this->exportDataArray[] = ['', "Status", "Jumlah Invoice", "Total Nilai"];
+        $currentBuildRow++;
+
+        // Status data - Start from column B
+        $statusOrder = ['paid' => 'Lunas', 'unpaid'      => 'Belum Bayar', 'pending_confirmation' => 'Menunggu Konfirmasi',
+            'cancelled'            => 'Dibatalkan', 'failed' => 'Gagal'];
+
+        foreach ($statusOrder as $statusKey => $statusLabel) {
             if (isset($summaryByStatus[$statusKey])) {
-                $this->exportDataArray[] = ["Tagihan " . $statusLabel, $summaryByStatus[$statusKey]->count, $summaryByStatus[$statusKey]->total_amount];
-            } else {
-                $this->exportDataArray[] = ["Tagihan " . $statusLabel, 0, 0];
+                $this->exportDataArray[] = [
+                    '',
+                    $statusLabel,
+                    $summaryByStatus[$statusKey]->count,
+                    "Rp " . number_format($summaryByStatus[$statusKey]->total_amount, 0, ',', '.')
+                ];
+                $currentBuildRow++;
             }
-            $this->summaryDataRowCount++;
         }
-        // Baris kosong setelah summary
-        $this->exportDataArray[] = ["", "", ""];
-        $currentBuildRow += $this->summaryDataRowCount + 1;
+        $this->summaryDataRowCount = count($statusOrder);
 
-        // Header Tabel Utama
+        // Empty Rows
+        $this->exportDataArray[] = ['', ''];
+        $this->exportDataArray[] = ['', ''];
+        $currentBuildRow += 2;
+
+        // Main Table Headers
         $this->mainTableHeaderRowPosition = $currentBuildRow;
+        $this->mainTableDataStartRow = $currentBuildRow + 1;
         $this->exportDataArray[]          = [
-            'No. Invoice', 'Tgl Buat', 'Pelanggan', 'ID Pelanggan', 'Paket',
-            'Periode Mulai', 'Periode Selesai', 'Jumlah (Rp)', 'Status Bayar',
-            'Tgl Bayar', 'Metode Bayar', 'Catatan Admin',
+            'No',
+            'No. Invoice',
+            'Tgl Buat',
+            'Pelanggan',
+            'ID Pelanggan',
+            'Paket',
+            'Periode Mulai',
+            'Periode Selesai',
+            'Jumlah (Rp)',
+            'Status Bayar',
+            'Tgl Bayar',
+            'Metode Bayar',
         ];
-        $this->mainTableDataStartRow = $this->mainTableHeaderRowPosition + 1;
 
-        if ($payments instanceof \Illuminate\Support\Collection  ? $payments->isNotEmpty() : count($payments) > 0) {
+        // Data Rows
+        if ($payments instanceof Collection ? $payments->isNotEmpty() : count($payments) > 0) {
+            $no = 1;
             foreach ($payments as $payment) {
                 $this->exportDataArray[] = [
+                    $no++,
                     $payment->nomor_invoice,
                     $payment->created_at ? Carbon::parse($payment->created_at)->format('d/m/Y H:i') : '-',
                     $payment->customer->nama_customer ?? '-',
@@ -126,15 +158,24 @@ class AllInvoicesReportExport implements FromArray, ShouldAutoSize, WithStyles, 
                     $payment->periode_tagihan_mulai ? Carbon::parse($payment->periode_tagihan_mulai)->format('d/m/Y') : '-',
                     $payment->periode_tagihan_selesai ? Carbon::parse($payment->periode_tagihan_selesai)->format('d/m/Y') : '-',
                     $payment->jumlah_tagihan,
-                    Str::title(str_replace('_', ' ', $payment->status_pembayaran)),
+                    $this->getStatusLabel($payment->status_pembayaran),
                     $payment->tanggal_pembayaran ? Carbon::parse($payment->tanggal_pembayaran)->format('d/m/Y') : '-',
                     $payment->metode_pembayaran ? Str::title($payment->metode_pembayaran) : '-',
-                    $payment->catatan_admin ?? '-',
                 ];
             }
-        } else {
-            $this->exportDataArray[] = ['Tidak ada data tagihan yang cocok dengan filter Anda.', null, null, null, null, null, null, null, null, null, null, null];
         }
+    }
+
+    protected function getStatusLabel($status): string
+    {
+        $labels = [
+            'paid'                 => 'Lunas',
+            'unpaid'               => 'Belum Bayar',
+            'pending_confirmation' => 'Menunggu Konfirmasi',
+            'cancelled'            => 'Dibatalkan',
+            'failed'               => 'Gagal',
+        ];
+        return $labels[$status] ?? Str::title(str_replace('_', ' ', $status));
     }
 
     public function array(): array
@@ -144,62 +185,101 @@ class AllInvoicesReportExport implements FromArray, ShouldAutoSize, WithStyles, 
 
     public function styles(Worksheet $sheet)
     {
-        $rupiahFormat            = '_("Rp"* #,##0_);_("Rp"* \(#,##0\);_("Rp"* "-"??_);_(@_)';
-        $mainTableColumnCount    = 12;
-        $lastColumnLetterOverall = PhpSpreadsheetCoordinate::stringFromColumnIndex($mainTableColumnCount);
+        // Title Styling - Changed from A1:L1 to B1:L1
+        $sheet->getStyle('B1:L1')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 14],
+            'fill' => [
+                'fillType' => PhpSpreadsheetFill::FILL_SOLID,
+                'startColor' => ['rgb' => 'E2EFD9']
+            ]
+        ]);
 
-        // Style Umum
-        $defaultFont = ['name' => 'Arial', 'size' => 9];
-        $sheet->getParent()->getDefaultStyle()->getFont()->applyFromArray($defaultFont);
+        // Main Summary Styling - Changed from A4 to B4
+        $sheet->getStyle('B4')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 12],
+            'fill' => ['fillType' => PhpSpreadsheetFill::FILL_SOLID, 'startColor' => ['rgb' => '366092']],
+            'font' => ['color' => ['rgb' => 'FFFFFF']]
+        ]);
 
-        // Judul Utama Laporan (Baris 1)
-        $sheet->mergeCells('A1:' . $lastColumnLetterOverall . '1');
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14)->setUnderline(true);
-        $sheet->getStyle('A1')->getAlignment()->setHorizontal(PhpSpreadsheetAlignment::HORIZONTAL_CENTER)->setVertical(PhpSpreadsheetAlignment::VERTICAL_CENTER);
+        // Status Summary Styling - Changed from A8 to B8
+        $sheet->getStyle('B8')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 11],
+            'fill' => ['fillType' => PhpSpreadsheetFill::FILL_SOLID, 'startColor' => ['rgb' => '366092']],
+            'font' => ['color' => ['rgb' => 'FFFFFF']]
+        ]);
 
-        // Info Filter (Baris 2)
-        $sheet->mergeCells('A2:' . $lastColumnLetterOverall . '2');
-        $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(8);
-        $sheet->getStyle('A2')->getAlignment()->setHorizontal(PhpSpreadsheetAlignment::HORIZONTAL_LEFT)->setVertical(PhpSpreadsheetAlignment::VERTICAL_CENTER);
+        // Status Summary Headers - Changed from A9:C9 to B9:D9
+        $sheet->getStyle('B9:D9')->applyFromArray([
+            'font' => ['bold' => true],
+            'fill' => ['fillType' => PhpSpreadsheetFill::FILL_SOLID, 'startColor' => ['rgb' => 'D9E1F2']]
+        ]);
 
-        // Baris 3 adalah baris kosong
+        // Set column A to be very narrow
+        $sheet->getColumnDimension('A')->setWidth(3);
 
-        // Judul Ringkasan (Baris 4, sesuai $this->summaryTitleRowPosition)
-        $sheet->mergeCells('A' . $this->summaryTitleRowPosition . ':C' . $this->summaryTitleRowPosition);
-        $sheet->getStyle('A' . $this->summaryTitleRowPosition)->getFont()->setBold(true)->setSize(11);
-        $sheet->getStyle('A' . $this->summaryTitleRowPosition)->getAlignment()->setHorizontal(PhpSpreadsheetAlignment::HORIZONTAL_CENTER)->setVertical(PhpSpreadsheetAlignment::VERTICAL_CENTER);
+        // Add borders to summary sections - Updated ranges
+        $sheet->getStyle('B5:C6')->applyFromArray([
+            'borders' => [
+                'allBorders' => ['borderStyle' => PhpSpreadsheetBorder::BORDER_THIN]
+            ]
+        ]);
 
-        // Header Tabel Ringkasan (Baris 5, sesuai $this->summaryHeaderRowPosition)
-        $sheet->getStyle('A' . $this->summaryHeaderRowPosition . ':C' . $this->summaryHeaderRowPosition)->getFont()->setBold(true)->setSize(9);
-        $sheet->getStyle('A' . $this->summaryHeaderRowPosition . ':C' . $this->summaryHeaderRowPosition)->getAlignment()->setHorizontal(PhpSpreadsheetAlignment::HORIZONTAL_CENTER)->setVertical(PhpSpreadsheetAlignment::VERTICAL_CENTER);
+        $sheet->getStyle('B9:D14')->applyFromArray([
+            'borders' => [
+                'allBorders' => ['borderStyle' => PhpSpreadsheetBorder::BORDER_THIN]
+            ]
+        ]);
 
-        // Data Ringkasan
-        $summaryDataStartRow = $this->summaryHeaderRowPosition + 1;
-        $summaryDataEndRow   = $summaryDataStartRow + $this->summaryDataRowCount - 1;
-        $sheet->getStyle('B' . $summaryDataStartRow . ':B' . $summaryDataEndRow)->getNumberFormat()->setFormatCode(PhpSpreadsheetNumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-        $sheet->getStyle('C' . $summaryDataStartRow . ':C' . $summaryDataEndRow)->getNumberFormat()->setFormatCode($rupiahFormat);
-        $sheet->getStyle('B' . $summaryDataStartRow . ':C' . $summaryDataEndRow)->getAlignment()->setHorizontal(PhpSpreadsheetAlignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('A' . $summaryDataStartRow . ':A' . $summaryDataEndRow)->getAlignment()->setHorizontal(PhpSpreadsheetAlignment::HORIZONTAL_LEFT);
+        // Format currency columns
+        $rupiahFormat = '_("Rp"* #,##0_);_("Rp"* \(#,##0\);_("Rp"* "-"??_);_(@_)';
+        $sheet->getStyle('I:I')->getNumberFormat()->setFormatCode($rupiahFormat);
+        $sheet->getStyle('C6')->getNumberFormat()->setFormatCode($rupiahFormat);
 
-        // Header Tabel Utama (sesuai $this->mainTableHeaderRowPosition)
-        $sheet->getStyle('A' . $this->mainTableHeaderRowPosition . ':' . $lastColumnLetterOverall . $this->mainTableHeaderRowPosition)->getFont()->setBold(true)->setSize(9);
-        $sheet->getStyle('A' . $this->mainTableHeaderRowPosition . ':' . $lastColumnLetterOverall . $this->mainTableHeaderRowPosition)->getAlignment()->setHorizontal(PhpSpreadsheetAlignment::HORIZONTAL_CENTER)->setVertical(PhpSpreadsheetAlignment::VERTICAL_CENTER);
+        // Set specific column widths instead of auto-size
+        $sheet->getColumnDimension('B')->setWidth(15);  // No. Invoice
+        $sheet->getColumnDimension('C')->setWidth(15);  // Tgl Buat
+        $sheet->getColumnDimension('D')->setWidth(30);  // Pelanggan
+        $sheet->getColumnDimension('E')->setWidth(12);  // ID Pelanggan
+        $sheet->getColumnDimension('F')->setWidth(12);  // Paket
+        $sheet->getColumnDimension('G')->setWidth(12);  // Periode Mulai
+        $sheet->getColumnDimension('H')->setWidth(12);  // Periode Selesai
+        $sheet->getColumnDimension('I')->setWidth(15);  // Jumlah (Rp)
+        $sheet->getColumnDimension('J')->setWidth(15);  // Status Bayar
+        $sheet->getColumnDimension('K')->setWidth(12);  // Tgl Bayar
+        $sheet->getColumnDimension('L')->setWidth(15);  // Metode Bayar
 
-        // Format kolom Jumlah (Rp) di tabel utama (Kolom H)
-        $sheet->getStyle('H' . $this->mainTableDataStartRow . ':H' . $sheet->getHighestRow())->getNumberFormat()->setFormatCode($rupiahFormat);
-        $sheet->getStyle('H' . $this->mainTableDataStartRow . ':H' . $sheet->getHighestRow())->getAlignment()->setHorizontal(PhpSpreadsheetAlignment::HORIZONTAL_RIGHT);
+        // Center align specific columns
+        $sheet->getStyle('A' . $this->mainTableDataStartRow . ':A' . $sheet->getHighestRow())->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('B' . $this->mainTableDataStartRow . ':B' . $sheet->getHighestRow())->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('C' . $this->mainTableDataStartRow . ':C' . $sheet->getHighestRow())->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-        // Alignment tengah untuk Status Bayar (Kolom I)
-        $sheet->getStyle('I' . $this->mainTableDataStartRow . ':I' . $sheet->getHighestRow())->getAlignment()->setHorizontal(PhpSpreadsheetAlignment::HORIZONTAL_CENTER);
+        // Add borders to summary sections
+        $sheet->getStyle('B5:C6')->applyFromArray([
+            'borders' => [
+                'allBorders' => ['borderStyle' => PhpSpreadsheetBorder::BORDER_THIN],
+            ],
+        ]);
 
-        // Border untuk tabel ringkasan dan tabel utama
-        $styleArrayBorders = ['borders' => ['allBorders' => ['borderStyle' => PhpSpreadsheetBorder::BORDER_THIN, 'color' => ['argb' => 'FF000000']]]];
-        if ($summaryDataEndRow >= $this->summaryHeaderRowPosition) {
-            $sheet->getStyle('A' . $this->summaryHeaderRowPosition . ':C' . $summaryDataEndRow)->applyFromArray($styleArrayBorders);
-        }
-        if ($sheet->getHighestRow() >= $this->mainTableHeaderRowPosition) {
-            $sheet->getStyle('A' . $this->mainTableHeaderRowPosition . ':' . $lastColumnLetterOverall . $sheet->getHighestRow())->applyFromArray($styleArrayBorders);
-        }
+        $sheet->getStyle('B9:D14')->applyFromArray([
+            'borders' => [
+                'allBorders' => ['borderStyle' => PhpSpreadsheetBorder::BORDER_THIN],
+            ],
+        ]);
+
+        return [
+            // Customize specific rows
+            $this->mainTableHeaderRowPosition => [
+                'font' => ['bold' => true],
+                'fill' => [
+                    'fillType'   => PhpSpreadsheetFill::FILL_SOLID,
+                    'startColor' => ['rgb' => '366092'],
+                ],
+                'font' => ['color' => ['rgb' => 'FFFFFF']],
+            ],
+        ];
     }
 
     public function title(): string

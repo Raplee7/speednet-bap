@@ -158,113 +158,182 @@
             border-top: none;
         }
     </style>
+    <style>
+        .summary-card,
+        .growth-card,
+        .status-card,
+        .paket-card {
+            transition: all 0.3s ease;
+            border: 1px solid !important;
+        }
+
+        .summary-card:hover,
+        .growth-card:hover,
+        .status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .paket-card:hover {
+            background-color: #f8f9fa !important;
+        }
+
+        .summary-icon,
+        .growth-icon,
+        .status-icon {
+            opacity: 0.8;
+        }
+
+        .small-text {
+            font-size: 1.1rem !important;
+        }
+
+        @media (max-width: 768px) {
+            .small-text {
+                font-size: 0.9rem !important;
+            }
+
+            .summary-card,
+            .growth-card,
+            .status-card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
     <div class="card shadow-sm border-0 rounded-4">
         {{-- Semua Tagihan --}}
-        <div class="card-header bg-light-subtle p-3 rounded-top-4">
-            <div class="row align-items-center">
-                <div class="col-lg-3">
-                    <h4 class="card-title mb-1 fw-semibold">{{ $pageTitle ?? 'Laporan Semua Tagihan' }}</h4>
+        <div class="card-header p-4 rounded-top-4">
+            <div class="row g-3">
+                <!-- Judul Laporan -->
+                <div class="col-lg-12 mb-2">
+                    <h4 class="text-muted mb-0">
+                        <i class="fa fa-file-text me-2"></i>
+                        {{ $pageTitle ?? 'Laporan Semua Tagihan' }}
+                    </h4>
                     {{-- Menampilkan keterangan filter periode pembuatan invoice --}}
                     @if (isset($creation_reportPeriodLabel) &&
                             !empty($creation_reportPeriodLabel) &&
                             ($creation_periodType ?? 'all') !== 'all')
-                        <p class="text-muted mb-0 small">Tgl. Pembuatan: <strong>{{ $creation_reportPeriodLabel }}</strong>
+                        <p class="text-muted mb-0 small mt-1">
+                            Tgl. Pembuatan: <strong>{{ $creation_reportPeriodLabel }}</strong>
                         </p>
                     @elseif(isset($creation_periodType) && $creation_periodType === 'all')
-                        <p class="text-muted mb-0 small">Tgl. Pembuatan: <strong>Semua Periode</strong></p>
+                        <p class="text-muted mb-0 small mt-1">
+                            Tgl. Pembuatan: <strong>Semua Periode</strong>
+                        </p>
                     @else
-                        <p class="text-muted mb-0 small">Filter tanggal pembuatan tidak aktif.</p>
+                        <p class="text-muted mb-0 small mt-1">
+                            Silakan pilih filter untuk menampilkan laporan
+                        </p>
                     @endif
                 </div>
-                <div class="col-lg-9">
-                    <form action="{{ route('reports.invoices.all') }}" method="GET"
-                        class="row gx-2 gy-2 align-items-end justify-content-lg-end filter-form">
 
-                        {{-- Include Partial Filter Periode untuk Tanggal Pembuatan Invoice --}}
-                        @include('reports.partials._period_filter', [
-                            'periodPrefix' => 'creation_',
-                            'periodData' => [
-                                // Mengirim data periode yang aktif/dipilih dengan prefix
-                                'creation_period_type' => $creation_periodType ?? 'all',
-                                'creation_selected_date' =>
-                                    $creation_selected_date ??
-                                    old('creation_selected_date', \Carbon\Carbon::now()->toDateString()),
-                                'creation_selected_month_year' =>
-                                    $creation_selectedMonthYear ??
-                                    old('creation_selected_month_year', \Carbon\Carbon::now()->format('Y-m')),
-                                'creation_selected_year_only' =>
-                                    $creation_selectedYearOnly ??
-                                    old('creation_selected_year_only', \Carbon\Carbon::now()->year),
-                                'creation_custom_start_date' =>
-                                    $creation_custom_start_date ?? old('creation_custom_start_date'),
-                                'creation_custom_end_date' =>
-                                    $creation_custom_end_date ?? old('creation_custom_end_date'),
-                            ],
-                            'availableYears' => $availableYears ?? [],
-                            'allMonthNames' => $allMonthNames ?? [],
-                        ])
+                <!-- Form Filter -->
+                <div class="col-lg-12">
+                    <form action="{{ route('reports.invoices.all') }}" method="GET" class="filter-form">
+                        <div class="row g-2 align-items-end flex-wrap">
+                            {{-- Include Partial Filter Periode untuk Tanggal Pembuatan Invoice --}}
+                            @include('reports.partials._period_filter', [
+                                'periodPrefix' => 'creation_',
+                                'periodData' => [
+                                    'creation_period_type' => $creation_periodType ?? 'all',
+                                    'creation_selected_date' =>
+                                        $creation_selected_date ??
+                                        old('creation_selected_date', \Carbon\Carbon::now()->toDateString()),
+                                    'creation_selected_month_year' =>
+                                        $creation_selectedMonthYear ??
+                                        old('creation_selected_month_year', \Carbon\Carbon::now()->format('Y-m')),
+                                    'creation_selected_year_only' =>
+                                        $creation_selectedYearOnly ??
+                                        old('creation_selected_year_only', \Carbon\Carbon::now()->year),
+                                    'creation_custom_start_date' =>
+                                        $creation_custom_start_date ?? old('creation_custom_start_date'),
+                                    'creation_custom_end_date' =>
+                                        $creation_custom_end_date ?? old('creation_custom_end_date'),
+                                ],
+                                'availableYears' => $availableYears ?? [],
+                                'allMonthNames' => $allMonthNames ?? [],
+                            ])
 
-                        <div class="col-lg-auto col-md-4 col-sm-6">
-                            <label for="status_pembayaran_all_inv" class="form-label">Status Bayar:</label>
-                            <select name="status_pembayaran" id="status_pembayaran_all_inv"
-                                class="form-select form-select-sm rounded-pill">
-                                <option value="">Semua Status</option>
-                                {{-- Pastikan $paymentStatuses dikirim dari controller --}}
-                                @foreach ($paymentStatuses as $value => $label)
-                                    <option value="{{ $value }}"
-                                        {{ $request->status_pembayaran == $value ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-auto col-md-4 col-sm-6" style="min-width: 180px;">
-                            <label for="customer_id_all_inv" class="form-label">Pelanggan:</label>
-                            <select name="customer_id" id="customer_id_all_inv"
-                                class="form-select form-select-sm rounded-pill">
-                                <option value="">Semua Pelanggan</option>
-                                {{-- Pastikan $customers dikirim dari controller --}}
-                                @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id_customer }}"
-                                        {{ $request->customer_id == $customer->id_customer ? 'selected' : '' }}>
-                                        {{ Str::limit($customer->nama_customer, 20) }} ({{ $customer->id_customer }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-auto col-md-4 col-sm-6">
-                            <label for="search_query_all_inv" class="form-label">Cari Invoice/Pelanggan:</label>
-                            <input type="text" name="search_query" id="search_query_all_inv"
-                                class="form-control form-control-sm rounded-pill"
-                                value="{{ $request->search_query ?? '' }}" placeholder="No. Inv/Nama/ID Pel...">
-                        </div>
-                        <div class="col-lg-auto col-md-12 d-flex gap-2 mt-md-3 mt-lg-0 justify-content-end">
-                            <button type="submit"
-                                class="btn btn-primary btn-sm rounded-pill flex-grow-1 flex-md-grow-0 px-4">
-                                <i class="fa fa-filter me-1"></i> Filter
-                            </button>
-                            <a href="{{ route('reports.invoices.all') }}"
-                                class="btn btn-secondary btn-sm rounded-pill px-4" title="Reset Filter">
-                                <i class="fa fa-refresh"></i> Reset
-                            </a>
-                            <div class="btn-group flex-grow-1 flex-md-grow-0">
-                                <button type="button" id="mainAllInvoicesExportButton"
-                                    class="btn btn-dark btn-sm rounded-pill dropdown-toggle w-100 px-4"
-                                    data-bs-toggle="dropdown" aria-expanded="false" {{-- Tombol export disable jika tidak ada data DAN tidak ada filter aktif --}}
-                                    {{ $payments->isEmpty() && !$request->hasAny(array_keys(array_filter($request->except('page')))) ? 'disabled' : '' }}>
-                                    <i class="fa fa-download me-1"></i> Export
+                            <!-- Filter Status Pembayaran -->
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                                <div class="form-group mb-0">
+                                    <label for="status_pembayaran_all_inv" class="form-label small mb-1">Status
+                                        Bayar</label>
+                                    <select name="status_pembayaran" id="status_pembayaran_all_inv"
+                                        class="form-select form-select-sm rounded-3">
+                                        <option value="">Semua Status</option>
+                                        @foreach ($paymentStatuses as $value => $label)
+                                            <option value="{{ $value }}"
+                                                {{ $request->status_pembayaran == $value ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Filter Pelanggan -->
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                                <div class="form-group mb-0">
+                                    <label for="customer_id_all_inv" class="form-label small mb-1">Pelanggan</label>
+                                    <select name="customer_id" id="customer_id_all_inv"
+                                        class="form-select form-select-sm rounded-3">
+                                        <option value="">Semua Pelanggan</option>
+                                        @foreach ($customers as $customer)
+                                            <option value="{{ $customer->id_customer }}"
+                                                {{ $request->customer_id == $customer->id_customer ? 'selected' : '' }}>
+                                                {{ Str::limit($customer->nama_customer, 20) }}
+                                                ({{ $customer->id_customer }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Search Query -->
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                                <div class="form-group mb-0">
+                                    <label for="search_query_all_inv" class="form-label small mb-1">Cari
+                                        Invoice/Pelanggan</label>
+                                    <input type="text" name="search_query" id="search_query_all_inv"
+                                        class="form-control form-control-sm rounded-3"
+                                        value="{{ $request->search_query ?? '' }}" placeholder="No. Inv/Nama/ID Pel...">
+                                </div>
+                            </div>
+
+                            <!-- Tombol Aksi -->
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 d-flex align-items-end gap-2">
+                                <button type="submit"
+                                    class="btn btn-primary btn-sm flex-grow-1 d-flex align-items-center justify-content-center">
+                                    <i class="fa fa-filter me-1"></i>
+                                    <span>Filter</span>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item {{ $payments->isEmpty() && !$request->hasAny(array_keys(array_filter($request->except('page')))) ? 'disabled' : '' }}"
-                                            href="#" id="exportAllInvoicesPdfButtonLink" target="_blank">Ke PDF</a>
-                                    </li>
-                                    <li><a class="dropdown-item {{ $payments->isEmpty() && !$request->hasAny(array_keys(array_filter($request->except('page')))) ? 'disabled' : '' }}"
-                                            href="#" id="exportAllInvoicesExcelButtonLink" target="_blank">Ke
-                                            Excel</a></li>
-                                </ul>
+                                <div class="dropdown flex-grow-1">
+                                    <button type="button" id="mainAllInvoicesExportButton"
+                                        class="btn btn-success btn-sm dropdown-toggle w-100" data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        {{ $payments->isEmpty() && !$request->hasAny(array_keys(array_filter($request->except('page')))) ? 'disabled' : '' }}>
+                                        <i class="fa fa-download me-1"></i> Export
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end w-100">
+                                        <li>
+                                            <a class="dropdown-item {{ $payments->isEmpty() && !$request->hasAny(array_keys(array_filter($request->except('page')))) ? 'disabled' : '' }}"
+                                                href="#" id="exportAllInvoicesPdfButtonLink" target="_blank">
+                                                <i class="fa fa-file-pdf me-2 text-danger"></i>PDF
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item {{ $payments->isEmpty() && !$request->hasAny(array_keys(array_filter($request->except('page')))) ? 'disabled' : '' }}"
+                                                href="#" id="exportAllInvoicesExcelButtonLink" target="_blank">
+                                                <i class="fa fa-file-excel me-2 text-success"></i>Excel
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -272,71 +341,129 @@
             </div>
         </div>
 
-        {{-- Summary Section --}}
+        {{-- Summary Section Semua Tagihan/Pendapatan --}}
         @if (
             $request->hasAny(['start_date', 'end_date', 'status_pembayaran', 'customer_id', 'paket_id', 'search_query']) ||
                 $payments->isNotEmpty())
             <div class="card-body pt-3 px-4 pb-0">
-                <h5 class="mb-3 fw-semibold text-primary">Ringkasan Laporan
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="mb-0 fw-semibold text-primary">
+                        <i class="fa fa-chart-pie me-2"></i>
+                        Ringkasan Laporan Tagihan
+                    </h5>
                     @if ($request->hasAny(['start_date', 'end_date', 'status_pembayaran', 'customer_id', 'paket_id', 'search_query']))
-                        <small class="text-muted fs-sm">(berdasarkan filter)</small>
+                        <span class="badge bg-light text-muted">Berdasarkan Filter</span>
                     @else
-                        <small class="text-muted fs-sm">(keseluruhan data yang ditampilkan)</small>
+                        <span class="badge bg-light text-muted">Keseluruhan Data</span>
                     @endif
-                </h5>
-                <div class="row g-3">
-                    <div class="col-md-3 col-6">
-                        <div class="summary-box">
-                            <h6>Total Invoice</h6>
-                            <p class="text-primary">{{ $totalInvoices }}</p>
+                </div>
+
+                <!-- Statistik Utama -->
+                <div class="row g-3 mb-4">
+                    <!-- Total Invoice -->
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div
+                            class="summary-card border rounded-3 p-3 text-center bg-primary bg-opacity-10 border-primary border-opacity-25">
+                            <div class="summary-icon mb-2">
+                                <i class="fa fa-file-text fa-2x text-primary"></i>
+                            </div>
+                            <h4 class="fw-bold text-primary mb-1">{{ number_format($totalInvoices) }}</h4>
+                            <p class="text-muted mb-0 small">Total Invoice</p>
                         </div>
                     </div>
-                    <div class="col-md-3 col-6">
-                        <div class="summary-box">
-                            <h6>
+
+                    <!-- Total Nilai Tagihan -->
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div
+                            class="summary-card border rounded-3 p-3 text-center bg-info bg-opacity-10 border-info border-opacity-25">
+                            <div class="summary-icon mb-2">
+                                <i class="fa fa-money fa-2x text-info"></i>
+                            </div>
+                            <h4 class="fw-bold text-info mb-1 small-text">Rp
+                                {{ number_format($totalAmountAll, 0, ',', '.') }}</h4>
+                            <p class="text-muted mb-0 small d-flex align-items-center justify-content-center">
                                 Nilai Tagihan Dibuat
-                                <i class="fa fa-info-circle text-muted info-tooltip" data-bs-toggle="tooltip"
+                                <i class="fa fa-info-circle ms-1 text-muted" data-bs-toggle="tooltip"
                                     data-bs-placement="top"
                                     title="Total nilai semua tagihan yang cocok dengan filter (termasuk semua status)."></i>
-                            </h6>
-                            <p class="text-primary">Rp {{ number_format($totalAmountAll, 0, ',', '.') }}</p>
+                            </p>
                         </div>
                     </div>
-                    @php
-                        $statusOrder = ['paid', 'unpaid', 'pending_confirmation', 'cancelled', 'failed'];
-                    @endphp
-                    @foreach ($statusOrder as $statusKey)
-                        @if (isset($summaryByStatus[$statusKey]))
-                            @php $statusData = $summaryByStatus[$statusKey]; @endphp
-                            <div class="col-md-3 col-6">
-                                <div class="summary-box">
-                                    <h6>Tagihan {{ $statusData->label }}</h6>
-                                    <p
-                                        class="
-                                    @switch($statusKey)
-                                        @case('paid') text-success @break
-                                        @case('unpaid') text-warning @break
-                                        @case('pending_confirmation') text-info @break
-                                        @case('failed') text-danger @break
-                                        @case('cancelled') text-secondary @break
-                                        @default text-dark @endswitch
-                                ">
-                                        {{ $statusData->count }}
-                                        <small class="d-block sub-text">Rp
-                                            {{ number_format($statusData->total_amount, 0, ',', '.') }}</small>
-                                    </p>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
                 </div>
-                <hr class="my-4">
+
+                <!-- Statistik per Status -->
+                <div class="mb-4">
+                    <h6 class="fw-semibold text-dark mb-3">
+                        <i class="fa fa-tasks me-2 text-secondary"></i>
+                        Detail Status Pembayaran
+                    </h6>
+                    <div class="row g-3">
+                        @php
+                            $statusOrder = ['paid', 'unpaid', 'pending_confirmation', 'cancelled', 'failed'];
+                            $statusConfig = [
+                                'paid' => ['color' => 'success', 'icon' => 'fa-check-circle', 'label' => 'Lunas'],
+                                'unpaid' => ['color' => 'warning', 'icon' => 'fa-clock', 'label' => 'Belum Bayar'],
+                                'pending_confirmation' => [
+                                    'color' => 'info',
+                                    'icon' => 'fa-hourglass-half',
+                                    'label' => 'Menunggu Konfirmasi',
+                                ],
+                                'cancelled' => [
+                                    'color' => 'secondary',
+                                    'icon' => 'fa-times-circle',
+                                    'label' => 'Dibatalkan',
+                                ],
+                                'failed' => [
+                                    'color' => 'danger',
+                                    'icon' => 'fa-exclamation-circle',
+                                    'label' => 'Gagal',
+                                ],
+                            ];
+                        @endphp
+
+                        @foreach ($statusOrder as $statusKey)
+                            @if (isset($summaryByStatus[$statusKey]))
+                                @php
+                                    $statusData = $summaryByStatus[$statusKey];
+                                    $config = $statusConfig[$statusKey];
+                                @endphp
+                                <div class="col-lg-4 col-md-6 col-sm-6">
+                                    <div
+                                        class="status-card border rounded-3 p-3 bg-{{ $config['color'] }} bg-opacity-10 border-{{ $config['color'] }} border-opacity-25">
+                                        <div class="d-flex align-items-center">
+                                            <div class="status-icon me-3">
+                                                <i class="fa {{ $config['icon'] }} fa-2x text-{{ $config['color'] }}"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="fw-semibold text-{{ $config['color'] }} mb-1">
+                                                    {{ $statusData->label }}</h6>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span
+                                                        class="fw-bold text-{{ $config['color'] }}">{{ number_format($statusData->count) }}</span>
+                                                    <small class="text-muted">Invoice</small>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted d-block">
+                                                        <i class="fa fa-money me-1"></i>
+                                                        Rp {{ number_format($statusData->total_amount, 0, ',', '.') }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+
+                <hr class="my-4 border-2 border-light">
             </div>
         @endif
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-report mb-0">
+                <table class="table table-report mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>No</th>

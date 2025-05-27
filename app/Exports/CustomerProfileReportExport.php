@@ -30,14 +30,14 @@ class CustomerProfileReportExport implements FromArray, ShouldAutoSize, WithStyl
     public function __construct(array $dataFromController)
     {
         $this->pageTitle = $dataFromController['pageTitle'] ?? 'Laporan Data Pelanggan';
-        
+
         // Perbaikan filter info
         $this->filterInfo = [
-            'search_query' => $dataFromController['filterInfo']['search_query'] ?? null,
-            'status_pelanggan' => $dataFromController['filterInfo']['status_pelanggan'] ?? null,
-            'paket_info' => $dataFromController['filterInfo']['paket_info'] ?? null,
+            'search_query'                 => $dataFromController['filterInfo']['search_query'] ?? null,
+            'status_pelanggan'             => $dataFromController['filterInfo']['status_pelanggan'] ?? null,
+            'paket_info'                   => $dataFromController['filterInfo']['paket_info'] ?? null,
             'activation_reportPeriodLabel' => $dataFromController['activation_reportPeriodLabel'] ?? null,
-            'activation_periodType' => $dataFromController['activation_periodType'] ?? null
+            'activation_periodType'        => $dataFromController['activation_periodType'] ?? null,
         ];
 
         $this->prepareTableHeaders();
@@ -54,10 +54,10 @@ class CustomerProfileReportExport implements FromArray, ShouldAutoSize, WithStyl
         ];
     }
 
-    protected function prepareExportDataArray(iterable $customers): void 
+    protected function prepareExportDataArray(iterable $customers): void
     {
         $this->exportDataArray = [];
-        $currentBuildRow = 1;
+        $currentBuildRow       = 1;
 
         // Baris 1: Judul Utama
         $this->exportDataArray[] = [$this->pageTitle];
@@ -65,30 +65,30 @@ class CustomerProfileReportExport implements FromArray, ShouldAutoSize, WithStyl
 
         // Baris 2: Info Filter yang Diperbaiki
         $activeFilters = [];
-        
-        if (!empty($this->filterInfo['search_query'])) {
+
+        if (! empty($this->filterInfo['search_query'])) {
             $activeFilters[] = "Cari: " . $this->filterInfo['search_query'];
         }
-        
-        if (!empty($this->filterInfo['status_pelanggan'])) {
+
+        if (! empty($this->filterInfo['status_pelanggan'])) {
             $activeFilters[] = "Status: " . $this->filterInfo['status_pelanggan'];
         }
-        
-        if (!empty($this->filterInfo['paket_info'])) {
+
+        if (! empty($this->filterInfo['paket_info'])) {
             $activeFilters[] = "Paket: " . $this->filterInfo['paket_info'];
         }
 
         // Filter periode aktivasi
-        if (!empty($this->filterInfo['activation_reportPeriodLabel'])) {
+        if (! empty($this->filterInfo['activation_reportPeriodLabel'])) {
             if ($this->filterInfo['activation_reportPeriodLabel'] !== 'Semua Periode' &&
-                !Str::contains($this->filterInfo['activation_reportPeriodLabel'], ['Tidak Valid', 'Tidak Lengkap', 'Error Filter'])) {
+                ! Str::contains($this->filterInfo['activation_reportPeriodLabel'], ['Tidak Valid', 'Tidak Lengkap', 'Error Filter'])) {
                 $activeFilters[] = "Periode Aktivasi: " . $this->filterInfo['activation_reportPeriodLabel'];
             }
         }
 
-        $filterText = !empty($activeFilters) ? 
-            "Filter Aktif: " . implode('; ', $activeFilters) : 
-            "Filter Aktif: Tidak ada filter diterapkan";
+        $filterText = ! empty($activeFilters) ?
+        "Filter Aktif: " . implode('; ', $activeFilters) :
+        "Filter Aktif: Tidak ada filter diterapkan";
 
         $this->exportDataArray[] = [$filterText];
         $currentBuildRow++;
@@ -108,13 +108,13 @@ class CustomerProfileReportExport implements FromArray, ShouldAutoSize, WithStyl
 
         if ($customers->isNotEmpty()) {
             foreach ($customers as $customer) {
-                $ktp_url = $customer->foto_ktp_customer ? url('storage/' . $customer->foto_ktp_customer) : '-';
+                $ktp_url   = $customer->foto_ktp_customer ? url('storage/' . $customer->foto_ktp_customer) : '-';
                 $rumah_url = $customer->foto_timestamp_rumah ? url('storage/' . $customer->foto_timestamp_rumah) : '-';
-                
+
                 $this->exportDataArray[] = [
                     $customer->id_customer, $customer->nama_customer, $customer->nik_customer ?? '-',
                     $customer->alamat_customer ?? '-', $customer->wa_customer ? "'" . $customer->wa_customer : '-',
-                    $ktp_url, // Ganti path dengan URL
+                    $ktp_url,   // Ganti path dengan URL
                     $rumah_url, // Ganti path dengan URL
                     $customer->paket->kecepatan_paket ?? '-', $customer->active_user ?? '-',
                     $customer->deviceSn->deviceModel->nama_model ?? '-', $customer->deviceSn->nomor ?? '-',
@@ -230,16 +230,17 @@ class CustomerProfileReportExport implements FromArray, ShouldAutoSize, WithStyl
             }
         }
 
-        // Style untuk kolom URL
-        $urlStyle = [
-            'font' => [
-                'color' => ['rgb' => '0066CC'],
-                'underline' => true
-            ]
-        ];
-        
-        // Terapkan style URL ke kolom foto
-        $sheet->getStyle('F:G')->applyFromArray($urlStyle);
+        // Terapkan style reguler ke kolom foto
+        $sheet->getStyle('F:G')->applyFromArray([
+            'font'      => [
+                'color'     => ['rgb' => 'FFFFF'],
+                'underline' => false,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical'   => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
 
         return $sheet;
     }

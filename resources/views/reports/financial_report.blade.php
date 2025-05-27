@@ -66,68 +66,69 @@
 
 @section('content')
     <div class="card shadow-sm border-0 rounded-4">
-        {{-- Pandapatan --}}
-        <div class="card-header bg-light-subtle p-3 rounded-top-4">
-            <div class="row align-items-center">
-                <div class="col-lg-4">
-                    <h4 class="card-title mb-1 fw-semibold">{{ $pageTitle ?? 'Laporan Keuangan Pendapatan' }}</h4>
+        {{-- Pendapatan --}}
+        <div class="card-header p-4 rounded-top-4">
+            <div class="row g-3">
+                <!-- Judul Laporan -->
+                <div class="col-lg-12 mb-2">
+                    <h4 class="text-muted mb-0">
+                        <i class="fa fa-chart-line me-2"></i>
+                        {{ $pageTitle ?? 'Laporan Keuangan Pendapatan' }}
+                    </h4>
                     {{-- Menampilkan label periode yang aktif --}}
                     @if (isset($reportPeriodLabel) && !empty($reportPeriodLabel))
-                        <p class="text-muted mb-0 small">Periode: <strong>{{ $reportPeriodLabel }}</strong></p>
+                        <p class="text-muted mb-0 small mt-1">
+                            Periode: <strong>{{ $reportPeriodLabel }}</strong>
+                        </p>
                     @else
-                        <p class="text-muted mb-0 small">Pilih filter periode untuk menampilkan laporan.</p>
+                        <p class="text-muted mb-0 small mt-1">
+                            Silakan pilih filter periode untuk menampilkan laporan
+                        </p>
                     @endif
                 </div>
-                <div class="col-lg-8">
+
+                <!-- Form Filter -->
+                <div class="col-lg-12">
                     {{-- Form Filter Periode --}}
-                    <form action="{{ route('reports.financial') }}" method="GET"
-                        class="row gx-2 gy-2 align-items-end justify-content-lg-end filter-form">
+                    <form action="{{ route('reports.financial') }}" method="GET" class="filter-form">
+                        <div class="row g-2 align-items-end flex-wrap">
+                            {{-- Include Partial Filter Periode --}}
+                            @include('reports.partials._period_filter', [
+                                'periodPrefix' => '',
+                                'periodData' => $request->all(),
+                                'availableYears' => $availableYears ?? [],
+                                'allMonthNames' => $allMonthNames ?? [],
+                            ])
 
-                        {{-- Include Partial Filter Periode --}}
-                        {{-- Pastikan variabel $availableYears dan $allMonthNames dikirim dari controller jika partial membutuhkannya --}}
-                        @include('reports.partials._period_filter', [
-                            'periodPrefix' => '', // Tidak ada prefix untuk filter utama laporan ini
-                            'periodData' => $request->all(), // Mengirim semua request agar nilai filter lama terbaca oleh partial
-                            // atau kirim array spesifik dari controller:
-                            // 'periodData' => [
-                            //    'period_type' => $periodType,
-                            //    'selected_date' => $selectedDate,
-                            //    // ...dst...
-                            // ]
-                            'availableYears' => $availableYears ?? [],
-                            'allMonthNames' => $allMonthNames ?? [],
-                        ])
-
-                        <div class="col-lg-auto col-md-12 d-flex gap-2 mt-md-3 mt-lg-0 justify-content-end">
-                            <button type="submit"
-                                class="btn btn-primary btn-sm rounded-pill flex-grow-1 flex-md-grow-0 px-4">
-                                <i class="fa fa-filter me-1"></i> Tampilkan
-                            </button>
-                            <a href="{{ route('reports.financial') }}" class="btn btn-secondary btn-sm rounded-pill px-4"
-                                title="Reset Filter">
-                                <i class="fa fa-refresh"></i> Reset
-                            </a>
-                            <div class="btn-group flex-grow-1 flex-md-grow-0">
-                                <button type="button" id="mainFinancialExportButton"
-                                    class="btn btn-dark btn-sm rounded-pill dropdown-toggle w-100 px-4"
-                                    data-bs-toggle="dropdown" aria-expanded="false" {{-- Tombol export disable jika tidak ada data DAN filter belum valid --}}
-                                    {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0 && $periodType !== 'all' && ($periodType === 'custom' ? $customStartDate && $customEndDate : true)) ? 'disabled' : '' }}>
-                                    <i class="fa fa-download me-1"></i> Export
+                            <!-- Tombol Aksi -->
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 d-flex align-items-end gap-2">
+                                <button type="submit"
+                                    class="btn btn-primary btn-sm flex-grow-1 d-flex align-items-center justify-content-center">
+                                    <i class="fa fa-filter me-1"></i>
+                                    <span>Tampilkan</span>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0 && $periodType !== 'all' && ($periodType === 'custom' ? $customStartDate && $customEndDate : true)) ? 'disabled' : '' }}"
-                                            href="#" id="exportFinancialPdfButtonLink" target="_blank">
-                                            <i class="fa fa-file-pdf-o me-2 text-danger"></i>Ke PDF
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0 && $periodType !== 'all' && ($periodType === 'custom' ? $customStartDate && $customEndDate : true)) ? 'disabled' : '' }}"
-                                            href="#" id="exportFinancialExcelButtonLink" target="_blank">
-                                            <i class="fa fa-file-excel-o me-2 text-success"></i>Ke Excel
-                                        </a>
-                                    </li>
-                                </ul>
+                                <div class="dropdown flex-grow-1">
+                                    <button type="button" id="mainFinancialExportButton"
+                                        class="btn btn-success btn-sm dropdown-toggle w-100" data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0 && $periodType !== 'all' && ($periodType === 'custom' ? $customStartDate && $customEndDate : true)) ? 'disabled' : '' }}>
+                                        <i class="fa fa-download me-1"></i> Export
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end w-100">
+                                        <li>
+                                            <a class="dropdown-item {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0 && $periodType !== 'all' && ($periodType === 'custom' ? $customStartDate && $customEndDate : true)) ? 'disabled' : '' }}"
+                                                href="#" id="exportFinancialPdfButtonLink" target="_blank">
+                                                <i class="fa fa-file-pdf me-2 text-danger"></i>PDF
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item {{ !(isset($reportPeriodLabel) && !empty($reportPeriodLabel) && ($totalIncome ?? 0) > 0 && $periodType !== 'all' && ($periodType === 'custom' ? $customStartDate && $customEndDate : true)) ? 'disabled' : '' }}"
+                                                href="#" id="exportFinancialExcelButtonLink" target="_blank">
+                                                <i class="fa fa-file-excel me-2 text-success"></i>Excel
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -255,61 +256,65 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const periodTypeSelect = document.getElementById('period_type');
-            const filterDaily = document.getElementById('filter_daily');
-            const filterMonthly = document.getElementById('filter_monthly');
-            const filterYearly = document.getElementById('filter_yearly');
-            const filterCustomRange = document.getElementById('filter_custom_range');
+            const selectedDateInput = document.getElementById('selected_date');
+            const selectedMonthYearInput = document.getElementById('selected_month_year');
+            const selectedYearOnlyInput = document.getElementById('selected_year_only');
+            const customStartDateInput = document.getElementById('custom_start_date');
+            const customEndDateInput = document.getElementById('custom_end_date');
+
             const exportPdfButtonLink = document.getElementById('exportFinancialPdfButtonLink');
             const exportExcelButtonLink = document.getElementById('exportFinancialExcelButtonLink');
             const mainExportButton = document.getElementById('mainFinancialExportButton');
 
-            function toggleDateFilters() {
-                const selectedPeriod = periodTypeSelect.value;
-                filterDaily.style.display = 'none';
-                filterMonthly.style.display = 'none';
-                filterYearly.style.display = 'none';
-                filterCustomRange.style.display = 'none';
-
-                if (selectedPeriod === 'daily') filterDaily.style.display = 'block';
-                else if (selectedPeriod === 'monthly') filterMonthly.style.display = 'block';
-                else if (selectedPeriod === 'yearly') filterYearly.style.display = 'block';
-                else if (selectedPeriod === 'custom') filterCustomRange.style.display = 'flex';
-                updateExportLinksStateFinancial();
-            }
-
             function updateExportLinksStateFinancial() {
-                const periodType = periodTypeSelect ? periodTypeSelect.value : '{{ $periodType ?? 'monthly' }}';
+                const periodType = periodTypeSelect ? periodTypeSelect.value : '{{ $periodType ?? 'all' }}';
                 let filtersAreSet = false;
-                const params = new URLSearchParams({
-                    period_type: periodType
-                });
-                const totalIncome = parseFloat({{ $totalIncome ?? 0 }}); // Ambil total income dari PHP
+                const params = new URLSearchParams();
+                if (periodTypeSelect) params.append('period_type', periodType);
 
-                if (periodType === 'daily' && document.getElementById('selected_date').value) {
-                    params.append('selected_date', document.getElementById('selected_date').value);
+                const totalIncomeValue = parseFloat('{{ $totalIncome ?? 0 }}');
+
+                if (periodType === 'daily' && selectedDateInput && selectedDateInput.value) {
+                    params.append('selected_date', selectedDateInput.value);
                     filtersAreSet = true;
-                } else if (periodType === 'monthly' && document.getElementById('selected_month_year').value) {
-                    params.append('selected_month_year', document.getElementById('selected_month_year').value);
+                } else if (periodType === 'monthly' && selectedMonthYearInput && selectedMonthYearInput.value) {
+                    params.append('selected_month_year', selectedMonthYearInput.value);
                     filtersAreSet = true;
-                } else if (periodType === 'yearly' && document.getElementById('selected_year_only').value) {
-                    params.append('selected_year_only', document.getElementById('selected_year_only').value);
+                } else if (periodType === 'yearly' && selectedYearOnlyInput && selectedYearOnlyInput.value) {
+                    params.append('selected_year_only', selectedYearOnlyInput.value);
                     filtersAreSet = true;
-                } else if (periodType === 'custom' && document.getElementById('custom_start_date').value && document
-                    .getElementById('custom_end_date').value) {
-                    params.append('custom_start_date', document.getElementById('custom_start_date').value);
-                    params.append('custom_end_date', document.getElementById('custom_end_date').value);
+                } else if (periodType === 'custom' && customStartDateInput && customStartDateInput.value &&
+                    customEndDateInput && customEndDateInput.value) {
+                    params.append('custom_start_date', customStartDateInput.value);
+                    params.append('custom_end_date', customEndDateInput.value);
                     filtersAreSet = true;
                 } else if (periodType === 'weekly') {
-                    params.append('selected_date', "{{ $selectedDate ?? \Carbon\Carbon::now()->toDateString() }}");
+                    if (selectedDateInput && selectedDateInput.value) {
+                        params.append('selected_date', selectedDateInput.value);
+                    } else {
+                        params.append('selected_date',
+                            "{{ $selectedDate ?? \Carbon\Carbon::now()->toDateString() }}");
+                    }
                     filtersAreSet = true;
+                } else if (periodType === 'all') {
+                    filtersAreSet = true; // "Semua Periode" dianggap filter yang valid
                 }
 
-                const enableExport = filtersAreSet && totalIncome > 0;
+                // PERUBAHAN LOGIKA UNTUK enableExport
+                // Tombol export aktif jika filter periode valid (termasuk 'all'),
+                // DAN (jika bukan 'all', harus ada income ATAU jika 'all', income bisa 0)
+                const enableExport = filtersAreSet && (periodType === 'all' || totalIncomeValue > 0);
 
                 if (mainExportButton) {
-                    if (enableExport) mainExportButton.classList.remove('disabled');
-                    else mainExportButton.classList.add('disabled');
+                    if (enableExport) {
+                        mainExportButton.classList.remove('disabled');
+                        mainExportButton.removeAttribute('disabled');
+                    } else {
+                        mainExportButton.classList.add('disabled');
+                        mainExportButton.setAttribute('disabled', 'disabled');
+                    }
                 }
+
                 if (exportPdfButtonLink) {
                     if (enableExport) {
                         exportPdfButtonLink.href = "{{ route('reports.financial.pdf') }}" + '?' + params
@@ -333,33 +338,36 @@
             }
 
             if (periodTypeSelect) {
-                periodTypeSelect.addEventListener('change', toggleDateFilters);
-                toggleDateFilters();
+                // toggleDateFilters() akan dipanggil oleh script di _period_filter.blade.php
+                // kita hanya perlu memastikan updateExportLinksStateFinancial dipanggil setelahnya atau saat change
+                periodTypeSelect.addEventListener('change', updateExportLinksStateFinancial);
             }
-            ['selected_date', 'selected_month_year', 'selected_year_only', 'custom_start_date', 'custom_end_date']
-            .forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.addEventListener('change', updateExportLinksStateFinancial);
+            [selectedDateInput, selectedMonthYearInput, selectedYearOnlyInput, customStartDateInput,
+                customEndDateInput
+            ].forEach(input => {
+                if (input) {
+                    input.addEventListener('change', updateExportLinksStateFinancial);
+                }
             });
-            updateExportLinksStateFinancial(); // Panggil saat load juga
+            updateExportLinksStateFinancial(); // Panggil saat load
 
 
             if (exportPdfButtonLink) {
                 exportPdfButtonLink.addEventListener('click', function(event) {
-                    if (this.classList.contains('disabled')) {
+                    if (mainExportButton && mainExportButton.classList.contains('disabled')) {
                         event.preventDefault();
                         Swal.fire('Filter Belum Lengkap atau Tidak Ada Data',
-                            'Silakan pilih filter periode yang valid dan pastikan ada data pendapatan untuk diexport.',
+                            'Silakan pilih filter periode yang valid dan pastikan ada data pendapatan untuk diexport (kecuali untuk "Semua Periode").',
                             'warning');
                     }
                 });
             }
             if (exportExcelButtonLink) {
                 exportExcelButtonLink.addEventListener('click', function(event) {
-                    if (this.classList.contains('disabled')) {
+                    if (mainExportButton && mainExportButton.classList.contains('disabled')) {
                         event.preventDefault();
                         Swal.fire('Filter Belum Lengkap atau Tidak Ada Data',
-                            'Silakan pilih filter periode yang valid dan pastikan ada data pendapatan untuk diexport.',
+                            'Silakan pilih filter periode yang valid dan pastikan ada data pendapatan untuk diexport (kecuali untuk "Semua Periode").',
                             'warning');
                     }
                 });
