@@ -60,11 +60,7 @@
                         <label for="modal_active_user_input" class="form-label fw-semibold">Active User</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                    fill="currentColor" class="bi bi-person text-secondary" viewBox="0 0 16 16">
-                                    <path
-                                        d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c0-.001-.001-.003-.003-.006a.504.504 0 0 0-.021-.045.465.465 0 0 0-.08-.103 3.99 3.99 0 0 0-.73-.727c-.27-.228-.71-.546-1.35-.832C9.463 10.287 8.758 10 8 10s-1.463.287-2.016.582a7.825 7.825 0 0 0-1.35.832 3.99 3.99 0 0 0-.73.727.465.465 0 0 0-.08.103.504.504 0 0 0-.021.045c-.002.003-.003.005-.003.006l.001.004.002.007.007.016c.02.044.055.104.107.175a4.98 4.98 0 0 0 1.016 1.063c.83.659 2.055 1.13 3.066 1.13s2.237-.471 3.066-1.13a4.98 4.98 0 0 0 1.123-1.254c-.002-.001-.002-.003-.002-.004z" />
-                                </svg>
+                                <i class="bi bi-person text-secondary"></i>
                             </span>
                             <input id="modal_active_user_input" type="text"
                                 class="form-control bg-light border-start-0 @error('active_user_modal', 'customer_login') is-invalid @enderror"
@@ -77,18 +73,18 @@
                         <label for="modal_password_input" class="form-label fw-semibold">Password</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                    fill="currentColor" class="bi bi-lock text-secondary" viewBox="0 0 16 16">
-                                    <path
-                                        d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
-                                </svg>
+                                <i class="bi bi-lock text-secondary"></i>
                             </span>
                             <input id="modal_password_input" type="password"
-                                class="form-control bg-light border-start-0 @error('password_modal', 'customer_login') is-invalid @enderror"
+                                class="form-control bg-light border-start-0 border-end-0 @error('password_modal', 'customer_login') is-invalid @enderror"
                                 name="password_modal" required autocomplete="current-password"
                                 placeholder="Masukkan password">
+                            <button class="input-group-text bg-light border-start-0" type="button" id="togglePassword">
+                                <i class="bi bi-eye-slash text-secondary"></i>
+                            </button>
                         </div>
                     </div>
+
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div class="form-check">
@@ -214,5 +210,21 @@
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
+    });
+</script>
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const password = document.getElementById('modal_password_input');
+        const icon = this.querySelector('i');
+
+        if (password.type === 'password') {
+            password.type = 'text';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        } else {
+            password.type = 'password';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        }
     });
 </script>
