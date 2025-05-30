@@ -317,9 +317,9 @@
 
     {{-- Baris untuk Kartu Angka - Kompak --}}
     <div class="row g-3 mb-4">
-        {{-- 1. Pelanggan Aktif/Total - Green Theme --}}
+        {{-- 1. Pelanggan Aktif/Total - Blue Theme --}}
         <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-            <div class="stat-card stat-card-green h-100">
+            <div class="stat-card stat-card-blue h-100">
                 <div class="stat-card-body">
                     <div class="stat-card-icon-chip">
                         <i class="fas fa-users stat-card-chip-icon"></i>
@@ -342,9 +342,9 @@
             </div>
         </div>
 
-        {{-- 2. Total Pendapatan Bulan Ini - Blue Theme --}}
+        {{-- 2. Total Pendapatan Bulan Ini - Green Theme --}}
         <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-            <div class="stat-card stat-card-blue h-100">
+            <div class="stat-card stat-card-green h-100">
                 <div class="stat-card-body">
                     <div class="stat-card-icon-chip">
                         <i class="fas fa-dollar-sign stat-card-chip-icon"></i>
@@ -379,7 +379,7 @@
                         <span
                             class="stat-card-currency">Rp</span>{{ number_format($totalUnpaidInvoicesAmount ?? 0, 0, ',', '.') }}
                     </div>
-                    <p class="stat-card-description">Tagihan Belum Dibayar ({{ $countUnpaidInvoices ?? 0 }} Invoice)</p>
+                    <p class="stat-card-description">Tagihan Belum Dibayar ( {{ $countUnpaidInvoices ?? 0 }} )</p>
                     <div class="stat-card-faint-icon-bg">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
