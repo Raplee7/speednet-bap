@@ -97,6 +97,10 @@
                     <div class="flex-wrap d-flex justify-content-between align-items-center">
                         <div>
                             <h1>{{ $pageTitle }}</h1>
+                            @if ($pageTitle === 'Dashboard')
+                                <p class="mt-3">Selamat datang kembali, {{ Auth::user()->nama_user }}! Semoga harimu
+                                    menyenangkan dan produktif.</p>
+                            @endif
                         </div>
                     </div>
                 </div>
