@@ -22,6 +22,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Nama</th>
+                                    <th>WA</th>
                                     <th>Email</th>
                                     <th>Role</th>
                                     <th>Aksi</th>
@@ -32,6 +33,7 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $user->nama_user }}</td>
+                                        <td>{{ $user->wa_user }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>
                                             @php

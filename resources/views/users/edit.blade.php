@@ -14,6 +14,11 @@
                                 value="{{ $user->nama_user }}" required>
                         </div>
                         <div class="mb-3">
+                            <label for="wa_user" class="form-label">No WA</label>
+                            <input type="text" name="wa_user" class="form-control" id="wa_user"
+                                value="{{ $user->wa_user }}">
+                        </div>
+                        <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
                             <input type="email" name="email" class="form-control" id="email"
                                 value="{{ $user->email }}" required>

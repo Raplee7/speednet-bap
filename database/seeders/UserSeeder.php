@@ -12,6 +12,7 @@ class UserSeeder extends Seeder
         User::create([
             'id_user'   => '1',
             'nama_user' => 'Rafli Marian Mirza',
+            'wa_user'   => '089520280405',
             'email'     => 'raflimarianm@gmail.com',
             'password'  => Hash::make('123'),
             'role'      => 'admin',
@@ -20,6 +21,7 @@ class UserSeeder extends Seeder
         User::create([
             'id_user'   => '2',
             'nama_user' => 'Kasir 01',
+            'wa_user'   => '089520280405',
             'email'     => '19242271@bsi.ac.id',
             'password'  => Hash::make('123'),
             'role'      => 'kasir',
