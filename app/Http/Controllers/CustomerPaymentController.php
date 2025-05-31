@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Ewallet;
 use App\Models\Payment;
+use App\Models\User;
+use App\Services\FonnteService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CustomerPaymentController extends BaseController
@@ -126,7 +129,7 @@ class CustomerPaymentController extends BaseController
      * Memproses pengajuan perpanjangan layanan ATAU
      * konfirmasi pembayaran tagihan yang sudah ada.
      */
-    public function processRenewal(Request $request)
+    public function processRenewal(Request $request, FonnteService $fonnteService)
     {
         // Dapatkan ID pelanggan yang sedang login
         $customerId = Auth::guard('customer_web')->id();
@@ -220,7 +223,7 @@ class CustomerPaymentController extends BaseController
             $periodeSelesai = $periodeMulai->copy()->addMonths($durasi)->subDay()->endOfDay();
             $nomorInvoice   = $this->generateInvoiceNumber();
 
-            Payment::create([
+            $newPayment = Payment::create([
                 'nomor_invoice'           => $nomorInvoice,
                 'customer_id'             => $customer->id_customer,
                 'paket_id'                => $paket->id_paket,
@@ -235,8 +238,48 @@ class CustomerPaymentController extends BaseController
                 'status_pembayaran'       => 'pending_confirmation',
                 'created_by_user_id'      => null,
             ]);
-            $successMessage = 'Pengajuan perpanjangan dan bukti pembayaran Anda telah berhasil dikirim. Mohon tunggu konfirmasi dari admin. No. Invoice: ' . $nomorInvoice;
+            $paymentToNotify = $newPayment;
+            $successMessage  = 'Pengajuan perpanjangan dan bukti pembayaran Anda telah berhasil dikirim. Mohon tunggu konfirmasi dari admin. No. Invoice: ' . $nomorInvoice;
         }
+
+        // --- KIRIM NOTIFIKASI KE ADMIN/KASIR ---
+        if ($paymentToNotify) {
+            // Load relasi customer untuk mendapatkan nama_customer jika belum ter-load
+            $paymentToNotify->loadMissing('customer');
+            $namaCustomerNotif = $paymentToNotify->customer ? $paymentToNotify->customer->nama_customer : 'Pelanggan';
+            $ewalletTujuan     = Ewallet::find($paymentToNotify->ewallet_id);
+            $namaEwallet       = $ewalletTujuan ? $ewalletTujuan->nama_ewallet . ' (' . $ewalletTujuan->nomor_rekening . ' a/n ' . $ewalletTujuan->atas_nama . ')' : 'Tidak diketahui';
+
+            $messageToAdmin = "🌟 *KONFIRMASI PEMBAYARAN BARU!* 🌟\n\n" .
+            "━━━━━━━━━━━━━━━━━━━━━━━\n" .
+            "📋 *DETAIL PEMBAYARAN*\n" .
+            "━━━━━━━━━━━━━━━━━━━━━━━\n\n" .
+            "📑\tNo. Invoice: *{$paymentToNotify->nomor_invoice}*\n" .
+            "👤\tPelanggan: *{$namaCustomerNotif}*\n" .
+            "🆔\tID: *{$paymentToNotify->customer_id}*\n" .
+            "💰\tJumlah: *Rp " . number_format($paymentToNotify->jumlah_tagihan, 0, ',', '.') . "*\n" .
+            "🏦\tTujuan: *{$namaEwallet}*\n\n" .
+            "🔗\t*Link Verifikasi*:\n" . route('payments.show', $paymentToNotify->id_payment) . "\n\n" .
+                "❗ *MOHON SEGERA VERIFIKASI PEMBAYARAN* ❗";
+
+            $adminUsers = User::whereIn('role', ['admin', 'kasir'])
+                ->whereNotNull('wa_user')
+                ->where('wa_user', '!=', '')
+                ->get();
+
+            if ($adminUsers->isNotEmpty()) {
+                foreach ($adminUsers as $adminUser) {
+                    Log::info("Mengirim notifikasi pembayaran [{$paymentToNotify->nomor_invoice}] ke admin/kasir: {$adminUser->nama_user} ({$adminUser->wa_user})");
+                    $berhasilKirim = $fonnteService->sendMessage($adminUser->wa_user, $messageToAdmin);
+                    if (! $berhasilKirim) {
+                        Log::warning("Gagal mengirim notifikasi pembayaran [{$paymentToNotify->nomor_invoice}] ke {$adminUser->wa_user} untuk admin {$adminUser->nama_user}");
+                    }
+                }
+            } else {
+                Log::info("Tidak ada user admin/kasir dengan nomor WA untuk dikirimi notifikasi pembayaran [{$paymentToNotify->nomor_invoice}].");
+            }
+        }
+        // --- AKHIR NOTIFIKASI ---
 
         return redirect()->route('customer.payments.index', ['status' => 'pending_confirmation'])
             ->with('success', $successMessage);
