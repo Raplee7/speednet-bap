@@ -133,6 +133,21 @@
         </script>
     @endif
 
+    @if (session('open_login_modal_on_load'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var customerLoginModalElement = document.getElementById(
+                'customerLoginModal'); // Pastikan ID modal loginmu benar
+                if (customerLoginModalElement) {
+                    var myModal = new bootstrap.Modal(customerLoginModalElement);
+                    myModal.show();
+                } else {
+                    console.warn('Elemen modal dengan ID "customerLoginModal" tidak ditemukan untuk dibuka otomatis.');
+                }
+            });
+        </script>
+    @endif
+
     {{-- Stack untuk script tambahan dari halaman spesifik --}}
     @stack('scripts')
 

@@ -1,6 +1,6 @@
-@extends('landing.layouts.app') {{-- Menggunakan layout landing yang baru --}}
+@extends('landing.layouts.app')
 
-@section('title', 'Beranda - Speednet') {{-- Contoh judul spesifik --}}
+@section('title', 'Beranda - Speednet')
 
 @section('content')
     <!-- Hero Section -->

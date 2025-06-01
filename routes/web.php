@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthCustomerController;
 use App\Http\Controllers\CustomerAccountController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\CustomerForgotPasswordOtpController;
 use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\CustomerSubmissionController;
 use App\Http\Controllers\DashboardController;
@@ -131,6 +132,12 @@ Route::prefix('pelanggan')->name('customer.')->group(function () {
     Route::middleware('guest:customer_web')->group(function () {
         Route::get('login', [AuthCustomerController::class, 'showLoginForm'])->name('login.form');
         Route::post('login', [AuthCustomerController::class, 'login'])->name('login.attempt');
+
+        Route::get('/lupa-password-otp', [CustomerForgotPasswordOtpController::class, 'showOtpRequestForm'])->name('password.otp.request_form');
+        Route::post('/lupa-password-otp/kirim', [CustomerForgotPasswordOtpController::class, 'sendOtp'])->name('password.otp.send');
+        Route::get('/reset-password-otp', [CustomerForgotPasswordOtpController::class, 'showOtpResetForm'])->name('password.otp.reset_form');
+        Route::post('/reset-password-otp', [CustomerForgotPasswordOtpController::class, 'resetPasswordWithOtp'])->name('password.otp.update');
+
     });
 
     // ----------- Authenticated Pelanggan -----------
@@ -149,4 +156,5 @@ Route::prefix('pelanggan')->name('customer.')->group(function () {
         Route::get('/akun/ubah-password', [CustomerAccountController::class, 'showChangePasswordForm'])->name('account.change_password.form');
         Route::post('/akun/ubah-password', [CustomerAccountController::class, 'updatePassword'])->name('account.password.update');
     });
+
 });

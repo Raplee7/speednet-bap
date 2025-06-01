@@ -94,8 +94,9 @@
                                 Ingat Saya
                             </label>
                         </div>
-                        <a href="#" class="text-decoration-none small" data-bs-toggle="tooltip"
-                            data-bs-placement="top" title="Hubungi layanan pelanggan">Lupa Password?</a>
+                        <a href="{{ route('customer.password.otp.request_form') }}"
+                            class="text-decoration-none small">Lupa
+                            Password?</a>
                     </div>
 
                     <!-- Tombol login yang lebih menarik dengan efek hover -->
@@ -125,8 +126,8 @@
                 <div class="text-center">
                     <div class="mb-3">
                         <span class="badge bg-light text-dark p-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                fill="currentColor" class="bi bi-headset me-1" viewBox="0 0 16 16">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-headset me-1" viewBox="0 0 16 16">
                                 <path
                                     d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5z" />
                             </svg>
