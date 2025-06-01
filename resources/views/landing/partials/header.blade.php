@@ -32,6 +32,8 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
+                            <li><a href="{{ route('customer.account.change_password.form') }}">Ubah Password</a></li>
+
                             <li>
                                 <a href="#"
                                     onclick="event.preventDefault(); document.getElementById('customer-logout-form-header').submit();">

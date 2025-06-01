@@ -5,6 +5,7 @@
 // ==============================
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthCustomerController;
+use App\Http\Controllers\CustomerAccountController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerDashboardController;
 use App\Http\Controllers\CustomerPaymentController;
@@ -143,5 +144,9 @@ Route::prefix('pelanggan')->name('customer.')->group(function () {
         Route::post('perpanjang-layanan', [CustomerPaymentController::class, 'processRenewal'])->name('renewal.process');
         Route::get('tagihan/{payment}/cetak', [CustomerPaymentController::class, 'printInvoice'])->name('payments.print_invoice');
         Route::get('tagihan/{payment}', [CustomerPaymentController::class, 'show'])->name('payments.show');
+
+        // Ubah Password
+        Route::get('/akun/ubah-password', [CustomerAccountController::class, 'showChangePasswordForm'])->name('account.change_password.form');
+        Route::post('/akun/ubah-password', [CustomerAccountController::class, 'updatePassword'])->name('account.password.update');
     });
 });

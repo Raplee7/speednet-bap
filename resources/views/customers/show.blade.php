@@ -132,34 +132,28 @@
                                     <div class="card border-0">
                                         <div class="card-body">
                                             <h6 class="card-title mb-3 fw-bold text-primary">Status Layanan Saat Ini</h6>
-                                            <div class="row align-items-center">
-                                                <div class="col-md-4 mb-3 mb-md-0">
-                                                    <label class="text-muted small mb-1">Status</label>
-                                                    <div>
-                                                        <span
-                                                            class="badge rounded-pill px-3 py-1 {{ $statusLayananClass }}">
-                                                            {{ $statusLayananText }}
-                                                        </span>
-                                                    </div>
+                                            <div class="mb-2">
+                                                <label class="text-muted small mb-1">Status Layanan</label>
+                                                <div>
+                                                    <span class="badge rounded-pill px-3 py-1 {{ $statusLayananClass }}">
+                                                        {{ $statusLayananText }}
+                                                    </span>
                                                 </div>
-                                                @if ($layananBerakhirPada)
-                                                    <div class="col-md-4 mb-3 mb-md-0">
-                                                        <label class="text-muted small mb-1">Layanan Aktif Hingga</label>
-                                                        <p class="mb-0 fw-semibold">
-                                                            {{ $layananBerakhirPada->copy()->addDay()->locale('id')->translatedFormat('d F Y') }}
-                                                        </p>
-                                                    </div>
-                                                    @if ($sisaHariLayanan !== null && $statusLayananText === 'Aktif')
-                                                        <div class="col-md-4">
-                                                            <label class="text-muted small mb-1">Sisa Masa Aktif</label>
-                                                            <p
-                                                                class="mb-0 fw-semibold {{ $sisaHariLayanan <= 3 ? 'text-warning' : '' }}">
-                                                                {{ $sisaHariLayanan }} hari lagi
-                                                            </p>
-                                                        </div>
-                                                    @endif
-                                                @endif
                                             </div>
+                                            @if ($layananBerakhirPada)
+                                                <div class="mb-2">
+                                                    <label class="text-muted small mb-1">Layanan Aktif Hingga</label>
+                                                    <p class="mb-0 fw-semibold">
+                                                        {{ $layananBerakhirPada->copy()->addDay()->locale('id')->translatedFormat('d F Y') }}
+                                                        @if ($sisaHariLayanan !== null && $statusLayananText === 'Aktif')
+                                                            <span
+                                                                class="ms-2 {{ $sisaHariLayanan <= 3 ? 'text-warning' : '' }}">
+                                                                ({{ $sisaHariLayanan }} hari lagi)
+                                                            </span>
+                                                        @endif
+                                                    </p>
+                                                </div>
+                                            @endif
                                             <div class="mt-3 text-end">
                                                 <a href="{{ route('payments.index', ['search_customer' => $customer->id_customer]) }}"
                                                     class="btn btn-sm btn-outline-primary rounded-pill">
