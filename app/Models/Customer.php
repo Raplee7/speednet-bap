@@ -5,12 +5,14 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
 // jika customer bisa login
 
 class Customer extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $table      = 'customers';
     protected $primaryKey = 'id_customer';
     public $incrementing  = false;
     protected $keyType    = 'string';
