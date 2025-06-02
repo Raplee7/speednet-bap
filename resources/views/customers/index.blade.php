@@ -141,7 +141,8 @@
                                             @endphp
 
                                             @if ($layananBerakhir)
-                                                {{ $layananBerakhir->locale('id')->translatedFormat('d M Y') }}
+                                                {{ $layananBerakhir->locale('id')->addDay()->translatedFormat('d M Y') }}
+                                                {{-- Tambahkan +1 hari untuk menyesuaikan dengan logika --}}
                                                 @if ($isExpired)
                                                     <span class="badge bg-danger ms-1">Expired</span>
                                                 @elseif ($layananBerakhir->isFuture())

@@ -312,6 +312,8 @@ class CustomerController extends Controller
                     // JADI, kita hanya kirim notif dengan password JIKA admin MENGUBAHNYA saat update ini.
                     Log::info("Pelanggan {$customer->nama_customer} diaktifkan tanpa perubahan password oleh admin saat ini. Notifikasi WA password tidak dikirim otomatis.");
                     // Atau kirim notifikasi tanpa password:
+                    $appUrl = rtrim(config('app.url'), '/');
+
                     $paketLangganan    = $customer->paket;
                     $kecepatanPaket    = $paketLangganan ? $paketLangganan->kecepatan_paket : 'Pilihan Anda';
                     $messageToCustomer = "🎉 *Akun Speednet Anda Telah Aktif!* 🎉\n\n" .
@@ -321,7 +323,7 @@ class CustomerController extends Controller
                         "ID Pelanggan: *{$customer->id_customer}*\n" .
                         "Paket: *{$kecepatanPaket}*\n\n" .
                         "🌐 *Akses Portal Pelanggan:*\n" .
-                        "Silakan login ke https://speednet.id/ menggunakan:\n" .
+                        "Silakan login ke {$appUrl}/ menggunakan:\n" .
                         "Active User: *{$customer->id_customer}*\n" .
                         (empty($plainPasswordUntukNotifikasi) ?
                         "Gunakan fitur 'Lupa Password' untuk mengatur password baru.\n\n" :

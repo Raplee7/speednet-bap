@@ -464,7 +464,7 @@
                                                     <span class="badge bg-danger text-white">Hari Ini</span>
                                                 @elseif ($customer->sisa_hari <= 3)
                                                     <span
-                                                        class="badge bg-warning text-dark">{{ $customer->sisa_hari }}h</span>
+                                                        class="badge bg-warning-subtle text-dark">{{ $customer->sisa_hari }}h</span>
                                                 @else
                                                     <span
                                                         class="badge bg-info text-white">{{ $customer->sisa_hari }}h</span>
