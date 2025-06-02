@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Paket;
 use App\Models\Payment;
+use App\Services\FonnteService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class PaymentController extends Controller
@@ -154,10 +156,10 @@ class PaymentController extends Controller
         return view('payments.show', compact('payment', 'pageTitle'));
     }
 
-    public function processVerification(Request $request, Payment $payment)
+    public function processVerification(Request $request, Payment $payment, FonnteService $fonnteService) // <-- INJECT FONNTESERVICE
     {
         if ($payment->status_pembayaran !== 'pending_confirmation') {
-            return redirect()->route('payments.show', $payment->id_payment)
+            return redirect()->route('payments.show', $payment->id_payment) // Asumsi nama rute admin
                 ->with('error', 'Status pembayaran tidak valid untuk dikonfirmasi/ditolak.');
         }
 
@@ -171,27 +173,83 @@ class PaymentController extends Controller
         if ($request->aksi_konfirmasi == 'lunas') {
             $payment->update([
                 'status_pembayaran'    => 'paid',
-                'tanggal_pembayaran'   => now(),
+                'tanggal_pembayaran'   => now(), // Ini akan jadi Tanggal Lunas
                 'confirmed_by_user_id' => Auth::id(),
-                'catatan_admin'        => $payment->catatan_admin . $catatanTambahan,
-                'metode_pembayaran'    => $payment->metode_pembayaran ?? 'transfer',
+                'catatan_admin'        => ($payment->catatan_admin ?? '') . $catatanTambahan,
+                'metode_pembayaran'    => $payment->metode_pembayaran ?? 'transfer', // Pastikan ini sesuai
             ]);
 
-            $customer = $payment->customer;
-            if ($customer && ($customer->status === 'nonaktif' || $customer->status === 'belum')) {
-                $customer->update(['status' => 'terpasang']);
+            $customer = $payment->customer; // Eager load jika belum: $payment->load('customer'); $customer = $payment->customer;
+            if ($customer) {
+                // Sesuaikan status 'belum' ini jika maksudnya adalah 'baru' atau status lain
+                if ($customer->status === 'nonaktif' || $customer->status === 'baru' || $customer->status === 'isolir') {
+                    $customer->update(['status' => 'terpasang']); // Atau 'aktif'
+                    Log::info("Status pelanggan {$customer->nama_customer} (ID: {$customer->id_customer}) diubah menjadi terpasang setelah pembayaran lunas.");
+                }
+
+                // Get customer data first
+                $namaPelanggan = $customer->nama_customer;
+                $nomorInvoice  = $payment->nomor_invoice;
+
+                // --- KIRIM NOTIFIKASI PEMBAYARAN LUNAS KE PELANGGAN ---
+                if ($customer->wa_customer) {
+                    // Ambil data yang diperlukan untuk pesan
+                    $namaPelanggan         = $customer->nama_customer;
+                    $nomorInvoice          = $payment->nomor_invoice;
+                    $jumlahDibayar         = $payment->jumlah_tagihan;
+                    $tanggalLunasFormatted = Carbon::parse($payment->tanggal_pembayaran)->translatedFormat('d F Y, H:i') . ' WIB';
+                    // Tanggal berakhir layanan dari periode tagihan yang baru lunas
+                    $layananAktifHinggaFormatted = Carbon::parse($payment->periode_tagihan_selesai)->translatedFormat('d F Y');
+
+                                                                               // Ganti dengan URL/Route yang benar ke halaman riwayat pembayaran pelanggan
+                    $linkRiwayatPembayaran = route('customer.payments.index'); // Contoh
+
+                    $messageToCustomer = "🌟 *PEMBAYARAN BERHASIL DIKONFIRMASI* 🌟\n\n" .
+                    "Dear *{$namaPelanggan}*,\n" .
+                    "Pembayaran tagihan Speednet Anda telah kami konfirmasi.\n\n" .
+                    "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" .
+                    "📋 *Detail Pembayaran:*\n" .
+                    "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" .
+                    "📄 No. Invoice: *{$nomorInvoice}*\n" .
+                    "💰 Total Bayar: *Rp " . number_format($jumlahDibayar, 0, ',', '.') . "*\n" .
+                    "✅ Tanggal Lunas: *{$tanggalLunasFormatted}*\n" .
+                    "📅 Aktif s/d: *{$layananAktifHinggaFormatted}*\n" .
+                    "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" .
+                    "🔍 Cek riwayat pembayaran Anda di:\n" .
+                    "{$linkRiwayatPembayaran}\n\n" .
+                    "💫 *Terima kasih atas kepercayaan Anda!*\n" .
+                    "Jika ada pertanyaan, silakan hubungi tim support kami.\n\n" .
+
+                    Log::info("Mengirim notifikasi pembayaran lunas [{$nomorInvoice}] ke pelanggan: {$namaPelanggan} ({$customer->wa_customer})");
+                    if (! $fonnteService->sendMessage($customer->wa_customer, $messageToCustomer)) {
+                        Log::warning("Gagal mengirim notifikasi pembayaran lunas [{$nomorInvoice}] ke pelanggan {$namaPelanggan} ({$customer->wa_customer}). Admin tetap melihat sukses.");
+                        // Pertimbangkan untuk memberi tahu admin di halaman redirect jika pengiriman WA gagal,
+                        // tapi proses konfirmasi pembayaran tetap berhasil.
+                        // return redirect()->route('payments.show', $payment->id_payment)
+                        //          ->with('success', 'Pembayaran berhasil dikonfirmasi LUNAS.')
+                        //          ->with('warning_wa', 'Notifikasi WhatsApp ke pelanggan mungkin gagal terkirim.');
+                    }
+                } else {
+                    Log::warning("Pelanggan {$namaPelanggan} (Invoice: {$nomorInvoice}) tidak memiliki nomor WA, notifikasi pembayaran lunas tidak dikirim.");
+                }
+                // --- AKHIR NOTIFIKASI ---
+            } else {
+                Log::error("Customer tidak ditemukan untuk payment ID: {$payment->id_payment} saat akan mengirim notifikasi lunas.");
             }
 
-            return redirect()->route('payments.show', $payment->id_payment)
+            return redirect()->route('payments.show', $payment->id_payment) // Asumsi nama rute admin
                 ->with('success', 'Pembayaran berhasil dikonfirmasi LUNAS.');
-        } else {
+        } else { // Jika aksi_konfirmasi == 'tolak'
             $payment->update([
-                'status_pembayaran'    => 'failed',
+                'status_pembayaran'    => 'failed', // Atau 'ditolak' jika ada status itu
                 'confirmed_by_user_id' => Auth::id(),
-                'catatan_admin'        => $payment->catatan_admin . $catatanTambahan,
+                'catatan_admin'        => ($payment->catatan_admin ?? '') . $catatanTambahan,
             ]);
 
-            return redirect()->route('payments.show', $payment->id_payment)
+            // TODO: Pertimbangkan mengirim notifikasi ke pelanggan bahwa pembayaran mereka ditolak beserta alasannya (dari catatan_admin).
+            // Ini bisa jadi notifikasi penting lainnya.
+
+            return redirect()->route('payments.show', $payment->id_payment) // Asumsi nama rute admin
                 ->with('warning', 'Pembayaran DITOLAK.');
         }
     }
