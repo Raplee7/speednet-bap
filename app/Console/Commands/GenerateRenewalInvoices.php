@@ -4,10 +4,13 @@ namespace App\Console\Commands;
 use App\Models\Customer;
 use App\Models\Paket;
 use App\Models\Payment;
-use Carbon\Carbon; // Pastikan model Paket di-use
+use App\Services\FonnteService;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+
+// Pastikan model Paket di-use
 
 // Untuk logging jika terjadi sesuatu
 
@@ -27,87 +30,79 @@ class GenerateRenewalInvoices extends Command
      */
     protected $description = 'Membuat tagihan perpanjangan otomatis untuk pelanggan yang layanannya akan segera berakhir.';
 
-    /**
-     * Execute the console command.
-     */
+    protected FonnteService $fonnteService;
+
+    public function __construct(FonnteService $fonnteService)
+    {
+        parent::__construct();
+        $this->fonnteService = $fonnteService;
+    }
+
     public function handle()
     {
-        $this->info('Memulai proses pembuatan tagihan perpanjangan otomatis...');
-        Log::info('Scheduled Task: GenerateRenewalInvoices - Dimulai.');
+        $this->info('Memulai proses pembuatan tagihan perpanjangan otomatis & notifikasi H-5...');
+        Log::info('Scheduled Task: GenerateRenewalInvoices (H-5 Reminder) - Dimulai.');
 
-        $daysBeforeExpiryToGenerate = 5; // Buat tagihan H-5 sebelum layanan berakhir
+        $daysBeforeExpiryToGenerate = 5; // Tagihan dibuat & notif dikirim H-5 sebelum layanan saat ini berakhir
         $today                      = Carbon::today();
-
-        // 1. Ambil semua pelanggan yang statusnya 'terpasang'
-        $activeCustomers       = Customer::where('status', 'terpasang')->with('paket')->get();
-        $generatedInvoiceCount = 0;
+        $activeCustomers            = Customer::where('status', 'terpasang')->with('paket')->get();
+        $generatedInvoiceCount      = 0;
+        $notifiedCustomerCount      = 0;
 
         if ($activeCustomers->isEmpty()) {
-            $this->info('Tidak ada pelanggan aktif yang ditemukan.');
-            Log::info('Scheduled Task: GenerateRenewalInvoices - Tidak ada pelanggan aktif.');
-            return 0;
+            $this->info('Tidak ada pelanggan aktif.');
+            Log::info('Scheduled Task: GenerateRenewalInvoices (H-5 Reminder) - Tidak ada pelanggan aktif.');
+            return Command::SUCCESS; // Menggunakan konstanta Command untuk status keluar
         }
 
         foreach ($activeCustomers as $customer) {
             if (! $customer->paket) {
-                Log::warning("Scheduled Task: Pelanggan ID {$customer->id_customer} ({$customer->nama_customer}) tidak memiliki paket aktif, dilewati.");
+                Log::warning("Pelanggan ID {$customer->id_customer} ({$customer->nama_customer}) tidak memiliki paket aktif, dilewati untuk generate invoice H-5.");
                 continue;
             }
 
-            // 2. Dapatkan pembayaran terakhir yang lunas untuk pelanggan ini
             $latestPaidPayment = Payment::where('customer_id', $customer->id_customer)
                 ->where('status_pembayaran', 'paid')
                 ->orderBy('periode_tagihan_selesai', 'desc')
                 ->first();
 
-            if (! $latestPaidPayment) {
-                // Jika tidak ada pembayaran lunas, mungkin ini pelanggan baru yang belum pernah bayar
-                // atau pelanggan lama yang sudah sangat lama tidak aktif.
-                // Kita bisa buat tagihan pertama jika tanggal aktivasi mereka sudah dekat atau lewat.
-                // Untuk saat ini, kita fokus pada perpanjangan dari yang sudah ada.
-                // Atau, kita bisa buat tagihan jika statusnya 'terpasang' tapi tidak ada 'paid' payment.
-                // Ini memerlukan logika tambahan jika mau menangani kasus aktivasi awal otomatis.
-                // Untuk sekarang, kita asumsikan 'terpasang' berarti sudah pernah ada pembayaran lunas.
-                Log::info("Scheduled Task: Pelanggan ID {$customer->id_customer} ({$customer->nama_customer}) status terpasang tapi tidak ada riwayat pembayaran lunas, dilewati.");
+            if (! $latestPaidPayment || ! $latestPaidPayment->periode_tagihan_selesai) {
+                Log::info("Pelanggan ID {$customer->id_customer} ({$customer->nama_customer}) status terpasang tapi tidak ada riwayat pembayaran lunas valid, dilewati untuk generate invoice H-5.");
                 continue;
             }
 
-            $periodeSelesaiLayananSaatIni = Carbon::parse($latestPaidPayment->periode_tagihan_selesai);
+            $periodeSelesaiLayananSaatIni = Carbon::parse($latestPaidPayment->periode_tagihan_selesai)->endOfDay(); // Ambil akhir hari
 
-                                                                                                                     // 3. Tentukan kapan tagihan baru harus dibuat
-                                                                                                                     // Tagihan baru dibuat jika layanan saat ini akan berakhir dalam $daysBeforeExpiryToGenerate hari
-                                                                                                                     // dan hari ini adalah tanggal yang tepat untuk generate (atau sudah lewat)
-            $targetGenerationDate = $periodeSelesaiLayananSaatIni->copy()->subDays($daysBeforeExpiryToGenerate - 1); // H-5 berarti targetnya 4 hari sebelum selesai (karena hari ke-5 adalah hari terakhir)
-                                                                                                                     // atau $periodeSelesaiLayananSaatIni->copy()->subDays($daysBeforeExpiryToGenerate) jika mau H-5 pas
+            // Tentukan tanggal target untuk generate invoice (H-5)
+            // Jika hari ini adalah H-5 atau lebih dekat (tapi sebelum layanan berakhir), maka generate.
+            // Misalnya, jika layanan habis tanggal 10, H-5 adalah tanggal 5.
+            // Jika command jalan tanggal 5, 6, 7, 8, 9, 10 dan invoice belum ada, maka akan dibuat.
+            $targetGenerationDate = $periodeSelesaiLayananSaatIni->copy()->subDays($daysBeforeExpiryToGenerate);
 
             // Periode layanan berikutnya akan dimulai sehari setelah periode saat ini selesai
             $nextPeriodStartDate = $periodeSelesaiLayananSaatIni->copy()->addDay()->startOfDay();
 
             // Cek apakah hari ini adalah waktu yang tepat untuk generate DAN layanan belum benar-benar berakhir
+            // Dan pastikan kita tidak membuat invoice jika layanan saat ini sudah berakhir
             if ($today->gte($targetGenerationDate) && $today->lte($periodeSelesaiLayananSaatIni)) {
-                // 4. Cek apakah sudah ada tagihan 'unpaid' atau 'pending_confirmation' untuk periode berikutnya
                 $existingUpcomingInvoice = Payment::where('customer_id', $customer->id_customer)
                     ->whereDate('periode_tagihan_mulai', $nextPeriodStartDate->toDateString())
                     ->whereIn('status_pembayaran', ['unpaid', 'pending_confirmation'])
-                    ->exists(); // Cukup cek apakah ada
+                    ->exists();
 
                 if ($existingUpcomingInvoice) {
-                    Log::info("Scheduled Task: Tagihan untuk periode berikutnya pelanggan ID {$customer->id_customer} sudah ada, dilewati.");
-                    continue; // Lewati jika sudah ada tagihan
+                    Log::info("Tagihan untuk periode berikutnya pelanggan ID {$customer->id_customer} sudah ada, generate invoice H-5 dilewati.");
+                    continue;
                 }
 
-                                    // 5. Buat tagihan baru
-                $durasi        = 1; // Default perpanjangan 1 bulan
-                $paket         = $customer->paket;
-                $jumlahTagihan = $paket->harga_paket * $durasi;
-
-                // Menggunakan logika periode selesai H-1 dari tanggal aktivasi bulan berikutnya
+                $durasi            = 1; // Default perpanjangan 1 bulan
+                $paket             = $customer->paket;
+                $jumlahTagihan     = $paket->harga_paket * $durasi;
                 $nextPeriodEndDate = $nextPeriodStartDate->copy()->addMonths($durasi)->subDay()->endOfDay();
-
-                $nomorInvoice = $this->generateInvoiceNumber();
+                $nomorInvoice      = $this->generateInvoiceNumber();
 
                 try {
-                    Payment::create([
+                    $newPayment = Payment::create([
                         'nomor_invoice'           => $nomorInvoice,
                         'customer_id'             => $customer->id_customer,
                         'paket_id'                => $paket->id_paket,
@@ -115,31 +110,66 @@ class GenerateRenewalInvoices extends Command
                         'durasi_pembayaran_bulan' => $durasi,
                         'periode_tagihan_mulai'   => $nextPeriodStartDate->toDateString(),
                         'periode_tagihan_selesai' => $nextPeriodEndDate->toDateString(),
-                        'tanggal_jatuh_tempo'     => $nextPeriodStartDate->toDateString(), // Batas bayar = awal periode baru
+                        'tanggal_jatuh_tempo'     => $nextPeriodStartDate->toDateString(),
                         'status_pembayaran'       => 'unpaid',
-                        'created_by_user_id'      => null, // Dibuat oleh sistem
-                                                           // 'metode_pembayaran' => null, // Default null
-                                                           // 'ewallet_id' => null, // Default null
-                                                           // 'bukti_pembayaran' => null, // Default null
-                                                           // 'catatan_admin' => 'Tagihan dibuat otomatis oleh sistem.',
+                        'created_by_user_id'      => null,
                     ]);
                     $generatedInvoiceCount++;
                     $this->info("Tagihan {$nomorInvoice} berhasil dibuat untuk pelanggan: {$customer->nama_customer} ({$customer->id_customer})");
-                    Log::info("Scheduled Task: Tagihan {$nomorInvoice} dibuat untuk {$customer->id_customer}");
+                    Log::info("Scheduled Task: Tagihan {$nomorInvoice} dibuat untuk {$customer->id_customer} (H-5)");
 
-                    // TODO: Nantinya, trigger event di sini untuk mengirim notifikasi WA ke pelanggan
-                    // event(new RenewalInvoiceGenerated($newPayment));
+                    // --- KIRIM NOTIFIKASI WA H-5 SETELAH TAGIHAN DIBUAT ---
+                    if ($customer->wa_customer) {
+                        // Tanggal berakhirnya layanan saat ini (yang memicu reminder H-5)
+                        $layananAkanBerakhirPadaFormatted = $periodeSelesaiLayananSaatIni->translatedFormat('d F Y');
+                        // Tanggal jatuh tempo untuk invoice BARU yang baru saja dibuat
+                        $jatuhTempoInvoiceBaruFormatted = Carbon::parse($newPayment->tanggal_jatuh_tempo)->translatedFormat('d F Y');
+                        $sisaHari                       = Carbon::today()->diffInDaysFiltered(fn(Carbon $date) => true, $periodeSelesaiLayananSaatIni) + 1;
+                        if ($sisaHari <= 0) {
+                            $sisaHariText = "hari terakhir";
+                        } else {
+                            $sisaHariText = "dalam {$sisaHari} hari lagi";
+                        }
+
+                        $messageToCustomer = "🔔 *SPEEDNET REMINDER* 🔔\n\n" .
+                        "Kepada Yth.\n" .
+                        "*{$customer->nama_customer}*\n\n" .
+                        "⚠️ *INFORMASI LAYANAN*\n" .
+                        "Layanan internet Speednet Anda akan berakhir {$sisaHariText}, yaitu pada tanggal:\n" .
+                        "📅 *{$layananAkanBerakhirPadaFormatted}*\n\n" .
+                        "💳 *DETAIL TAGIHAN PERPANJANGAN*\n" .
+                        "No. Invoice: *{$newPayment->nomor_invoice}*\n" .
+                        "Nominal: *Rp " . number_format($newPayment->jumlah_tagihan, 0, ',', '.') . "*\n" .
+                        "Jatuh Tempo: *{$jatuhTempoInvoiceBaruFormatted}*\n\n" .
+                        "💡 *CARA PEMBAYARAN*\n" .
+                        "1️. Website Speednet: " . route('customer.payments.index') . "\n" .
+                        "2️. Kunjungi kantor Speednet\n\n" .
+                        "Mohon segera lakukan pembayaran untuk menghindari layanan dinonaktifkan.\n\n" .
+                        "Terima kasih 🙏\n" .
+
+                        Log::info("Mengirim notifikasi tagihan H-5 [{$newPayment->nomor_invoice}] ke {$customer->nama_customer} ({$customer->wa_customer})");
+                        if ($this->fonnteService->sendMessage($customer->wa_customer, $messageToCustomer)) {
+                            $notifiedCustomerCount++;
+                            // Tandai bahwa notifikasi H-5 sudah dikirim untuk invoice ini (opsional, jika ingin lebih detail)
+                            // $newPayment->update(['h5_reminder_sent_at' => now()]);
+                        } else {
+                            Log::warning("Gagal mengirim notifikasi tagihan H-5 [{$newPayment->nomor_invoice}] ke {$customer->wa_customer}");
+                        }
+                    } else {
+                        Log::warning("Pelanggan {$customer->nama_customer} (ID: {$customer->id_customer}) tidak punya no WA, notifikasi H-5 dilewati.");
+                    }
+                    // --- AKHIR NOTIFIKASI ---
 
                 } catch (\Exception $e) {
-                    $this->error("Gagal membuat tagihan untuk pelanggan ID {$customer->id_customer}: " . $e->getMessage());
-                    Log::error("Scheduled Task: Gagal membuat tagihan untuk {$customer->id_customer}. Error: " . $e->getMessage());
+                    $this->error("Gagal membuat tagihan untuk ID {$customer->id_customer}: " . $e->getMessage());
+                    Log::error("Scheduled Task: Gagal membuat tagihan H-5 untuk {$customer->id_customer}. Error: " . $e->getMessage());
                 }
             }
         }
 
-        $this->info("Proses pembuatan tagihan perpanjangan otomatis selesai. Total tagihan dibuat: {$generatedInvoiceCount}.");
-        Log::info("Scheduled Task: GenerateRenewalInvoices - Selesai. Tagihan dibuat: {$generatedInvoiceCount}.");
-        return 0; // 0 menandakan sukses
+        $this->info("Proses H-5 selesai. Tagihan dibuat: {$generatedInvoiceCount}. Notifikasi H-5 dikirim: {$notifiedCustomerCount}.");
+        Log::info("Scheduled Task: GenerateRenewalInvoices (H-5 Reminder) - Selesai. Tagihan: {$generatedInvoiceCount}, Notif H-5: {$notifiedCustomerCount}.");
+        return Command::SUCCESS;
     }
 
     /**
