@@ -67,7 +67,7 @@ class CustomerAndPaymentSeeder extends Seeder
         $customer1_id = $this->generateCustomerId();
         Customer::create([
             'id_customer'      => $customer1_id,
-            'nama_customer'    => $faker->name,
+            'nama_customer'    => 'Rafli MarMir',
             'nik_customer'     => $faker->unique()->numerify('################'),
             'alamat_customer'  => $faker->address,
             'wa_customer'      => '089520280405',

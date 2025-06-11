@@ -120,32 +120,32 @@ class GenerateRenewalInvoices extends Command
 
                     // --- KIRIM NOTIFIKASI WA H-5 SETELAH TAGIHAN DIBUAT ---
                     if ($customer->wa_customer) {
-                        // Tanggal berakhirnya layanan saat ini (yang memicu reminder H-5)
-                        $layananAkanBerakhirPadaFormatted = $periodeSelesaiLayananSaatIni->translatedFormat('d F Y');
-                        // Tanggal jatuh tempo untuk invoice BARU yang baru saja dibuat
-                        $jatuhTempoInvoiceBaruFormatted = Carbon::parse($newPayment->tanggal_jatuh_tempo)->translatedFormat('d F Y');
-                        $sisaHari                       = Carbon::today()->diffInDaysFiltered(fn(Carbon $date) => true, $periodeSelesaiLayananSaatIni) + 1;
+                        // 1. Ambil tanggal jatuh tempo dari invoice BARU yang baru saja dibuat
+                        $tanggalJatuhTempo   = Carbon::parse($newPayment->tanggal_jatuh_tempo);
+                        $jatuhTempoFormatted = $tanggalJatuhTempo->translatedFormat('d F Y');
+
+// 2. Hitung sisa hari menuju tanggal JATUH TEMPO tersebut
+                        $sisaHari = max(0, Carbon::today()->diffInDays($tanggalJatuhTempo->startOfDay(), false));
+
+// 3. Buat teks sisa hari yang dinamis
                         if ($sisaHari <= 0) {
-                            $sisaHariText = "hari terakhir";
+                            $sisaHariText = "adalah HARI INI";
                         } else {
                             $sisaHariText = "dalam {$sisaHari} hari lagi";
                         }
 
-                        $messageToCustomer = "🔔 *SPEEDNET REMINDER* 🔔\n\n" .
-                        "Kepada Yth.\n" .
-                        "*{$customer->nama_customer}*\n\n" .
-                        "⚠️ *INFORMASI LAYANAN*\n" .
-                        "Layanan internet Speednet Anda akan berakhir {$sisaHariText}, yaitu pada tanggal:\n" .
-                        "📅 *{$layananAkanBerakhirPadaFormatted}*\n\n" .
-                        "💳 *DETAIL TAGIHAN PERPANJANGAN*\n" .
+// --- SUSUN PESAN FINAL ---
+                        $messageToCustomer = "SPEEDNET REMINDER ⚠️\n\n" .
+                        "Yth. *{$customer->nama_customer}*,\n\n" .
+                        "Layanan internet Anda akan berakhir dalam {$sisaHariText}, yaitu pada tanggal {$jatuhTempoFormatted}\n\n" .
+                        "💳 *DETAIL TAGIHAN*\n" .
                         "No. Invoice: *{$newPayment->nomor_invoice}*\n" .
-                        "Nominal: *Rp " . number_format($newPayment->jumlah_tagihan, 0, ',', '.') . "*\n" .
-                        "Jatuh Tempo: *{$jatuhTempoInvoiceBaruFormatted}*\n\n" .
+                        "Nominal: *Rp " . number_format($newPayment->jumlah_tagihan, 0, ',', '.') . "*\n\n" .
                         "💡 *CARA PEMBAYARAN*\n" .
-                        "1️. Website Speednet: " . route('customer.payments.index') . "\n" .
-                        "2️. Kunjungi kantor Speednet\n\n" .
-                        "Mohon segera lakukan pembayaran untuk menghindari layanan dinonaktifkan.\n\n" .
-                        "Terima kasih 🙏\n" .
+                        "1. Website Speednet: " . route('customer.payments.index') . "\n" .
+                            "2. Kunjungi kantor Speednet\n\n" .
+                            "Mohon segera lakukan pembayaran sebelum jatuh tempo untuk memastikan layanan Anda terus berjalan tanpa gangguan.\n\n" .
+                            "Terima kasih 🙏\nTim Speednet";
 
                         Log::info("Mengirim notifikasi tagihan H-5 [{$newPayment->nomor_invoice}] ke {$customer->nama_customer} ({$customer->wa_customer})");
                         if ($this->fonnteService->sendMessage($customer->wa_customer, $messageToCustomer)) {
