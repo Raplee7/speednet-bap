@@ -9,9 +9,8 @@
         <div class="container">
             <div class="row gy-4">
                 <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
-                    <h1 data-aos="fade-up">We offer modern solutions for growing your business</h1>
-                    <p data-aos="fade-up" data-aos-delay="100">We are team of talented designers making websites
-                        with Bootstrap</p>
+                    <h1 data-aos="fade-up">Nikmati Layanan Internet Cepat dengan Pembayaran Lebih Mudah</h1>
+                    <p data-aos="fade-up" data-aos-delay="100">Akses Mudah, Pembayaran Cepat, Layanan Terjamin</p>
                 </div>
                 <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out">
                     <img src="{{ asset('cust-assets/img/speednet-hero.png') }}" class="img-fluid animated" alt="">
@@ -30,13 +29,8 @@
                 <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
                     <div class="content">
                         <h3>Who We Are</h3>
-                        <h2>Expedita voluptas omnis cupiditate totam eveniet nobis sint iste. Dolores est repellat
-                            corrupti reprehenderit.</h2>
-                        <p>
-                            Quisquam vel ut sint cum eos hic dolores aperiam. Sed deserunt et. Inventore et et dolor
-                            consequatur itaque ut voluptate sed et. Magnam nam ipsum tenetur suscipit voluptatum nam
-                            et est corrupti.
-                        </p>
+                        <h2>Kami adalah penyedia layanan Wi-Fi lokal yang fokus menyediakan koneksi internet cepat, stabil, dan terjangkau. Dengan sistem manajemen pembayaran berbasis web, kami memudahkan pelanggan dalam mengelola layanan dan pembayaran secara praktis dan efisien.</h2>
+                        
                         <div class="text-center text-lg-start">
                             <a href="#"
                                 class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
@@ -55,7 +49,6 @@
         </div>
 
     </section><!-- /About Section -->
-
     <!-- Paket Section -->
     <section id="paket" class="pricing section">
 
@@ -67,45 +60,43 @@
         <div class="container">
             <div class="row gy-4">
 
-                @php
-                    $paketIconColors = ['#20c997', '#0dcaf0', '#fd7e14', '#0d6efd', '#6f42c1', '#ffc107'];
-                @endphp
-
-                @forelse ($pakets as $index => $paket)
-                    <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="{{ ($index + 1) * 100 }}">
-                        <div class="pricing-tem h-100 d-flex flex-column">
-                            @php
-                                $iconColor = $paketIconColors[$index % count($paketIconColors)];
-                            @endphp
-
-                            <h3 style="color: {{ $iconColor }};">{{ $paket->kecepatan_paket }}</h3>
-
-                            <div class="price"><sup>Rp</sup>{{ number_format($paket->harga_paket, 0, ',', '.') }}<span> /
-                                    bulan</span></div>
-
-                            <div class="icon my-3">
-                                <i class="bi bi-wifi" style="color: {{ $iconColor }}; font-size: 3rem;"></i>
-                            </div>
-
-                            <ul class="flex-grow-1">
-                                <li>Kecepatan hingga {{ $paket->kecepatan_paket }}</li>
-                                <li>Unlimited Kuota</li>
-                                <li>Gratis Biaya Pemasangan*</li>
-                                <li>Support 24/7</li>
-                            </ul>
-
-                            <div class="mt-auto">
-                                {{-- Tombol memanggil fungsi JavaScript untuk memilih paket di form dan scroll --}}
-                                <a href="#form-pemasangan" class="btn-buy"
-                                    onclick="pilihPaket('{{ $paket->id_paket }}')">Pilih Paket Ini</a>
-                            </div>
+                <!-- Paket 10 Mbps -->
+                <div class="col-lg-6 col-md-6" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="pricing-tem h-100 d-flex flex-column">
+                        <h3 style="color: #20c997;">10 Mbps</h3>
+                        <div class="price"><sup>Rp</sup>185.000<span> / bulan</span></div>
+                        <div class="icon my-3">
+                            <i class="bi bi-wifi" style="color: #20c997; font-size: 3rem;"></i>
+                        </div>
+                        <ul class="flex-grow-1">
+                            <li>Kecepatan hingga 10 Mbps</li>
+                            <li>Gratis Biaya Pemasangan*</li>
+                            <li>Support 24/7</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="#form-pemasangan" class="btn-buy" onclick="pilihPaket('paket10')">Pilih Paket Ini</a>
                         </div>
                     </div>
-                @empty
-                    <div class="col-12">
-                        <p class="text-center">Belum ada paket yang tersedia saat ini. Silakan kembali lagi nanti.</p>
+                </div>
+
+                <!-- Paket 20 Mbps -->
+                <div class="col-lg-6 col-md-6" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="pricing-tem h-100 d-flex flex-column">
+                        <h3 style="color: #0dcaf0;">20 Mbps</h3>
+                        <div class="price"><sup>Rp</sup>250.000<span> / bulan</span></div>
+                        <div class="icon my-3">
+                            <i class="bi bi-wifi" style="color: #0dcaf0; font-size: 3rem;"></i>
+                        </div>
+                        <ul class="flex-grow-1">
+                            <li>Kecepatan hingga 20 Mbps</li>
+                            <li>Gratis Biaya Pemasangan*</li>
+                            <li>Support 24/7</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="#form-pemasangan" class="btn-buy" onclick="pilihPaket('paket20')">Pilih Paket Ini</a>
+                        </div>
                     </div>
-                @endforelse
+                </div>
 
             </div>
         </div>
@@ -241,33 +232,25 @@
                     <div class="faq-container">
 
                         <div class="faq-item faq-active">
-                            <h3>Non consectetur a erat nam at lectus urna duis?</h3>
+                            <h3>Layanan internet tersedia di daerah mana saja?</h3>
                             <div class="faq-content">
-                                <p>Feugiat pretium nibh ipsum consequat. Tempus iaculis urna id volutpat lacus
-                                    laoreet non curabitur gravida. Venenatis lectus magna fringilla urna porttitor
-                                    rhoncus dolor purus non.</p>
+                                <p>Layanan kami saat ini tersedia di wilayah Desa Parit Baru dan sekitarnya. Untuk info cakupan wilayah terbaru, silakan hubungi admin.</p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
                         </div><!-- End Faq item-->
 
                         <div class="faq-item">
-                            <h3>Feugiat scelerisque varius morbi enim nunc faucibus a pellentesque?</h3>
+                            <h3>Apa keunggulan layanan Wi-Fi ini dibandingkan penyedia lain?</h3>
                             <div class="faq-content">
-                                <p>Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id
-                                    interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus
-                                    scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim.
-                                    Mauris ultrices eros in cursus turpis massa tincidunt dui.</p>
+                                <p>Kami menawarkan kecepatan stabil, harga terjangkau, pemasangan gratis*, dan layanan pelanggan yang responsif 24/7.</p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
                         </div><!-- End Faq item-->
 
                         <div class="faq-item">
-                            <h3>Dolor sit amet consectetur adipiscing elit pellentesque?</h3>
+                            <h3>Apakah ada biaya pemasangan?</h3>
                             <div class="faq-content">
-                                <p>Eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci.
-                                    Faucibus pulvinar elementum integer enim. Sem nulla pharetra diam sit amet nisl
-                                    suscipit. Rutrum tellus pellentesque eu tincidunt. Lectus urna duis convallis
-                                    convallis tellus. Urna molestie at elementum eu facilisis sed odio morbi quis
+                                <p>Tidak, kami memberikan gratis biaya pemasangan untuk pelanggan baru sesuai ketentuan yang berlaku.
                                 </p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
@@ -282,32 +265,26 @@
                     <div class="faq-container">
 
                         <div class="faq-item">
-                            <h3>Ac odio tempor orci dapibus. Aliquam eleifend mi in nulla?</h3>
+                            <h3>Apakah tersedia layanan bantuan teknis?</h3>
                             <div class="faq-content">
-                                <p>Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id
-                                    interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus
-                                    scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim.
-                                    Mauris ultrices eros in cursus turpis massa tincidunt dui.</p>
+                                <p>Ya, kami menyediakan layanan bantuan teknis pada jam kerja, yaitu Senin hingga Sabtu, pukul 08.00 – 17.00 WIB, melalui WhatsApp, telepon, atau langsung dari dashboard pelanggan.</p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
                         </div><!-- End Faq item-->
 
                         <div class="faq-item">
-                            <h3>Tempus quam pellentesque nec nam aliquam sem et tortor consequat?</h3>
+                            <h3>Apa yang harus saya lakukan jika koneksi internet saya bermasalah?</h3>
                             <div class="faq-content">
-                                <p>Molestie a iaculis at erat pellentesque adipiscing commodo. Dignissim suspendisse
-                                    in est ante in. Nunc vel risus commodo viverra maecenas accumsan. Sit amet nisl
-                                    suscipit adipiscing bibendum est. Purus gravida quis blandit turpis cursus in
+                                <p>Segera hubungi admin agar tim teknis kami dapat segera membantu.
                                 </p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
                         </div><!-- End Faq item-->
 
                         <div class="faq-item">
-                            <h3>Perspiciatis quod quo quos nulla quo illum ullam?</h3>
+                            <h3>Bagaimana jika saya terlambat membayar tagihan?</h3>
                             <div class="faq-content">
-                                <p>Enim ea facilis quaerat voluptas quidem et dolorem. Quis et consequatur non sed
-                                    in suscipit sequi. Distinctio ipsam dolore et.</p>
+                                <p>Kami memberikan masa tenggang tertentu. Namun jika melebihi batas waktu, layanan akan dihentikan sementara hingga pembayaran dilakukan.</p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
                         </div><!-- End Faq item-->
@@ -338,7 +315,7 @@
                             <div class="info-item h-100" data-aos="fade" data-aos-delay="200"> {{-- Tambah h-100 jika ingin sama tinggi --}}
                                 <i class="bi bi-geo-alt"></i>
                                 <h3>Alamat</h3>
-                                <p>Jl. Contoh Alamat No. 123</p> {{-- GANTI DENGAN ALAMATMU --}}
+                                <p>Jl. Arteri Supadio Jl. Pd. Indah Lestari No.12B, Sungai Raya, Kec. Sungai Raya, Kabupaten Kubu Raya,</p> {{-- GANTI DENGAN ALAMATMU --}}
                                 <p>Pontianak, Kalimantan Barat</p>
                             </div>
                         </div>
@@ -346,8 +323,8 @@
                             <div class="info-item h-100" data-aos="fade" data-aos-delay="300">
                                 <i class="bi bi-telephone"></i>
                                 <h3>Telepon Kami</h3>
-                                <p>+62 812 3456 7890</p> {{-- GANTI DENGAN NOMORMU --}}
-                                <p>+62 561 123 456</p>
+                                <p>+62 897 0002 025</p> {{-- GANTI DENGAN NOMORMU --}}
+                             
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -362,8 +339,8 @@
                             <div class="info-item h-100" data-aos="fade" data-aos-delay="500">
                                 <i class="bi bi-clock"></i>
                                 <h3>Jam Buka</h3>
-                                <p>Senin - Jumat</p>
-                                <p>08:00 - 16:00 WIB</p> {{-- Sesuaikan jam buka --}}
+                                <p>Senin - Sabtu</p>
+                                <p>08:00 - 17:00 WIB</p> {{-- Sesuaikan jam buka --}}
                             </div>
                         </div>
                     </div>
