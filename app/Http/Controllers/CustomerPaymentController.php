@@ -170,6 +170,8 @@ class CustomerPaymentController extends BaseController
 
         $pathBuktiBayar = $request->file('bukti_pembayaran')->store('bukti_pembayaran_pelanggan', 'public');
 
+        $paymentToNotify = null; // Initialize to avoid undefined variable
+
         if ($request->has('existing_payment_id') && $request->existing_payment_id) {
             $payment = Payment::where('id_payment', $request->existing_payment_id)
                 ->where('customer_id', $customer->id_customer)
@@ -186,6 +188,8 @@ class CustomerPaymentController extends BaseController
             $payment->bukti_pembayaran  = $pathBuktiBayar;
             $payment->status_pembayaran = 'pending_confirmation';
             $payment->save();
+
+            $paymentToNotify = $payment; // Assign here as well
 
             $successMessage = 'Konfirmasi pembayaran untuk Invoice #' . $payment->nomor_invoice . ' telah berhasil dikirim. Mohon tunggu verifikasi dari admin.';
 

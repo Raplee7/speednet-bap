@@ -55,8 +55,6 @@ class Payment extends Model
      */
     public function customer()
     {
-        // Nama foreign key di tabel payments adalah 'customer_id',
-        // dan primary key di tabel customers adalah 'id_customer'.
         return $this->belongsTo(Customer::class, 'customer_id', 'id_customer');
     }
 

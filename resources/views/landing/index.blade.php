@@ -28,21 +28,23 @@
 
                 <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
                     <div class="content">
-                        <h3>Who We Are</h3>
-                        <h2>Kami adalah penyedia layanan Wi-Fi lokal yang fokus menyediakan koneksi internet cepat, stabil, dan terjangkau. Dengan sistem manajemen pembayaran berbasis web, kami memudahkan pelanggan dalam mengelola layanan dan pembayaran secara praktis dan efisien.</h2>
-                        
-                        <div class="text-center text-lg-start">
+                        <h3>Tentang Kami</h3>
+                        <h2>Kami adalah penyedia layanan Wi-Fi lokal yang fokus menyediakan koneksi internet cepat, stabil,
+                            dan terjangkau. Dengan sistem manajemen pembayaran berbasis web, kami memudahkan pelanggan dalam
+                            mengelola layanan dan pembayaran secara praktis dan efisien.</h2>
+
+                        {{-- <div class="text-center text-lg-start">
                             <a href="#"
                                 class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
                                 <span>Read More</span>
                                 <i class="bi bi-arrow-right"></i>
                             </a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
                 <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-                    <img src="{{ asset('cust-assets/img/about.jpg') }}" class="img-fluid" alt="">
+                    <img src="{{ asset('cust-assets/img/about.jpeg') }}" class="img-fluid" alt="">
                 </div>
 
             </div>
@@ -60,43 +62,44 @@
         <div class="container">
             <div class="row gy-4">
 
-                <!-- Paket 10 Mbps -->
-                <div class="col-lg-6 col-md-6" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="pricing-tem h-100 d-flex flex-column">
-                        <h3 style="color: #20c997;">10 Mbps</h3>
-                        <div class="price"><sup>Rp</sup>185.000<span> / bulan</span></div>
-                        <div class="icon my-3">
-                            <i class="bi bi-wifi" style="color: #20c997; font-size: 3rem;"></i>
-                        </div>
-                        <ul class="flex-grow-1">
-                            <li>Kecepatan hingga 10 Mbps</li>
-                            <li>Gratis Biaya Pemasangan*</li>
-                            <li>Support 24/7</li>
-                        </ul>
-                        <div class="mt-auto">
-                            <a href="#form-pemasangan" class="btn-buy" onclick="pilihPaket('paket10')">Pilih Paket Ini</a>
-                        </div>
-                    </div>
-                </div>
+                @php
+                    $paketIconColors = ['#20c997', '#0dcaf0', '#fd7e14', '#0d6efd', '#6f42c1', '#ffc107'];
+                @endphp
 
-                <!-- Paket 20 Mbps -->
-                <div class="col-lg-6 col-md-6" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="pricing-tem h-100 d-flex flex-column">
-                        <h3 style="color: #0dcaf0;">20 Mbps</h3>
-                        <div class="price"><sup>Rp</sup>250.000<span> / bulan</span></div>
-                        <div class="icon my-3">
-                            <i class="bi bi-wifi" style="color: #0dcaf0; font-size: 3rem;"></i>
-                        </div>
-                        <ul class="flex-grow-1">
-                            <li>Kecepatan hingga 20 Mbps</li>
-                            <li>Gratis Biaya Pemasangan*</li>
-                            <li>Support 24/7</li>
-                        </ul>
-                        <div class="mt-auto">
-                            <a href="#form-pemasangan" class="btn-buy" onclick="pilihPaket('paket20')">Pilih Paket Ini</a>
+                @forelse ($pakets as $index => $paket)
+                    <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="{{ ($index + 1) * 100 }}">
+                        <div class="pricing-tem h-100 d-flex flex-column">
+                            @php
+                                $iconColor = $paketIconColors[$index % count($paketIconColors)];
+                            @endphp
+
+                            <h3 style="color: {{ $iconColor }};">{{ $paket->kecepatan_paket }}</h3>
+
+                            <div class="price"><sup>Rp</sup>{{ number_format($paket->harga_paket, 0, ',', '.') }}<span> /
+                                    bulan</span></div>
+
+                            <div class="icon my-3">
+                                <i class="bi bi-wifi" style="color: {{ $iconColor }}; font-size: 3rem;"></i>
+                            </div>
+
+                            <ul class="flex-grow-1">
+                                <li>Kecepatan hingga {{ $paket->kecepatan_paket }}</li>
+                                <li>Gratis Biaya Pemasangan*</li>
+                                <li>Support 24/7</li>
+                            </ul>
+
+                            <div class="mt-auto">
+                                {{-- Tombol memanggil fungsi JavaScript untuk memilih paket di form dan scroll --}}
+                                <a href="#form-pemasangan" class="btn-buy"
+                                    onclick="pilihPaket('{{ $paket->id_paket }}')">Pilih Paket Ini</a>
+                            </div>
                         </div>
                     </div>
-                </div>
+                @empty
+                    <div class="col-12">
+                        <p class="text-center">Belum ada paket yang tersedia saat ini. Silakan kembali lagi nanti.</p>
+                    </div>
+                @endforelse
 
             </div>
         </div>
@@ -234,7 +237,8 @@
                         <div class="faq-item faq-active">
                             <h3>Layanan internet tersedia di daerah mana saja?</h3>
                             <div class="faq-content">
-                                <p>Layanan kami saat ini tersedia di wilayah Desa Parit Baru dan sekitarnya. Untuk info cakupan wilayah terbaru, silakan hubungi admin.</p>
+                                <p>Layanan kami saat ini tersedia di wilayah Desa Parit Baru dan sekitarnya. Untuk info
+                                    cakupan wilayah terbaru, silakan hubungi admin.</p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
                         </div><!-- End Faq item-->
@@ -242,7 +246,8 @@
                         <div class="faq-item">
                             <h3>Apa keunggulan layanan Wi-Fi ini dibandingkan penyedia lain?</h3>
                             <div class="faq-content">
-                                <p>Kami menawarkan kecepatan stabil, harga terjangkau, pemasangan gratis*, dan layanan pelanggan yang responsif 24/7.</p>
+                                <p>Kami menawarkan kecepatan stabil, harga terjangkau, pemasangan gratis*, dan layanan
+                                    pelanggan yang responsif 24/7.</p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
                         </div><!-- End Faq item-->
@@ -250,7 +255,8 @@
                         <div class="faq-item">
                             <h3>Apakah ada biaya pemasangan?</h3>
                             <div class="faq-content">
-                                <p>Tidak, kami memberikan gratis biaya pemasangan untuk pelanggan baru sesuai ketentuan yang berlaku.
+                                <p>Tidak, kami memberikan gratis biaya pemasangan untuk pelanggan baru sesuai ketentuan yang
+                                    berlaku.
                                 </p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
@@ -267,7 +273,9 @@
                         <div class="faq-item">
                             <h3>Apakah tersedia layanan bantuan teknis?</h3>
                             <div class="faq-content">
-                                <p>Ya, kami menyediakan layanan bantuan teknis pada jam kerja, yaitu Senin hingga Sabtu, pukul 08.00 – 17.00 WIB, melalui WhatsApp, telepon, atau langsung dari dashboard pelanggan.</p>
+                                <p>Ya, kami menyediakan layanan bantuan teknis pada jam kerja, yaitu Senin hingga Sabtu,
+                                    pukul 08.00 – 17.00 WIB, melalui WhatsApp, telepon, atau langsung dari dashboard
+                                    pelanggan.</p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
                         </div><!-- End Faq item-->
@@ -284,7 +292,8 @@
                         <div class="faq-item">
                             <h3>Bagaimana jika saya terlambat membayar tagihan?</h3>
                             <div class="faq-content">
-                                <p>Kami memberikan masa tenggang tertentu. Namun jika melebihi batas waktu, layanan akan dihentikan sementara hingga pembayaran dilakukan.</p>
+                                <p>Kami memberikan masa tenggang tertentu. Namun jika melebihi batas waktu, layanan akan
+                                    dihentikan sementara hingga pembayaran dilakukan.</p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
                         </div><!-- End Faq item-->
@@ -315,7 +324,8 @@
                             <div class="info-item h-100" data-aos="fade" data-aos-delay="200"> {{-- Tambah h-100 jika ingin sama tinggi --}}
                                 <i class="bi bi-geo-alt"></i>
                                 <h3>Alamat</h3>
-                                <p>Jl. Arteri Supadio Jl. Pd. Indah Lestari No.12B, Sungai Raya, Kec. Sungai Raya, Kabupaten Kubu Raya,</p> {{-- GANTI DENGAN ALAMATMU --}}
+                                <p>Jl. Arteri Supadio Jl. Pd. Indah Lestari No.12B, Sungai Raya, Kec. Sungai Raya, Kabupaten
+                                    Kubu Raya,</p> {{-- GANTI DENGAN ALAMATMU --}}
                                 <p>Pontianak, Kalimantan Barat</p>
                             </div>
                         </div>
@@ -324,7 +334,7 @@
                                 <i class="bi bi-telephone"></i>
                                 <h3>Telepon Kami</h3>
                                 <p>+62 897 0002 025</p> {{-- GANTI DENGAN NOMORMU --}}
-                             
+
                             </div>
                         </div>
                         <div class="col-md-6">

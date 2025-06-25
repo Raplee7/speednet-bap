@@ -143,7 +143,7 @@ class GenerateRenewalInvoices extends Command
                         "Nominal: *Rp " . number_format($newPayment->jumlah_tagihan, 0, ',', '.') . "*\n\n" .
                         "💡 *CARA PEMBAYARAN*\n" .
                         "1. Website Speednet: " . route('customer.payments.index') . "\n" .
-                            "2. Kunjungi kantor Speednet\n\n" .
+                            "2. Kunjungi/hubungi kantor Speednet\n\n" .
                             "Mohon segera lakukan pembayaran sebelum jatuh tempo untuk memastikan layanan Anda terus berjalan tanpa gangguan.\n\n" .
                             "Terima kasih 🙏\nTim Speednet";
 

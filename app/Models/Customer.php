@@ -61,8 +61,6 @@ class Customer extends Authenticatable
      */
     public function payments()
     {
-        // Nama foreign key di tabel payments adalah 'customer_id',
-        // dan local key (primary key) di tabel customers adalah 'id_customer'.
         return $this->hasMany(Payment::class, 'customer_id', 'id_customer');
     }
 
