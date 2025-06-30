@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pakets', function (Blueprint $table) {
             $table->id('id_paket');
-            $table->string('kecepatan_paket');
+            $table->string('kecepatan_paket', 20);
             $table->decimal('harga_paket', 10, 2);
             $table->timestamps();
         });

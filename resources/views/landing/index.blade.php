@@ -9,8 +9,8 @@
         <div class="container">
             <div class="row gy-4">
                 <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
-                    <h1 data-aos="fade-up">Nikmati Layanan Internet Cepat dengan Pembayaran Lebih Mudah</h1>
-                    <p data-aos="fade-up" data-aos-delay="100">Akses Mudah, Pembayaran Cepat, Layanan Terjamin</p>
+                    <h1 data-aos="fade-up">Lebih Mudah Pasangnya, Lebih Terjangkau Bulanannya</h1>
+                    <p data-aos="fade-up" data-aos-delay="100">Akses Cepat, Koneksi Stabil, Pengalaman Terjamin</p>
                 </div>
                 <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out">
                     <img src="{{ asset('cust-assets/img/speednet-hero.png') }}" class="img-fluid animated" alt="">
@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-                    <img src="{{ asset('cust-assets/img/about.jpeg') }}" class="img-fluid" alt="">
+                    <img src="{{ asset('cust-assets/img/about.png') }}" class="img-fluid" alt="">
                 </div>
 
             </div>

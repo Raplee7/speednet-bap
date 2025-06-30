@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('device_models', function (Blueprint $table) {
             $table->id('id_dm');
-            $table->string('nama_model');
+            $table->string('nama_model', 50);
             $table->timestamps();
-
         });
     }
 

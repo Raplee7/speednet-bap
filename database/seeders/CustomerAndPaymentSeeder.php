@@ -55,7 +55,7 @@ class CustomerAndPaymentSeeder extends Seeder
         $faker             = \Faker\Factory::create('id_ID');                        // Menggunakan Faker Indonesia
         $adminUser         = User::where('role', 'admin')->first() ?? User::first(); // Ambil admin atau user pertama
         $paket10Mbps       = Paket::where('kecepatan_paket', '10 Mbps')->first();
-        $paket25Mbps       = Paket::where('kecepatan_paket', '25 Mbps')->first();
+        $paket25Mbps       = Paket::where('kecepatan_paket', '20 Mbps')->first();
         $ewalletGopay      = Ewallet::where('nama_ewallet', 'GoPay')->first();
         $ewalletDana       = Ewallet::where('nama_ewallet', 'Dana')->first();
         $deviceSnAvailable = Device_sn::where('status', 'tersedia')->get();

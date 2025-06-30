@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('device_sns', function (Blueprint $table) {
             $table->id('id_dsn');
-            $table->string('nomor')->unique();
+            $table->string('nomor', 50)->unique();
             $table->foreignId('model_id')->constrained('device_models', 'id_dm')->onDelete('cascade');
             $table->enum('status', ['tersedia', 'dipakai', 'rusak'])->default('tersedia');
             $table->timestamps();
         });
-
     }
 
     /**

@@ -324,7 +324,7 @@ class CustomerController extends Controller
                         "Paket: *{$kecepatanPaket}*\n\n" .
                         "🌐 *Akses Portal Pelanggan:*\n" .
                         "Silakan login ke {$appUrl}/ menggunakan:\n" .
-                        "Active User: *{$customer->id_customer}*\n" .
+                        "Active User: *{$customer->active_user}*\n" .
                         (empty($plainPasswordUntukNotifikasi) ?
                         "Gunakan fitur 'Lupa Password' untuk mengatur password baru.\n\n" :
                         "Password: *{$plainPasswordUntukNotifikasi}*\n\n") .
