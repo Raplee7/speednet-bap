@@ -73,7 +73,6 @@ class CustomerPaymentReportExport implements FromCollection, WithHeadings, WithM
             'Paket',
             'Tgl Aktivasi',
             'Layanan Habis',
-            'Layanan Actual',
         ];
 
         // Sub-header untuk setiap bulan
@@ -94,7 +93,7 @@ class CustomerPaymentReportExport implements FromCollection, WithHeadings, WithM
             $periodTitle,                                        // Baris 2: Periode
             [],                                                  // Baris 3: Baris kosong sebagai pemisah
             $mainHeaders,                                        // Baris 4: Header utama tabel (termasuk nama bulan)
-            array_merge(array_fill(0, 7, ''), $monthSubHeaders), // Baris 5: Sub-header untuk detail bulan
+            array_merge(array_fill(0, 6, ''), $monthSubHeaders), // Baris 5: Sub-header untuk detail bulan
         ];
     }
 
@@ -108,7 +107,6 @@ class CustomerPaymentReportExport implements FromCollection, WithHeadings, WithM
             strip_tags($row['paket_info'] ?? '-'),
             $row['tgl_aktivasi'] ?? '-',
             $row['tgl_layanan_habis_terakhir_visual'] ?? '-',
-            $row['tgl_layanan_habis_sebenarnya'] ?? '-',
         ];
 
         foreach ($this->displayedMonths as $monthName) {
@@ -124,132 +122,131 @@ class CustomerPaymentReportExport implements FromCollection, WithHeadings, WithM
     {
         // Default styles
         $sheet->getDefaultRowDimension()->setRowHeight(18);
-        
+
         // Title Styling (Row 1)
         $sheet->mergeCells('A1:' . $sheet->getHighestColumn() . '1');
         $sheet->getStyle('A1')->applyFromArray([
-            'font' => [
-                'bold' => true,
-                'size' => 14,
-                'color' => ['rgb' => '000000']
+            'font'      => [
+                'bold'  => true,
+                'size'  => 14,
+                'color' => ['rgb' => '000000'],
             ],
             'alignment' => [
                 'horizontal' => PhpSpreadsheetAlignment::HORIZONTAL_CENTER,
-                'vertical' => PhpSpreadsheetAlignment::VERTICAL_CENTER
+                'vertical'   => PhpSpreadsheetAlignment::VERTICAL_CENTER,
             ],
-            'fill' => [
-                'fillType' => PhpSpreadsheetFill::FILL_SOLID,
-                'startColor' => ['rgb' => 'E2EFD9']
+            'fill'      => [
+                'fillType'   => PhpSpreadsheetFill::FILL_SOLID,
+                'startColor' => ['rgb' => 'E2EFD9'],
             ],
-            'borders' => [
+            'borders'   => [
                 'bottom' => [
                     'borderStyle' => PhpSpreadsheetBorder::BORDER_MEDIUM,
-                    'color' => ['rgb' => '000000']
-                ]
-            ]
+                    'color'       => ['rgb' => '000000'],
+                ],
+            ],
         ]);
 
         // Period Info (Row 2)
         $sheet->mergeCells('A2:' . $sheet->getHighestColumn() . '2');
         $sheet->getStyle('A2')->applyFromArray([
-            'font' => [
+            'font'      => [
                 'bold' => true,
-                'size' => 11
+                'size' => 11,
             ],
             'alignment' => [
-                'horizontal' => PhpSpreadsheetAlignment::HORIZONTAL_CENTER
+                'horizontal' => PhpSpreadsheetAlignment::HORIZONTAL_CENTER,
             ],
-            'fill' => [
-                'fillType' => PhpSpreadsheetFill::FILL_SOLID,
-                'startColor' => ['rgb' => 'F8F9FA']
+            'fill'      => [
+                'fillType'   => PhpSpreadsheetFill::FILL_SOLID,
+                'startColor' => ['rgb' => 'F8F9FA'],
             ],
-            'borders' => [
+            'borders'   => [
                 'bottom' => [
                     'borderStyle' => PhpSpreadsheetBorder::BORDER_THIN,
-                    'color' => ['rgb' => '000000']
-                ]
-            ]
+                    'color'       => ['rgb' => '000000'],
+                ],
+            ],
         ]);
 
         // Headers Style (Row 4)
         $mainHeaderStyle = [
-            'font' => [
-                'bold' => true,
-                'size' => 10,
-                'color' => ['rgb' => 'FFFFFF']
+            'font'      => [
+                'bold'  => true,
+                'size'  => 10,
+                'color' => ['rgb' => 'FFFFFF'],
             ],
             'alignment' => [
                 'horizontal' => PhpSpreadsheetAlignment::HORIZONTAL_CENTER,
-                'vertical' => PhpSpreadsheetAlignment::VERTICAL_CENTER,
-                'wrapText' => true
+                'vertical'   => PhpSpreadsheetAlignment::VERTICAL_CENTER,
+                'wrapText'   => true,
             ],
-            'fill' => [
-                'fillType' => PhpSpreadsheetFill::FILL_SOLID,
-                'startColor' => ['rgb' => '366092']
+            'fill'      => [
+                'fillType'   => PhpSpreadsheetFill::FILL_SOLID,
+                'startColor' => ['rgb' => '366092'],
             ],
-            'borders' => [
+            'borders'   => [
                 'allBorders' => [
                     'borderStyle' => PhpSpreadsheetBorder::BORDER_THIN,
-                    'color' => ['rgb' => '000000']
+                    'color'       => ['rgb' => '000000'],
                 ],
-                'outline' => [
+                'outline'    => [
                     'borderStyle' => PhpSpreadsheetBorder::BORDER_MEDIUM,
-                    'color' => ['rgb' => '000000']
-                ]
-            ]
+                    'color'       => ['rgb' => '000000'],
+                ],
+            ],
         ];
         $sheet->getStyle('A4:' . $sheet->getHighestColumn() . '4')->applyFromArray($mainHeaderStyle);
 
         // Sub Headers Style (Row 5)
         $subHeaderStyle = [
-            'font' => [
+            'font'      => [
                 'bold' => true,
-                'size' => 9
+                'size' => 9,
             ],
             'alignment' => [
                 'horizontal' => PhpSpreadsheetAlignment::HORIZONTAL_CENTER,
-                'vertical' => PhpSpreadsheetAlignment::VERTICAL_CENTER,
-                'wrapText' => true
+                'vertical'   => PhpSpreadsheetAlignment::VERTICAL_CENTER,
+                'wrapText'   => true,
             ],
-            'fill' => [
-                'fillType' => PhpSpreadsheetFill::FILL_SOLID,
-                'startColor' => ['rgb' => 'D9E1F2']
+            'fill'      => [
+                'fillType'   => PhpSpreadsheetFill::FILL_SOLID,
+                'startColor' => ['rgb' => 'D9E1F2'],
             ],
-            'borders' => [
+            'borders'   => [
                 'allBorders' => [
                     'borderStyle' => PhpSpreadsheetBorder::BORDER_THIN,
-                    'color' => ['rgb' => '000000']
-                ]
-            ]
+                    'color'       => ['rgb' => '000000'],
+                ],
+            ],
         ];
         $sheet->getStyle('A5:' . $sheet->getHighestColumn() . '5')->applyFromArray($subHeaderStyle);
 
-        // Set Column Widths
-        $sheet->getColumnDimension('A')->setWidth(8);   // ID
-        $sheet->getColumnDimension('B')->setWidth(25);  // Nama
-        $sheet->getColumnDimension('C')->setWidth(12);  // Status
-        $sheet->getColumnDimension('D')->setWidth(12);  // Paket
-        $sheet->getColumnDimension('E')->setWidth(12);  // Tgl Aktivasi
-        $sheet->getColumnDimension('F')->setWidth(12);  // Layanan Habis
-        $sheet->getColumnDimension('G')->setWidth(12);  // Layanan Actual
+                                                       // Set Column Widths
+        $sheet->getColumnDimension('A')->setWidth(8);  // ID
+        $sheet->getColumnDimension('B')->setWidth(25); // Nama
+        $sheet->getColumnDimension('C')->setWidth(12); // Status
+        $sheet->getColumnDimension('D')->setWidth(12); // Paket
+        $sheet->getColumnDimension('E')->setWidth(12); // Tgl Aktivasi
+        $sheet->getColumnDimension('F')->setWidth(12); // Layanan Habis
 
         // Style for data cells
         $dataStyle = [
             'alignment' => [
-                'vertical' => PhpSpreadsheetAlignment::VERTICAL_CENTER
+                'vertical' => PhpSpreadsheetAlignment::VERTICAL_CENTER,
             ],
-            'borders' => [
+            'borders'   => [
                 'allBorders' => [
                     'borderStyle' => PhpSpreadsheetBorder::BORDER_THIN,
-                    'color' => ['rgb' => '000000']
-                ]
-            ]
+                    'color'       => ['rgb' => '000000'],
+                ],
+            ],
         ];
         $sheet->getStyle('A6:' . $sheet->getHighestColumn() . $sheet->getHighestRow())->applyFromArray($dataStyle);
 
         // Month columns styling with different colors
-        $startColumnIndex = 7;
-        $monthColors = [
+        $startColumnIndex = 6;
+        $monthColors      = [
             'E3F2FD', // Light Blue
             'F3E5F5', // Light Purple
             'E8F5E9', // Light Green
@@ -261,59 +258,59 @@ class CustomerPaymentReportExport implements FromCollection, WithHeadings, WithM
             'F1F8E9', // Light Light Green
             'FCE4EC', // Light Pink
             'E8EAF6', // Light Indigo
-            'F9FBE7'  // Light Lime
+            'F9FBE7', // Light Lime
         ];
 
         foreach ($this->displayedMonths as $index => $monthName) {
             $startLetter = PhpSpreadsheetCoordinate::stringFromColumnIndex($startColumnIndex + 1);
-            $endLetter = PhpSpreadsheetCoordinate::stringFromColumnIndex($startColumnIndex + 3);
-            
-            // Set month column widths
-            $sheet->getColumnDimension($startLetter)->setWidth(10);  // Tgl Bayar
-            $sheet->getColumnDimension(PhpSpreadsheetCoordinate::stringFromColumnIndex($startColumnIndex + 2))->setWidth(12);  // Status
-            $sheet->getColumnDimension($endLetter)->setWidth(13);  // Invoice
-            
+            $endLetter   = PhpSpreadsheetCoordinate::stringFromColumnIndex($startColumnIndex + 3);
+
+                                                                                                                              // Set month column widths
+            $sheet->getColumnDimension($startLetter)->setWidth(10);                                                           // Tgl Bayar
+            $sheet->getColumnDimension(PhpSpreadsheetCoordinate::stringFromColumnIndex($startColumnIndex + 2))->setWidth(12); // Status
+            $sheet->getColumnDimension($endLetter)->setWidth(13);                                                             // Invoice
+
             // Merge month header cells
             $sheet->mergeCells($startLetter . '4:' . $endLetter . '4');
-            
+
             // Apply month specific color to header and data cells
             $colorIndex = $index % count($monthColors);
-            
+
             // Style for month header
             $sheet->getStyle($startLetter . '4:' . $endLetter . '4')->applyFromArray([
                 'fill' => [
-                    'fillType' => PhpSpreadsheetFill::FILL_SOLID,
-                    'startColor' => ['rgb' => $monthColors[$colorIndex]]
+                    'fillType'   => PhpSpreadsheetFill::FILL_SOLID,
+                    'startColor' => ['rgb' => $monthColors[$colorIndex]],
                 ],
                 'font' => [
-                    'bold' => true,
-                    'color' => ['rgb' => '000000'] // Black text for better contrast
-                ]
+                    'bold'  => true,
+                    'color' => ['rgb' => '000000'], // Black text for better contrast
+                ],
             ]);
-            
+
             // Style for month sub-headers
             $sheet->getStyle($startLetter . '5:' . $endLetter . '5')->applyFromArray([
                 'fill' => [
-                    'fillType' => PhpSpreadsheetFill::FILL_SOLID,
-                    'startColor' => ['rgb' => $monthColors[$colorIndex]]
+                    'fillType'   => PhpSpreadsheetFill::FILL_SOLID,
+                    'startColor' => ['rgb' => $monthColors[$colorIndex]],
                 ],
                 'font' => [
                     'bold' => true,
-                    'size' => 8
-                ]
+                    'size' => 8,
+                ],
             ]);
-            
+
             // Apply color to ALL data cells (not just even rows)
             $colorIndex = $index % count($monthColors);
             for ($row = 6; $row <= $sheet->getHighestRow(); $row++) {
                 $sheet->getStyle($startLetter . $row . ':' . $endLetter . $row)->applyFromArray([
                     'fill' => [
-                        'fillType' => PhpSpreadsheetFill::FILL_SOLID,
-                        'startColor' => ['rgb' => $monthColors[$colorIndex]]
-                    ]
+                        'fillType'   => PhpSpreadsheetFill::FILL_SOLID,
+                        'startColor' => ['rgb' => $monthColors[$colorIndex]],
+                    ],
                 ]);
             }
-            
+
             $startColumnIndex += 3;
         }
 
@@ -332,12 +329,12 @@ class CustomerPaymentReportExport implements FromCollection, WithHeadings, WithM
         return [
             // Event untuk mengatur tinggi baris header
             AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getRowDimension(1)->setRowHeight(30);  // Title
-                $event->sheet->getRowDimension(2)->setRowHeight(20);  // Period
-                $event->sheet->getRowDimension(3)->setRowHeight(8);   // Spacing
-                $event->sheet->getRowDimension(4)->setRowHeight(25);  // Main Headers
-                $event->sheet->getRowDimension(5)->setRowHeight(20);  // Sub Headers
-                
+                $event->sheet->getRowDimension(1)->setRowHeight(30); // Title
+                $event->sheet->getRowDimension(2)->setRowHeight(20); // Period
+                $event->sheet->getRowDimension(3)->setRowHeight(8);  // Spacing
+                $event->sheet->getRowDimension(4)->setRowHeight(25); // Main Headers
+                $event->sheet->getRowDimension(5)->setRowHeight(20); // Sub Headers
+
                 // Set data rows height
                 for ($row = 6; $row <= $event->sheet->getHighestRow(); $row++) {
                     $event->sheet->getRowDimension($row)->setRowHeight(18);

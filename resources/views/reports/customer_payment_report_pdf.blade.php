@@ -205,7 +205,7 @@
                         <tr>
                             <td class="customer-id text-center">{{ $data['customer']->id_customer }}</td>
                             <td class="customer-name">{{ Str::limit($data['customer']->nama_customer, 20) }}</td>
-                            <td class="customer-status text-center">  <!-- Change this line -->
+                            <td class="customer-status text-center"> <!-- Change this line -->
                                 <span class="status-{{ strtolower($data['customer']->status) }}">
                                     {{ Str::title(str_replace('_', ' ', $data['customer']->status)) }}
                                 </span>
@@ -236,11 +236,11 @@
                                     }
                                 @endphp
                                 <td class="month-col {{ $monthData['class'] }}">
-                                    @if($tanggalBayar && $tanggalBayar != '-')
+                                    @if ($tanggalBayar && $tanggalBayar != '-')
                                         <span class="sub-text">{{ $tanggalBayar }}</span>
                                     @endif
                                     <span class="status-text">{{ $monthData['text'] }}</span>
-                                    @if(!empty($monthData['invoice_no']) && $monthData['text'] != '-')
+                                    @if (!empty($monthData['invoice_no']) && $monthData['text'] != '-')
                                         <span class="sub-text invoice-number">{{ $monthData['invoice_no'] }}</span>
                                     @endif
                                 </td>

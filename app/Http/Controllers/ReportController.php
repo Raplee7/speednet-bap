@@ -225,7 +225,7 @@ class ReportController extends BaseController
         if ($data['selectedEndMonth'] && $data['selectedEndMonth'] != $data['selectedStartMonth'] && isset($data['allMonthNames'][$data['selectedEndMonth']])) {
             $fileName .= '-sd-' . Str::slug($data['allMonthNames'][$data['selectedEndMonth']]);
         }
-        $fileName .= '.pdf';
+        $fileName .= '_' . Carbon::now()->format('YmdHis') . '.pdf';
 
         return $pdf->download($fileName);
     }
@@ -248,7 +248,7 @@ class ReportController extends BaseController
         if ($data['selectedEndMonth'] && $data['selectedEndMonth'] != $data['selectedStartMonth'] && isset($data['allMonthNames'][$data['selectedEndMonth']])) {
             $fileName .= '-sd-' . Str::slug($data['allMonthNames'][$data['selectedEndMonth']]);
         }
-        $fileName .= '.xlsx';
+        $fileName .= '_' . Carbon::now()->format('YmdHis') . '.xlsx';
 
         // Pastikan nama export class sesuai jika Anda mengubahnya juga
         return Excel::download(new CustomerPaymentReportExport($data), $fileName);
@@ -414,8 +414,7 @@ class ReportController extends BaseController
         $pdf = PDF::loadView('reports.financial_report_pdf', array_merge(['pageTitle' => $pageTitle], $data))
             ->setPaper('a4', 'portrait'); // Portrait untuk laporan keuangan biasanya cukup
 
-        $fileName = 'laporan_keuangan_pendapatan_' . Str::slug($data['reportPeriodLabel'], '_') . '.pdf';
-
+        $fileName = 'laporan_keuangan_pendapatan_' . Str::slug($data['reportPeriodLabel'], '_') . '_' . Carbon::now()->format('YmdHis') . '.xlsx';
         return $pdf->download($fileName);
     }
 
@@ -430,8 +429,7 @@ class ReportController extends BaseController
             return redirect()->route('reports.financial', $request->query())->with('error', 'Silakan pilih filter periode yang valid terlebih dahulu untuk export Excel.');
         }
 
-        $fileName = 'laporan_keuangan_pendapatan_' . Str::slug($data['reportPeriodLabel'], '_') . '.xlsx';
-
+        $fileName = 'laporan_keuangan_pendapatan_' . Str::slug($data['reportPeriodLabel'], '_') . '_' . Carbon::now()->format('YmdHis') . '.xlsx';
         return Excel::download(new FinancialReportExport($data), $fileName);
         return redirect()->route('reports.financial', $request->query())->with('info', 'Fitur Export Excel untuk Laporan Keuangan sedang dalam pengembangan.');
     }
@@ -721,39 +719,39 @@ class ReportController extends BaseController
         }
         // Perbaikan filter info
         $filterInfo = [];
-        
+
         // Search query filter
         if ($searchQueryInput) {
             $filterInfo['search_query'] = $searchQueryInput;
         }
 
-        // Status filter 
+        // Status filter
         if ($filterStatus) {
             $filterInfo['status_pelanggan'] = $statusesForFilter[$filterStatus] ?? Str::title(str_replace('_', ' ', $filterStatus));
         }
 
         // Paket filter
         if ($filterPaketId) {
-            $paketInfo = $paketsForFilter->firstWhere('id_paket', $filterPaketId);
+            $paketInfo                = $paketsForFilter->firstWhere('id_paket', $filterPaketId);
             $filterInfo['paket_info'] = $paketInfo ? $paketInfo->kecepatan_paket : null;
         }
 
         // Period filter
         if ($activationPeriodData['startDate'] && $activationPeriodData['endDate']) {
             $filterInfo['activation_reportPeriodLabel'] = $activationPeriodData['reportPeriodLabel'];
-            $filterInfo['activation_periodType'] = $activationPeriodData['periodType'];
+            $filterInfo['activation_periodType']        = $activationPeriodData['periodType'];
         }
 
         $returnData = [
-            'customers' => $customersData,
-            'pakets' => $paketsForFilter,
-            'statuses' => $statusesForFilter,
-            'request' => $request,
+            'customers'              => $customersData,
+            'pakets'                 => $paketsForFilter,
+            'statuses'               => $statusesForFilter,
+            'request'                => $request,
             'totalCustomersFiltered' => $totalCustomersFiltered,
-            'summaryByStatus' => $summaryByStatus,
-            'summaryByPaket' => $summaryByPaket,
-            'customerGrowth' => $customerGrowth,
-            'filterInfo' => $filterInfo // Tambahkan filterInfo ke returnData
+            'summaryByStatus'        => $summaryByStatus,
+            'summaryByPaket'         => $summaryByPaket,
+            'customerGrowth'         => $customerGrowth,
+            'filterInfo'             => $filterInfo, // Tambahkan filterInfo ke returnData
         ];
 
         $availableYears = [];
@@ -798,10 +796,8 @@ class ReportController extends BaseController
         $activationPeriodLabel = $data['activation_reportPeriodLabel'] ?? 'semua_periode';
         if ($activationPeriodLabel !== 'Semua Periode' && ! Str::contains($activationPeriodLabel, ['Tidak Valid', 'Tidak Lengkap', 'Error Filter'])) {
             $fileName .= Str::slug($activationPeriodLabel, '_');
-        } else {
-            $fileName .= Carbon::now()->format('YmdHis');
         }
-        $fileName .= '.pdf';
+        $fileName .= Carbon::now()->format('YmdHis') . '.pdf';
 
         return $pdf->download($fileName);
     }
@@ -822,10 +818,8 @@ class ReportController extends BaseController
         $activationPeriodLabel = $data['activation_reportPeriodLabel'] ?? 'semua_periode';
         if ($activationPeriodLabel !== 'Semua Periode' && ! Str::contains($activationPeriodLabel, ['Tidak Valid', 'Tidak Lengkap', 'Error Filter'])) {
             $fileName .= Str::slug($activationPeriodLabel, '_');
-        } else {
-            $fileName .= Carbon::now()->format('YmdHis');
         }
-        $fileName .= '.xlsx';
+        $fileName .= '_' . Carbon::now()->format('YmdHis') . '.xlsx';
 
         // $data sudah berisi 'statuses', 'pakets', dll.
         return Excel::download(new CustomerProfileReportExport(array_merge(['pageTitle' => $pageTitle], $data)), $fileName);

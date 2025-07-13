@@ -313,19 +313,19 @@
 
         <div class="container section-title" data-aos="fade-up">
             <h2>Kontak</h2>
-            <p>Hubungi Kami</p> {{-- Sedikit modifikasi teks --}}
+            <p>Hubungi Kami</p>
         </div>
         <div class="container" data-aos="fade-up" data-aos-delay="100">
             <div class="row gy-4">
 
-                <div class="col-lg-6"> {{-- Kolom untuk Info Kontak (Alamat, Telepon, Email, Jam Buka) --}}
+                <div class="col-lg-6">
                     <div class="row gy-4">
                         <div class="col-md-6">
-                            <div class="info-item h-100" data-aos="fade" data-aos-delay="200"> {{-- Tambah h-100 jika ingin sama tinggi --}}
+                            <div class="info-item h-100" data-aos="fade" data-aos-delay="200">
                                 <i class="bi bi-geo-alt"></i>
                                 <h3>Alamat</h3>
                                 <p>Jl. Arteri Supadio Jl. Pd. Indah Lestari No.12B, Sungai Raya, Kec. Sungai Raya, Kabupaten
-                                    Kubu Raya,</p> {{-- GANTI DENGAN ALAMATMU --}}
+                                    Kubu Raya,</p>
                                 <p>Pontianak, Kalimantan Barat</p>
                             </div>
                         </div>
@@ -333,7 +333,7 @@
                             <div class="info-item h-100" data-aos="fade" data-aos-delay="300">
                                 <i class="bi bi-telephone"></i>
                                 <h3>Telepon Kami</h3>
-                                <p>+62 897 0002 025</p> {{-- GANTI DENGAN NOMORMU --}}
+                                <p>+62 897 0002 025</p>
 
                             </div>
                         </div>
@@ -341,8 +341,8 @@
                             <div class="info-item h-100" data-aos="fade" data-aos-delay="400">
                                 <i class="bi bi-envelope"></i>
                                 <h3>Email Kami</h3>
-                                <p>info@speednetbap.test</p> {{-- GANTI DENGAN EMAILMU --}}
-                                <p>dukungan@speednetbap.test</p>
+                                <p>-</p>
+                                <p>-</p>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -350,7 +350,7 @@
                                 <i class="bi bi-clock"></i>
                                 <h3>Jam Buka</h3>
                                 <p>Senin - Sabtu</p>
-                                <p>08:00 - 17:00 WIB</p> {{-- Sesuaikan jam buka --}}
+                                <p>08:00 - 17:00 WIB</p>
                             </div>
                         </div>
                     </div>
