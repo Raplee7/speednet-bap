@@ -500,7 +500,8 @@
                                     <h6 class="fw-semibold mb-2">Butuh Bantuan?</h6>
                                     <p class="small text-muted mb-3">Jika mengalami kendala dengan layanan atau pembayaran,
                                         hubungi kami.</p>
-                                    <a href="#" class="btn btn-sm btn-outline-primary rounded-pill w-100">
+                                    <a href="https://wa.me/628970002025" target="_blank"
+                                        class="btn btn-sm btn-outline-primary rounded-pill w-100">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-headset me-1" viewBox="0 0 16 16">
                                             <path

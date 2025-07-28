@@ -274,8 +274,7 @@
                             <h3>Apakah tersedia layanan bantuan teknis?</h3>
                             <div class="faq-content">
                                 <p>Ya, kami menyediakan layanan bantuan teknis pada jam kerja, yaitu Senin hingga Sabtu,
-                                    pukul 08.00 – 17.00 WIB, melalui WhatsApp, telepon, atau langsung dari dashboard
-                                    pelanggan.</p>
+                                    pukul 08.00 – 17.00 WIB, melalui WhatsApp atau telepon.</p>
                             </div>
                             <i class="faq-toggle bi bi-chevron-right"></i>
                         </div><!-- End Faq item-->
